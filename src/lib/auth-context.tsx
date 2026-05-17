@@ -40,14 +40,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     console.log("Admin check for", uid, ":", hasAdminRole, lastData);
     setIsAdmin(hasAdminRole);
-    if (error) {
-      console.error("Error checking admin status:", error);
-      setIsAdmin(false);
-      return;
-    }
-    const hasAdminRole = !!data?.some((r) => r.role === "admin");
-    console.log("Admin check for", uid, ":", hasAdminRole, data);
-    setIsAdmin(hasAdminRole);
   };
 
   useEffect(() => {
