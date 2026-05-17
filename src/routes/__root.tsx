@@ -5,16 +5,17 @@
   function ThemeSync() {
     const [settings, setSettings] = useState<{ primary_color?: string | null; accent_color?: string | null } | null>(null);
  
-    useEffect(() => {
-      let cancelled = false;
-      (async () => {
-        try {
-          const { data } = await supabase.from("site_settings").select("primary_color, accent_color").limit(1).maybeSingle();
-          if (!cancelled && data) setSettings(data);
-        } catch {}
-      })();
-      return () => { cancelled = true; };
-    }, []);
+   useEffect(() => {
+     if (typeof window === "undefined") return;
+     let cancelled = false;
+     (async () => {
+       try {
+         const { data } = await supabase.from("site_settings").select("primary_color, accent_color").limit(1).maybeSingle();
+         if (!cancelled && data) setSettings(data);
+       } catch {}
+     })();
+     return () => { cancelled = true; };
+   }, []);
  
     useEffect(() => {
       if (!settings || typeof document === "undefined") return;

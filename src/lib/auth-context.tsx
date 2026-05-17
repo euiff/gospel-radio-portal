@@ -42,17 +42,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsAdmin(hasAdminRole);
   };
 
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
-      setSession(s); setUser(s?.user ?? null);
-      setTimeout(() => checkAdmin(s?.user?.id), 0);
-    });
-    supabase.auth.getSession().then(({ data: { session: s } }) => {
-      setSession(s); setUser(s?.user ?? null);
-      checkAdmin(s?.user?.id).finally(() => setLoading(false));
-    });
-    return () => subscription.unsubscribe();
-  }, []);
+   useEffect(() => {
+     if (typeof window === "undefined") {
+       setLoading(false);
+       return;
+     }
+     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
+       setSession(s); setUser(s?.user ?? null);
+       setTimeout(() => checkAdmin(s?.user?.id), 0);
+     });
+     supabase.auth.getSession().then(({ data: { session: s } }) => {
+       setSession(s); setUser(s?.user ?? null);
+       checkAdmin(s?.user?.id).finally(() => setLoading(false));
+     });
+     return () => subscription.unsubscribe();
+   }, []);
 
   const signOut = async () => { await supabase.auth.signOut(); };
 
