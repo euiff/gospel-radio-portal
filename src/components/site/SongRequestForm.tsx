@@ -13,8 +13,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { Music, MessageSquare } from "lucide-react";
 
 const formSchema = z.object({
@@ -49,10 +49,7 @@ export function SongRequestForm() {
 
       if (error) throw error;
 
-      toast({
-        title: "Pedido enviado!",
-        description: "Sua música foi solicitada com sucesso.",
-      });
+      toast.success("Pedido enviado! Sua música foi solicitada com sucesso.");
 
       // WhatsApp Integration (Example number, should be configurable)
       const whatsappNumber = "5511999999999"; 
@@ -63,11 +60,7 @@ export function SongRequestForm() {
 
       form.reset();
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Erro ao enviar",
-        description: "Ocorreu um problema ao processar seu pedido.",
-      });
+      toast.error("Erro ao enviar: Ocorreu um problema ao processar seu pedido.");
     } finally {
       setIsLoading(false);
     }
