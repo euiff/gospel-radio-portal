@@ -20,8 +20,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAdmin = async (uid: string | undefined) => {
     if (!uid) { setIsAdmin(false); return; }
-    const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid);
-    setIsAdmin(!!data?.some((r) => r.role === "admin"));
+    const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", uid);
+    if (error) {
+      console.error("Error checking admin status:", error);
+      setIsAdmin(false);
+      return;
+    }
+    const hasAdminRole = !!data?.some((r) => r.role === "admin");
+    console.log("Admin check for", uid, ":", hasAdminRole, data);
+    setIsAdmin(hasAdminRole);
   };
 
   useEffect(() => {
