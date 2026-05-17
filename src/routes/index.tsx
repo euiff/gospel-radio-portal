@@ -1,15 +1,55 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, Link, defer } from "@tanstack/react-router";
+import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
+import { Suspense, lazy } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import heroImg from "@/assets/hero-worship.jpg";
 import { useRadio } from "@/lib/radio-context";
 import { Play, Pause, ArrowRight, Clock } from "lucide-react";
-import { SongRequestForm } from "@/components/site/SongRequestForm";
-import { ScheduleDisplay } from "@/components/site/ScheduleDisplay";
-import { PrayerMural } from "@/components/site/PrayerMural";
 import { MessageCircle, Heart, Music } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Lazy load secondary components to reduce initial bundle size
+const SongRequestForm = lazy(() => import("@/components/site/SongRequestForm").then(m => ({ default: m.SongRequestForm })));
+const ScheduleDisplay = lazy(() => import("@/components/site/ScheduleDisplay").then(m => ({ default: m.ScheduleDisplay })));
+const PrayerMural = lazy(() => import("@/components/site/PrayerMural").then(m => ({ default: m.PrayerMural })));
+
+const featuredNewsQueryOptions = queryOptions({
+  queryKey: ["news-featured"],
+  queryFn: async () => {
+    const { data } = await supabase.from("news")
+      .select("id,slug,title,excerpt,cover_image,published_at,featured,category:categories(name,slug)")
+      .eq("published", true).eq("featured", true)
+      .order("published_at", { ascending: false }).limit(1).maybeSingle();
+    return data as NewsItem | null;
+  },
+});
+
+const latestNewsQueryOptions = queryOptions({
+  queryKey: ["news-latest"],
+  queryFn: async () => {
+    const { data } = await supabase.from("news")
+      .select("id,slug,title,excerpt,cover_image,published_at,featured,category:categories(name,slug)")
+      .eq("published", true).order("published_at", { ascending: false }).limit(6);
+    return (data ?? []) as NewsItem[];
+  },
+});
+
+const programsTodayQueryOptions = queryOptions({
+  queryKey: ["programs-today"],
+  queryFn: async () => {
+    const dow = new Date().getDay();
+    const { data } = await supabase.from("programs").select("*").eq("day_of_week", dow).order("start_time");
+    return data ?? [];
+  },
+});
 
 export const Route = createFileRoute("/")({
+  loader: ({ context: { queryClient } }) => {
+    // Prefetch queries to reduce TTFB and improve LCP
+    queryClient.ensureQueryData(featuredNewsQueryOptions);
+    queryClient.ensureQueryData(latestNewsQueryOptions);
+    queryClient.ensureQueryData(programsTodayQueryOptions);
+  },
   head: () => ({
     meta: [
       { title: "Rádio Gospel — Música cristã ao vivo 24h" },
@@ -27,40 +67,26 @@ interface NewsItem {
 
 function Home() {
   const { settings, isPlaying, toggle } = useRadio();
-  const { data: featured } = useQuery({
-    queryKey: ["news-featured"],
-    queryFn: async () => {
-      const { data } = await supabase.from("news")
-        .select("id,slug,title,excerpt,cover_image,published_at,featured,category:categories(name,slug)")
-        .eq("published", true).eq("featured", true)
-        .order("published_at", { ascending: false }).limit(1).maybeSingle();
-      return data as NewsItem | null;
-    },
-  });
-  const { data: latest } = useQuery({
-    queryKey: ["news-latest"],
-    queryFn: async () => {
-      const { data } = await supabase.from("news")
-        .select("id,slug,title,excerpt,cover_image,published_at,featured,category:categories(name,slug)")
-        .eq("published", true).order("published_at", { ascending: false }).limit(6);
-      return (data ?? []) as NewsItem[];
-    },
-  });
-  const { data: programs } = useQuery({
-    queryKey: ["programs-today"],
-    queryFn: async () => {
-      const dow = new Date().getDay();
-      const { data } = await supabase.from("programs").select("*").eq("day_of_week", dow).order("start_time");
-      return data ?? [];
-    },
-  });
+  
+  // useSuspenseQuery for better UX with TanStack Router
+  const { data: featured } = useSuspenseQuery(featuredNewsQueryOptions);
+  const { data: latest } = useSuspenseQuery(latestNewsQueryOptions);
+  const { data: programs } = useSuspenseQuery(programsTodayQueryOptions);
 
   return (
     <main>
        {/* HERO */}
        <section className="relative overflow-hidden min-h-[70vh] flex items-center">
          <div className="absolute inset-0 z-0">
-           <img src={heroImg} alt="" className="w-full h-full object-cover" width={1600} height={900} />
+            <img 
+              src={heroImg} 
+              alt="" 
+              className="w-full h-full object-cover" 
+              width={1600} 
+              height={900} 
+              fetchPriority="high" 
+              loading="eager"
+            />
            <div className="absolute inset-0 gradient-deep opacity-90" />
          </div>
          <div className="relative z-10 container mx-auto px-4 py-16 md:py-24 text-white">
@@ -232,16 +258,22 @@ function Home() {
              {/* Sidebar: Schedule and Request Form */}
              <div className="lg:col-span-4 space-y-8">
                <div id="programacao">
-                 <ScheduleDisplay />
+                  <Suspense fallback={<Skeleton className="h-[400px] w-full rounded-2xl" />}>
+                    <ScheduleDisplay />
+                  </Suspense>
                </div>
                <div id="pedidos">
-                 <SongRequestForm />
+                  <Suspense fallback={<Skeleton className="h-[300px] w-full rounded-2xl" />}>
+                    <SongRequestForm />
+                  </Suspense>
                </div>
              </div>
 
              {/* Main Content: Prayer Mural */}
              <div className="lg:col-span-8" id="oracao">
-               <PrayerMural />
+                <Suspense fallback={<Skeleton className="h-[600px] w-full rounded-2xl" />}>
+                  <PrayerMural />
+                </Suspense>
              </div>
            </div>
          </div>
