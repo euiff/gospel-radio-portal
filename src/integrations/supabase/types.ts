@@ -130,6 +130,68 @@ export type Database = {
           },
         ]
       }
+      prayer_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          prayer_request_id: string | null
+          user_name: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          prayer_request_id?: string | null
+          user_name: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          prayer_request_id?: string | null
+          user_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prayer_comments_prayer_request_id_fkey"
+            columns: ["prayer_request_id"]
+            isOneToOne: false
+            referencedRelation: "prayer_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prayer_requests: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_private: boolean | null
+          status: string
+          updated_at: string
+          user_name: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_private?: boolean | null
+          status?: string
+          updated_at?: string
+          user_name: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_private?: boolean | null
+          status?: string
+          updated_at?: string
+          user_name?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -148,6 +210,45 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+        }
+        Relationships: []
+      }
+      programming: {
+        Row: {
+          created_at: string
+          day_of_week: number
+          description: string | null
+          end_time: string
+          host: string
+          id: string
+          image_url: string | null
+          start_time: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          day_of_week: number
+          description?: string | null
+          end_time: string
+          host: string
+          id?: string
+          image_url?: string | null
+          start_time: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          day_of_week?: number
+          description?: string | null
+          end_time?: string
+          host?: string
+          id?: string
+          image_url?: string | null
+          start_time?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -268,6 +369,36 @@ export type Database = {
           site_description?: string | null
           site_name?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      song_requests: {
+        Row: {
+          artist: string
+          created_at: string
+          id: string
+          message: string | null
+          song_title: string
+          status: string
+          user_name: string
+        }
+        Insert: {
+          artist: string
+          created_at?: string
+          id?: string
+          message?: string | null
+          song_title: string
+          status?: string
+          user_name: string
+        }
+        Update: {
+          artist?: string
+          created_at?: string
+          id?: string
+          message?: string | null
+          song_title?: string
+          status?: string
+          user_name?: string
         }
         Relationships: []
       }
