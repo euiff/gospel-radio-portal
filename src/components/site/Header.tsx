@@ -1,10 +1,12 @@
- import { Link, useRouterState } from "@tanstack/react-router";
- import { useAuth } from "@/lib/auth-context";
- import { LayoutDashboard, LogIn, Menu, X } from "lucide-react";
-  import { useState, useEffect } from "react";
-  import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Link, useRouterState } from "@tanstack/react-router";
+import { useAuth } from "@/lib/auth-context";
+import { LayoutDashboard, LogIn, Menu, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
-const nav = [
+const defaultNav = [
   { to: "/", label: "Início" },
   { to: "/categoria/noticias", label: "Notícias" },
   { to: "/categoria/musica", label: "Música" },
@@ -17,6 +19,16 @@ const nav = [
     const { user, isAdmin } = useAuth();
     const path = useRouterState({ select: (r) => r.location.pathname });
      const [isOpen, setIsOpen] = useState(false);
+
+    const { data: siteSettings } = useQuery({
+      queryKey: ["site-settings-header"],
+      queryFn: async () => {
+        const { data } = await supabase.from("site_settings").select("logo_url, navigation_menu").limit(1).maybeSingle();
+        return data;
+      }
+    });
+
+    const nav = (siteSettings?.navigation_menu as any[]) || defaultNav;
    
      // Close menu on path change
      useEffect(() => {
@@ -27,7 +39,13 @@ const nav = [
       <header className="bg-background border-b border-border sticky top-0 z-40 lg:relative lg:z-auto">
        <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
          <Link to="/" className="font-display text-2xl font-bold text-primary shrink-0">
-           Rádio<span className="text-gradient-gold">Gospel</span>
+           {siteSettings?.logo_url ? (
+             <img src={siteSettings.logo_url} alt="Logo" className="h-10 w-auto object-contain" />
+           ) : (
+             <>
+               Rádio<span className="text-gradient-gold">Gospel</span>
+             </>
+           )}
          </Link>
  
          {/* Desktop Navigation */}

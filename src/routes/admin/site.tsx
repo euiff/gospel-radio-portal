@@ -2,27 +2,36 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Plus, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/site")({ component: SiteSettings });
 
- const fields: Array<{ key: string; label: string; type?: string }> = [
-   { key: "site_name", label: "Nome do portal" },
-   { key: "site_description", label: "Descrição (SEO)" },
-   { key: "hero_title", label: "Título do hero" },
-   { key: "hero_subtitle", label: "Subtítulo do hero" },
-   { key: "footer_text", label: "Texto do rodapé" },
-   { key: "primary_color", label: "Cor Primária", type: "color" },
-   { key: "accent_color", label: "Cor de Destaque", type: "color" },
- ];
+const fields: Array<{ key: string; label: string; type?: string }> = [
+  { key: "site_name", label: "Nome do portal" },
+  { key: "logo_url", label: "URL do Logo (Imagem)" },
+  { key: "site_description", label: "Descrição (SEO)" },
+  { key: "hero_title", label: "Título do hero" },
+  { key: "hero_subtitle", label: "Subtítulo do hero" },
+  { key: "footer_text", label: "Texto do rodapé" },
+  { key: "primary_color", label: "Cor Primária", type: "color" },
+  { key: "accent_color", label: "Cor de Destaque", type: "color" },
+];
 
 function SiteSettings() {
   const [data, setData] = useState<any>(null);
   const [saving, setSaving] = useState(false);
-  useEffect(() => { supabase.from("site_settings").select("*").limit(1).maybeSingle().then(({ data }) => setData(data ?? {})); }, []);
+  
+  useEffect(() => { 
+    supabase.from("site_settings").select("*").limit(1).maybeSingle().then(({ data }) => {
+      setData(data ?? { navigation_menu: [] });
+    }); 
+  }, []);
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault(); setSaving(true);
-    const payload = { ...data }; delete payload.created_at; delete payload.updated_at;
+    const payload = { ...data }; 
+    delete payload.created_at; 
+    delete payload.updated_at;
     const { error } = data?.id
       ? await supabase.from("site_settings").update(payload).eq("id", data.id)
       : await supabase.from("site_settings").insert(payload);
@@ -32,11 +41,31 @@ function SiteSettings() {
 
   if (!data) return <div>Carregando…</div>;
 
+  const addMenuItem = () => {
+    const menu = [...(data.navigation_menu || [])];
+    menu.push({ label: "Novo Link", to: "/" });
+    setData({ ...data, navigation_menu: menu });
+  };
+
+  const removeMenuItem = (index: number) => {
+    const menu = [...(data.navigation_menu || [])];
+    menu.splice(index, 1);
+    setData({ ...data, navigation_menu: menu });
+  };
+
+  const updateMenuItem = (index: number, field: string, value: string) => {
+    const menu = [...(data.navigation_menu || [])];
+    menu[index] = { ...menu[index], [field]: value };
+    setData({ ...data, navigation_menu: menu });
+  };
+
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-4xl pb-12">
       <h1 className="font-display text-4xl text-primary mb-2">Configurar Site</h1>
       <p className="text-muted-foreground mb-8">Textos institucionais e SEO.</p>
-       <form onSubmit={save} className="bg-card border border-border rounded-xl p-6 space-y-6">
+       <form onSubmit={save} className="space-y-8">
+        <div className="bg-card border border-border rounded-xl p-6 space-y-6">
+          <h2 className="text-xl font-display text-primary">Informações Gerais</h2>
          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
            {fields.map((f) => (
              <div key={f.key} className={f.type === "color" ? "col-span-1" : "col-span-1 md:col-span-2"}>
@@ -66,13 +95,60 @@ function SiteSettings() {
              </div>
            ))}
          </div>
-         <button 
-           disabled={saving} 
-           className="w-full py-4 rounded-xl gradient-gold text-gold-foreground font-bold shadow-lg hover:scale-[1.01] active:scale-95 transition disabled:opacity-50"
-         >
-           {saving ? "Salvando…" : "Salvar Alterações"}
-         </button>
-       </form>
+        </div>
+
+        <div className="bg-card border border-border rounded-xl p-6 space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-display text-primary">Menu de Navegação</h2>
+            <button 
+              type="button"
+              onClick={addMenuItem}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent/10 text-accent hover:bg-accent/20 transition text-sm font-bold"
+            >
+              <Plus className="w-4 h-4" /> Adicionar Item
+            </button>
+          </div>
+          
+          <div className="space-y-3">
+            {(data.navigation_menu || []).map((item: any, idx: number) => (
+              <div key={idx} className="flex gap-3 items-end p-4 bg-muted/30 rounded-xl border border-border">
+                <div className="flex-1 space-y-1.5">
+                  <label className="text-[10px] font-bold uppercase text-muted-foreground">Rótulo</label>
+                  <input 
+                    value={item.label} 
+                    onChange={(e) => updateMenuItem(idx, "label", e.target.value)}
+                    placeholder="Ex: Contato"
+                    className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
+                  />
+                </div>
+                <div className="flex-[2] space-y-1.5">
+                  <label className="text-[10px] font-bold uppercase text-muted-foreground">Link (URL ou Rota)</label>
+                  <input 
+                    value={item.to} 
+                    onChange={(e) => updateMenuItem(idx, "to", e.target.value)}
+                    placeholder="Ex: /contato ou https://..."
+                    className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
+                  />
+                </div>
+                <button 
+                  type="button"
+                  onClick={() => removeMenuItem(idx)}
+                  className="p-2.5 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <button 
+          disabled={saving} 
+          className="w-full py-4 rounded-xl gradient-gold text-gold-foreground font-bold shadow-lg hover:scale-[1.01] active:scale-95 transition disabled:opacity-50"
+        >
+          {saving ? "Salvando…" : "Salvar Alterações"}
+        </button>
+      </form>
     </div>
   );
 }
