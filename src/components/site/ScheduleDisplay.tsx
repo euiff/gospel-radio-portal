@@ -33,7 +33,9 @@ export function ScheduleDisplay() {
     };
 
     fetchPrograms();
-    const interval = setInterval(() => updateSchedule(programs), 60000); // Update every minute
+    const interval = setInterval(() => {
+      if (programs.length > 0) updateSchedule(programs);
+    }, 60000); // Update every minute
     return () => clearInterval(interval);
   }, [programs.length]);
 
@@ -41,9 +43,12 @@ export function ScheduleDisplay() {
     const now = new Date();
     const currentTimeStr = now.toLocaleTimeString("pt-BR", { hour12: false });
 
-    const current = allPrograms.find(p => 
-      currentTimeStr >= p.start_time && currentTimeStr < p.end_time
-    );
+    const current = allPrograms.find(p => {
+      // Ensure consistent format (HH:MM:SS) for comparison
+      const start = p.start_time.length === 5 ? `${p.start_time}:00` : p.start_time;
+      const end = p.end_time.length === 5 ? `${p.end_time}:00` : p.end_time;
+      return currentTimeStr >= start && currentTimeStr < end;
+    });
 
     const upcoming = allPrograms.filter(p => 
       p.start_time > currentTimeStr
