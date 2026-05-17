@@ -14,6 +14,8 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as NoticiaSlugRouteImport } from './routes/noticia/$slug'
+import { Route as CategoriaSlugRouteImport } from './routes/categoria/$slug'
 import { Route as AdminSiteRouteImport } from './routes/admin/site'
 import { Route as AdminRadioRouteImport } from './routes/admin/radio'
 import { Route as AdminProgramacaoRouteImport } from './routes/admin/programacao'
@@ -44,6 +46,16 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const NoticiaSlugRoute = NoticiaSlugRouteImport.update({
+  id: '/noticia/$slug',
+  path: '/noticia/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
+  id: '/categoria/$slug',
+  path: '/categoria/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminSiteRoute = AdminSiteRouteImport.update({
   id: '/site',
@@ -81,6 +93,8 @@ export interface FileRoutesByFullPath {
   '/admin/programacao': typeof AdminProgramacaoRoute
   '/admin/radio': typeof AdminRadioRoute
   '/admin/site': typeof AdminSiteRoute
+  '/categoria/$slug': typeof CategoriaSlugRoute
+  '/noticia/$slug': typeof NoticiaSlugRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -92,6 +106,8 @@ export interface FileRoutesByTo {
   '/admin/programacao': typeof AdminProgramacaoRoute
   '/admin/radio': typeof AdminRadioRoute
   '/admin/site': typeof AdminSiteRoute
+  '/categoria/$slug': typeof CategoriaSlugRoute
+  '/noticia/$slug': typeof NoticiaSlugRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
@@ -105,6 +121,8 @@ export interface FileRoutesById {
   '/admin/programacao': typeof AdminProgramacaoRoute
   '/admin/radio': typeof AdminRadioRoute
   '/admin/site': typeof AdminSiteRoute
+  '/categoria/$slug': typeof CategoriaSlugRoute
+  '/noticia/$slug': typeof NoticiaSlugRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -119,6 +137,8 @@ export interface FileRouteTypes {
     | '/admin/programacao'
     | '/admin/radio'
     | '/admin/site'
+    | '/categoria/$slug'
+    | '/noticia/$slug'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -130,6 +150,8 @@ export interface FileRouteTypes {
     | '/admin/programacao'
     | '/admin/radio'
     | '/admin/site'
+    | '/categoria/$slug'
+    | '/noticia/$slug'
     | '/admin'
   id:
     | '__root__'
@@ -142,6 +164,8 @@ export interface FileRouteTypes {
     | '/admin/programacao'
     | '/admin/radio'
     | '/admin/site'
+    | '/categoria/$slug'
+    | '/noticia/$slug'
     | '/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -150,6 +174,8 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   LoginRoute: typeof LoginRoute
   ProgramacaoRoute: typeof ProgramacaoRoute
+  CategoriaSlugRoute: typeof CategoriaSlugRoute
+  NoticiaSlugRoute: typeof NoticiaSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -188,6 +214,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/noticia/$slug': {
+      id: '/noticia/$slug'
+      path: '/noticia/$slug'
+      fullPath: '/noticia/$slug'
+      preLoaderRoute: typeof NoticiaSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/categoria/$slug': {
+      id: '/categoria/$slug'
+      path: '/categoria/$slug'
+      fullPath: '/categoria/$slug'
+      preLoaderRoute: typeof CategoriaSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/site': {
       id: '/admin/site'
@@ -252,6 +292,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   LoginRoute: LoginRoute,
   ProgramacaoRoute: ProgramacaoRoute,
+  CategoriaSlugRoute: CategoriaSlugRoute,
+  NoticiaSlugRoute: NoticiaSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
