@@ -213,45 +213,6 @@ export type Database = {
         }
         Relationships: []
       }
-      programming: {
-        Row: {
-          created_at: string
-          day_of_week: number
-          description: string | null
-          end_time: string
-          host: string
-          id: string
-          image_url: string | null
-          start_time: string
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          day_of_week: number
-          description?: string | null
-          end_time: string
-          host: string
-          id?: string
-          image_url?: string | null
-          start_time: string
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          day_of_week?: number
-          description?: string | null
-          end_time?: string
-          host?: string
-          id?: string
-          image_url?: string | null
-          start_time?: string
-          title?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       programs: {
         Row: {
           cover_image: string | null
@@ -296,7 +257,6 @@ export type Database = {
           id: string
           instagram: string | null
           logo_url: string | null
-          now_playing_api: string | null
           station_name: string
           stream_url: string
           tagline: string | null
@@ -311,7 +271,6 @@ export type Database = {
           id?: string
           instagram?: string | null
           logo_url?: string | null
-          now_playing_api?: string | null
           station_name?: string
           stream_url?: string
           tagline?: string | null
@@ -326,7 +285,6 @@ export type Database = {
           id?: string
           instagram?: string | null
           logo_url?: string | null
-          now_playing_api?: string | null
           station_name?: string
           stream_url?: string
           tagline?: string | null
