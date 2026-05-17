@@ -144,32 +144,59 @@ function Home() {
         </div>
       </section>
 
-      {/* PROGRAMMING */}
-      <section className="bg-secondary py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-10">
-            <div className="text-xs uppercase tracking-widest text-accent font-semibold">Hoje na rádio</div>
-            <h2 className="font-display text-4xl text-primary">Programação do dia</h2>
-          </div>
-          {programs && programs.length > 0 ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
-              {programs.map((p: any) => (
-                <div key={p.id} className="bg-card border border-border rounded-xl p-5 hover:border-accent transition">
-                  <div className="flex items-center gap-2 text-accent text-sm font-semibold"><Clock className="w-4 h-4" />{p.start_time?.slice(0,5)} – {p.end_time?.slice(0,5)}</div>
-                  <h3 className="font-display text-2xl text-primary mt-2">{p.name}</h3>
-                  {p.host && <p className="text-sm text-muted-foreground">com {p.host}</p>}
-                  {p.description && <p className="text-sm mt-2">{p.description}</p>}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-center text-muted-foreground">Nenhum programa cadastrado para hoje.</p>
-          )}
-          <div className="text-center mt-8">
-            <Link to="/programacao" className="inline-flex items-center gap-2 text-primary hover:text-accent">Ver programação completa <ArrowRight className="w-4 h-4" /></Link>
-          </div>
-        </div>
-      </section>
+       {/* PROGRAMMING */}
+       <section className="bg-muted/50 py-16 md:py-24 border-y border-border">
+         <div className="container mx-auto px-4">
+           <div className="text-center mb-12">
+             <div className="text-xs uppercase tracking-widest text-accent font-bold mb-3">Sintonize</div>
+             <h2 className="font-display text-primary">Nossa Programação</h2>
+             <p className="text-muted-foreground mt-2">O que está rolando hoje na sua rádio favorita</p>
+           </div>
+           
+           {programs && programs.length > 0 ? (
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+               {programs.map((p: any) => (
+                 <div key={p.id} className="group bg-card border border-border rounded-2xl p-6 hover:border-accent/50 hover:shadow-lg transition-all duration-300 relative overflow-hidden">
+                   <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                     <Clock className="w-12 h-12" />
+                   </div>
+                   <div className="flex items-center gap-2 text-accent text-sm font-bold mb-4">
+                     <span className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-accent/10">
+                       <Clock className="w-3.5 h-3.5" />
+                       {p.start_time?.slice(0,5)} – {p.end_time?.slice(0,5)}
+                     </span>
+                   </div>
+                   <h3 className="font-display text-2xl text-primary mb-2 leading-tight group-hover:text-accent transition-colors">{p.name}</h3>
+                   {p.host && (
+                     <div className="flex items-center gap-2 mb-3">
+                       <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] text-primary font-bold uppercase">
+                         {p.host.slice(0,1)}
+                       </div>
+                       <p className="text-sm font-medium text-primary/80">Com {p.host}</p>
+                     </div>
+                   )}
+                   {p.description && (
+                     <p className="text-sm text-muted-foreground line-clamp-2 italic leading-relaxed">
+                       "{p.description}"
+                     </p>
+                   )}
+                 </div>
+               ))}
+             </div>
+           ) : (
+             <div className="max-w-md mx-auto text-center p-12 bg-card border border-dashed border-border rounded-3xl">
+               <Clock className="w-12 h-12 mx-auto text-muted-foreground/30 mb-4" />
+               <p className="text-muted-foreground">A programação de hoje ainda está sendo preparada. Fique ligado!</p>
+             </div>
+           )}
+           
+           <div className="text-center mt-12">
+             <Link to="/programacao" className="inline-flex items-center gap-2 px-8 py-3 rounded-full border border-primary/20 text-primary font-bold hover:bg-primary hover:text-white transition-all shadow-sm">
+               Grade completa de horários <ArrowRight className="w-4 h-4" />
+             </Link>
+           </div>
+         </div>
+       </section>
     </main>
   );
 }
