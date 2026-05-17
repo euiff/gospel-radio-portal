@@ -6,6 +6,7 @@ interface RadioSettings {
   station_name: string;
   tagline: string | null;
   stream_url: string;
+  api_now_playing: string | null;
   logo_url: string | null;
   cover_url: string | null;
   whatsapp: string | null;
@@ -16,6 +17,7 @@ interface RadioSettings {
 
 interface RadioCtx {
   settings: RadioSettings | null;
+  nowPlaying: string | null;
   isPlaying: boolean;
   volume: number;
   toggle: () => void;
@@ -27,6 +29,7 @@ const Ctx = createContext<RadioCtx | null>(null);
 
 export function RadioProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<RadioSettings | null>(null);
+  const [nowPlaying, setNowPlaying] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolumeState] = useState(0.8);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -35,6 +38,28 @@ export function RadioProvider({ children }: { children: ReactNode }) {
     const { data } = await supabase.from("radio_settings").select("*").limit(1).maybeSingle();
     if (data) setSettings(data as RadioSettings);
   };
+
+  useEffect(() => {
+    if (!settings?.api_now_playing) {
+      setNowPlaying(null);
+      return;
+    }
+
+    const fetchNowPlaying = async () => {
+      try {
+        const res = await fetch(settings.api_now_playing!);
+        const json = await res.json();
+        const title = json.title || json.song || json.now_playing?.song?.title || json.current || json.text;
+        if (title) setNowPlaying(title);
+      } catch (e) {
+        console.debug("Now playing fetch failed", e);
+      }
+    };
+
+    fetchNowPlaying();
+    const interval = setInterval(fetchNowPlaying, 30000);
+    return () => clearInterval(interval);
+  }, [settings?.api_now_playing]);
 
   useEffect(() => { load(); }, []);
 
@@ -60,7 +85,7 @@ export function RadioProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <Ctx.Provider value={{ settings, isPlaying, volume, toggle, setVolume: setVolumeState, reload: load }}>
+    <Ctx.Provider value={{ settings, nowPlaying, isPlaying, volume, toggle, setVolume: setVolumeState, reload: load }}>
       {children}
     </Ctx.Provider>
   );
