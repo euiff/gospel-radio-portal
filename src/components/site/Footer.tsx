@@ -21,10 +21,16 @@ function FooterNavLink({ item }: { item: NavItem }) {
   return <a href={to} target={external ? "_blank" : undefined} rel={external ? "noreferrer" : undefined} className={className}>{label}</a>;
 }
 
-export function Footer() {
-  const { settings } = useRadio();
-
-  const { data: siteSettings } = useQuery({
+ export function Footer() {
+   const { settings: radioSettings } = useRadio();
+ 
+   const { data: siteSettings, isLoading } = useQuery({
+     queryKey: ["site-settings-footer"],
+     queryFn: async () => {
+       const { data } = await supabase.from("site_settings").select("*").limit(1).maybeSingle();
+       return data;
+     }
+   });
     queryKey: ["site-settings-footer"],
     queryFn: async () => {
       const { data } = await supabase.from("site_settings").select("logo_url, navigation_menu").limit(1).maybeSingle();
@@ -48,9 +54,9 @@ export function Footer() {
                 </>
               )}
             </div>
-            <p className="text-sm mt-4 text-white/60 leading-relaxed max-w-xs">
-              {settings?.tagline ?? "Levando a palavra de Deus e o melhor do louvor para o seu coração, 24 horas por dia."}
-            </p>
+             <p className="text-sm mt-4 text-white/60 leading-relaxed max-w-xs">
+               {siteSettings?.site_description || radioSettings?.tagline || "Levando a palavra de Deus e o melhor do louvor para o seu coração, 24 horas por dia."}
+             </p>
           </div>
           
           <div>
@@ -101,8 +107,14 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] md:text-xs text-white/30 uppercase tracking-widest font-medium">
-          <div>© {new Date().getFullYear()} {settings?.station_name ?? "Rádio Gospel"}.</div>
+         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] md:text-xs text-white/30 uppercase tracking-widest font-medium">
+           <div>
+             {siteSettings?.footer_text ? (
+               <span dangerouslySetInnerHTML={{ __html: siteSettings.footer_text.replace('{year}', new Date().getFullYear().toString()) }} />
+             ) : (
+               <>© {new Date().getFullYear()} {radioSettings?.station_name || "Rádio Gospel"}.</>
+             )}
+           </div>
           <div className="flex items-center gap-6">
             <span className="hover:text-white cursor-pointer transition-colors">Termos de Uso</span>
             <span className="hover:text-white cursor-pointer transition-colors">Privacidade</span>
