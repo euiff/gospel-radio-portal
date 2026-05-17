@@ -69,7 +69,7 @@ const menu = [
    return (
      <div className="min-h-screen flex flex-col md:flex-row bg-background">
        {/* Mobile Admin Header */}
-       <header className="md:hidden bg-sidebar text-sidebar-foreground p-4 border-b border-sidebar-border flex items-center justify-between sticky top-[68px] z-40">
+        <header className="md:hidden bg-sidebar text-sidebar-foreground p-4 border-b border-sidebar-border flex items-center justify-between sticky top-0 z-40">
          <div className="flex items-center gap-3">
            <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -ml-2 hover:bg-sidebar-accent rounded-lg transition" aria-label="Menu Admin">
              <Menu className="w-6 h-6" />
