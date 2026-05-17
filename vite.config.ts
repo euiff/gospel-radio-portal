@@ -6,13 +6,20 @@
  // You can pass additional config via defineConfig({ vite: { ... } }) if needed.
  import { defineConfig } from "@lovable.dev/vite-tanstack-config";
  
+ import { nitro } from "nitro/vite";
+ 
  // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
  // @cloudflare/vite-plugin builds from this — wrangler.jsonc main alone is insufficient.
- export default defineConfig({
+  export default defineConfig({
     tanstackStart: {
       server: { entry: "server" },
     },
     vite: {
+      plugins: [
+        nitro({
+          preset: "vercel",
+        }),
+      ],
       build: {
         target: "esnext",
         rollupOptions: {
@@ -21,14 +28,11 @@
               if (id.includes("node_modules")) {
                 if (id.includes("@supabase")) return "vendor-supabase";
                 if (id.includes("@tanstack")) return "vendor-tanstack";
-                // Group all UI and utility libraries together to prevent SSR circular dependency cycles.
-                // Circular dependencies in manual chunks can cause runtime "TypeError: __assign is not a function"
-                // and "Cannot set properties of undefined (setting 'Activity')" during SSR.
                 return "vendor";
-               }
+              }
             },
           },
         },
       },
     },
- });
+  });
