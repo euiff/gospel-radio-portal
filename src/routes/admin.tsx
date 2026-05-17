@@ -34,11 +34,32 @@ const menu = [
    if (!isAdmin) return (
      <div className="container mx-auto py-20 text-center px-4">
        <h1 className="font-display text-3xl text-primary">Acesso restrito</h1>
-       <p className="text-muted-foreground mt-2">Sua conta não tem permissão de administrador.</p>
-       <p className="text-sm text-muted-foreground mt-4 p-4 bg-muted rounded-lg inline-block">Atribua o papel <code>admin</code> à sua conta na tabela <code>user_roles</code> via Lovable Cloud.</p>
-       <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-         <Link to="/" className="px-6 py-2.5 rounded-lg border border-border font-medium">Voltar para a Home</Link>
-         <button onClick={() => signOut().then(() => nav({ to: "/login" }))} className="px-6 py-2.5 rounded-lg bg-primary text-primary-foreground font-medium">Sair e entrar com outra conta</button>
+        <p className="text-muted-foreground mt-2">Sua conta ({user.email}) não possui permissões administrativas ativas no momento.</p>
+        
+        <div className="mt-10 max-w-lg mx-auto bg-card border border-border rounded-2xl p-6 text-left shadow-sm">
+          <h3 className="font-bold text-primary mb-2 flex items-center gap-2">
+            <Settings className="w-5 h-5 text-accent" />
+            Já possui acesso?
+          </h3>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Se você acabou de receber permissões, tente atualizar a página ou clique no botão abaixo para recarregar sua sessão e verificar as novas credenciais.
+          </p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-6 w-full py-3 rounded-xl gradient-gold text-gold-foreground font-bold shadow-md hover:scale-[1.02] transition"
+          >
+            Atualizar Permissões
+          </button>
+        </div>
+ 
+        <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+          <Link to="/" className="px-6 py-3 rounded-xl border border-border font-bold hover:bg-muted transition text-sm">Voltar ao Site</Link>
+          <button 
+            onClick={() => signOut().then(() => nav({ to: "/login" }))} 
+            className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold hover:opacity-90 transition text-sm"
+          >
+            Sair e entrar novamente
+          </button>
        </div>
      </div>
    );
