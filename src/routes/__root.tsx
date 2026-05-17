@@ -1,5 +1,34 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Outlet, createRootRouteWithContext, useRouter, useRouterState, HeadContent, Scripts, Link } from "@tanstack/react-router";
+ import { useEffect } from "react";
+ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+ import { Outlet, createRootRouteWithContext, useRouter, useRouterState, HeadContent, Scripts, Link, useLocation } from "@tanstack/react-router";
+ import { useQuery } from "@tanstack/react-query";
+ import { supabase } from "@/integrations/supabase/client";
+ function ThemeSync() {
+   const { data: settings } = useQuery({
+     queryKey: ["site-settings-theme"],
+     queryFn: async () => (await supabase.from("site_settings").select("primary_color, accent_color").limit(1).maybeSingle()).data,
+     staleTime: 1000 * 60 * 5, // 5 minutes
+   });
+ 
+   useEffect(() => {
+     if (!settings) return;
+     const root = document.documentElement;
+     if (settings.primary_color) {
+       // Convert hex to oklch or just use as is if we change styles.css to use variables
+       // For now, let's just override the variables directly
+       root.style.setProperty("--primary", settings.primary_color);
+       root.style.setProperty("--sidebar", settings.primary_color);
+     }
+     if (settings.accent_color) {
+       root.style.setProperty("--accent", settings.accent_color);
+       root.style.setProperty("--gold", settings.accent_color);
+       root.style.setProperty("--ring", settings.accent_color);
+     }
+   }, [settings]);
+ 
+   return null;
+ }
+ 
 import { Toaster } from "@/components/ui/sonner";
 import appCss from "../styles.css?url";
 import { RadioProvider } from "@/lib/radio-context";
@@ -87,7 +116,8 @@ function RootShell({ children }: { children: React.ReactNode }) {
              <Outlet />
            </main>
            {!isAdmin && <Footer />}
-           <Toaster />
+            <ThemeSync />
+            <Toaster />
          </RadioProvider>
        </AuthProvider>
      </QueryClientProvider>
