@@ -1,38 +1,36 @@
-  import { useEffect, useState } from "react";
- import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-  import { Outlet, createRootRouteWithContext, useRouter, useRouterState, HeadContent, Scripts, Link } from "@tanstack/react-router";
- import { supabase } from "@/integrations/supabase/client";
-  function ThemeSync() {
-    const [settings, setSettings] = useState<{ primary_color?: string | null; accent_color?: string | null } | null>(null);
- 
-   useEffect(() => {
-     if (typeof window === "undefined") return;
-     let cancelled = false;
-     (async () => {
-       try {
-         const { data } = await supabase.from("site_settings").select("primary_color, accent_color").limit(1).maybeSingle();
-         if (!cancelled && data) setSettings(data);
-       } catch {}
-     })();
-     return () => { cancelled = true; };
-   }, []);
- 
-    useEffect(() => {
-      if (!settings || typeof document === "undefined") return;
-      const root = document.documentElement;
-      if (settings.primary_color) {
-        root.style.setProperty("--primary", settings.primary_color);
-        root.style.setProperty("--sidebar", settings.primary_color);
-      }
-      if (settings.accent_color) {
-        root.style.setProperty("--accent", settings.accent_color);
-        root.style.setProperty("--gold", settings.accent_color);
-        root.style.setProperty("--ring", settings.accent_color);
-      }
-    }, [settings]);
- 
-    return null;
-  }
+import { useEffect } from "react";
+import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
+import { Outlet, createRootRouteWithContext, useRouter, useRouterState, HeadContent, Scripts, Link, ErrorComponentProps } from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
+import { AlertCircle, RefreshCw, Home as HomeIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+function ThemeSync() {
+  const { data: settings } = useQuery({
+    queryKey: ["site-settings-theme"],
+    queryFn: async () => {
+      const { data } = await supabase.from("site_settings").select("primary_color, accent_color").limit(1).maybeSingle();
+      return data;
+    },
+    staleTime: Infinity,
+  });
+
+  useEffect(() => {
+    if (!settings || typeof document === "undefined") return;
+    const root = document.documentElement;
+    if (settings.primary_color) {
+      root.style.setProperty("--primary", settings.primary_color);
+      root.style.setProperty("--sidebar", settings.primary_color);
+    }
+    if (settings.accent_color) {
+      root.style.setProperty("--accent", settings.accent_color);
+      root.style.setProperty("--gold", settings.accent_color);
+      root.style.setProperty("--ring", settings.accent_color);
+    }
+  }, [settings]);
+
+  return null;
+}
  
 import { Toaster } from "@/components/ui/sonner";
 import appCss from "../styles.css?url";
@@ -54,15 +52,36 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
-  console.error(error);
+function ErrorComponent({ error, reset }: ErrorComponentProps) {
+  console.error("Root Error:", error);
   const router = useRouter();
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold">Algo deu errado</h1>
-        <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
-        <button onClick={() => { router.invalidate(); reset(); }} className="mt-6 px-4 py-2 rounded-md bg-primary text-primary-foreground">Tentar novamente</button>
+    <div className="flex min-h-screen items-center justify-center bg-background p-6">
+      <div className="max-w-lg w-full bg-card border border-border rounded-3xl p-8 text-center shadow-2xl">
+        <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-6">
+          <AlertCircle className="w-8 h-8 text-destructive" />
+        </div>
+        <h1 className="font-display text-2xl text-primary mb-2">Ops! Tivemos um problema</h1>
+        <p className="text-muted-foreground mb-8 text-sm leading-relaxed">
+          Ocorreu um erro inesperado. Pedimos desculpas pelo transtorno.
+          {process.env.NODE_ENV === "development" && (
+            <code className="block mt-4 p-4 bg-muted rounded-lg text-left text-[10px] overflow-auto max-h-32">
+              {error instanceof Error ? error.message : "Erro desconhecido"}
+            </code>
+          )}
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Button 
+            variant="default" 
+            className="gap-2 rounded-xl h-12 px-6"
+            onClick={() => { router.invalidate(); reset(); }}
+          >
+            <RefreshCw className="w-4 h-4" /> Tentar novamente
+          </Button>
+          <Link to="/" className="inline-flex items-center justify-center gap-2 px-6 h-12 bg-muted rounded-xl font-medium hover:bg-muted/80 transition text-sm">
+            <HomeIcon className="w-4 h-4" /> Voltar ao Início
+          </Link>
+        </div>
       </div>
     </div>
   );
