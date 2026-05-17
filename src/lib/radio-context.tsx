@@ -1,5 +1,6 @@
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, useMemo, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface RadioSettings {
   id: string;
@@ -27,28 +28,39 @@ interface RadioCtx {
 
 const Ctx = createContext<RadioCtx | null>(null);
 
+export const radioSettingsQueryOptions = {
+  queryKey: ["radio-settings"],
+  queryFn: async () => {
+    const { data, error } = await supabase.from("radio_settings").select("*").limit(1).maybeSingle();
+    if (error) throw error;
+    return data as RadioSettings | null;
+  },
+  staleTime: 1000 * 60 * 60, // Settings don't change often
+};
+
 export function RadioProvider({ children }: { children: ReactNode }) {
-  const [settings, setSettings] = useState<RadioSettings | null>(null);
+  const queryClient = useQueryClient();
+  const { data: settings } = useQuery(radioSettingsQueryOptions);
+  
   const [nowPlaying, setNowPlaying] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolumeState] = useState(0.8);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-   const load = async () => {
-     if (typeof window === "undefined") return;
-     const { data } = await supabase.from("radio_settings").select("*").limit(1).maybeSingle();
-     if (data) setSettings(data as RadioSettings);
-   };
+  const reload = async () => {
+    await queryClient.invalidateQueries({ queryKey: ["radio-settings"] });
+  };
 
   useEffect(() => {
-    if (!settings?.api_now_playing) {
+    const streamUrl = settings?.api_now_playing;
+    if (!streamUrl) {
       setNowPlaying(null);
       return;
     }
 
     const fetchNowPlaying = async () => {
       try {
-        const res = await fetch(settings.api_now_playing!);
+        const res = await fetch(streamUrl);
         const json = await res.json();
         const title = json.title || json.song || json.now_playing?.song?.title || json.current || json.text;
         if (title) setNowPlaying(title);
@@ -61,11 +73,6 @@ export function RadioProvider({ children }: { children: ReactNode }) {
     const interval = setInterval(fetchNowPlaying, 30000);
     return () => clearInterval(interval);
   }, [settings?.api_now_playing]);
-
-   useEffect(() => {
-     if (typeof window === "undefined") return;
-     load();
-   }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -88,8 +95,18 @@ export function RadioProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const value = useMemo(() => ({
+    settings,
+    nowPlaying,
+    isPlaying,
+    volume,
+    toggle,
+    setVolume: setVolumeState,
+    reload,
+  }), [settings, nowPlaying, isPlaying, volume]);
+
   return (
-    <Ctx.Provider value={{ settings, nowPlaying, isPlaying, volume, toggle, setVolume: setVolumeState, reload: load }}>
+    <Ctx.Provider value={value}>
       {children}
     </Ctx.Provider>
   );
