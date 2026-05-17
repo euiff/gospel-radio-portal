@@ -4,6 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import heroImg from "@/assets/hero-worship.jpg";
 import { useRadio } from "@/lib/radio-context";
 import { Play, Pause, ArrowRight, Clock } from "lucide-react";
+import { SongRequestForm } from "@/components/site/SongRequestForm";
+import { ScheduleDisplay } from "@/components/site/ScheduleDisplay";
+import { PrayerMural } from "@/components/site/PrayerMural";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -209,6 +212,29 @@ function Home() {
                Grade completa de horários <ArrowRight className="w-4 h-4" />
              </Link>
            </div>
+         </div>
+       </section>
+
+       {/* INTERACTIVE SECTION */}
+       <section className="container mx-auto px-4 py-16 md:py-24">
+         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+           <div className="space-y-8">
+             <ScheduleDisplay />
+             <SongRequestForm />
+           </div>
+           <div className="h-full">
+             <PrayerMural />
+           </div>
+         </div>
+       </section>
+
+       {/* CALL TO ACTION */}
+       <section className="bg-primary text-primary-foreground py-16 md:py-20 text-center">
+         <div className="container mx-auto px-4 max-w-4xl">
+           <h2 className="font-display text-4xl md:text-5xl mb-6">Sua participação faz a rádio!</h2>
+           <p className="text-lg md:text-xl text-primary-foreground/80 mb-10 leading-relaxed">
+             Siga-nos nas redes sociais, mande seu testemunho e ajude a espalhar a palavra de Deus através da música.
+           </p>
          </div>
        </section>
     </main>
