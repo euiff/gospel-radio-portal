@@ -4,6 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import heroImg from "@/assets/hero-worship.jpg";
 import { useRadio } from "@/lib/radio-context";
 import { Play, Pause, ArrowRight, Clock } from "lucide-react";
+import { SongRequestForm } from "@/components/site/SongRequestForm";
+import { ScheduleDisplay } from "@/components/site/ScheduleDisplay";
+import { PrayerMural } from "@/components/site/PrayerMural";
+import { MessageCircle, Heart, Music } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -209,6 +213,76 @@ function Home() {
                Grade completa de horários <ArrowRight className="w-4 h-4" />
              </Link>
            </div>
+         </div>
+       </section>
+
+
+       {/* FEATURES TABS / SECTION */}
+       <section id="interatividade" className="bg-white py-16 md:py-24 border-b border-border">
+         <div className="container mx-auto px-4">
+           <div className="text-center mb-16">
+             <div className="text-xs uppercase tracking-widest text-accent font-bold mb-3">Interatividade</div>
+             <h2 className="font-display text-primary text-4xl md:text-5xl">Participe da Nossa Rádio</h2>
+             <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+               Peça sua música favorita, confira nossa grade completa e deixe seu pedido de oração no nosso mural comunitário.
+             </p>
+           </div>
+
+           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+             {/* Sidebar: Schedule and Request Form */}
+             <div className="lg:col-span-4 space-y-8">
+               <div id="programacao">
+                 <ScheduleDisplay />
+               </div>
+               <div id="pedidos">
+                 <SongRequestForm />
+               </div>
+             </div>
+
+             {/* Main Content: Prayer Mural */}
+             <div className="lg:col-span-8" id="oracao">
+               <PrayerMural />
+             </div>
+           </div>
+         </div>
+       </section>
+
+       {/* INTERACTIVE QUICK NAV */}
+       <section className="bg-primary/5 py-12 border-b border-border">
+         <div className="container mx-auto px-4">
+           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+             <a href="#pedidos" className="flex flex-col items-center p-6 bg-card rounded-2xl border border-border hover:border-accent hover:shadow-md transition-all text-center group">
+               <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                 <Music className="w-6 h-6 text-accent" />
+               </div>
+               <h3 className="font-bold text-primary mb-1">Pedir Música</h3>
+               <p className="text-xs text-muted-foreground">Mande seu pedido via WhatsApp</p>
+             </a>
+             <a href="#oracao" className="flex flex-col items-center p-6 bg-card rounded-2xl border border-border hover:border-accent hover:shadow-md transition-all text-center group">
+               <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                 <Heart className="w-6 h-6 text-red-500" />
+               </div>
+               <h3 className="font-bold text-primary mb-1">Mural de Oração</h3>
+               <p className="text-xs text-muted-foreground">Compartilhe sua intenção</p>
+             </a>
+             <a href="#programacao" className="flex flex-col items-center p-6 bg-card rounded-2xl border border-border hover:border-accent hover:shadow-md transition-all text-center group">
+               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                 <MessageCircle className="w-6 h-6 text-primary" />
+               </div>
+               <h3 className="font-bold text-primary mb-1">Grade Completa</h3>
+               <p className="text-xs text-muted-foreground">Confira nossos horários</p>
+             </a>
+           </div>
+         </div>
+       </section>
+
+       {/* CALL TO ACTION */}
+       <section className="bg-primary text-primary-foreground py-16 md:py-20 text-center">
+         <div className="container mx-auto px-4 max-w-4xl">
+           <h2 className="font-display text-4xl md:text-5xl mb-6">Sua participação faz a rádio!</h2>
+           <p className="text-lg md:text-xl text-primary-foreground/80 mb-10 leading-relaxed">
+             Siga-nos nas redes sociais, mande seu testemunho e ajude a espalhar a palavra de Deus através da música.
+           </p>
          </div>
        </section>
     </main>
