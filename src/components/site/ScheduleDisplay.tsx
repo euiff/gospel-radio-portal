@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 interface Program {
   id: string;
   name: string;
-  host: string;
+  host: string | null;
   start_time: string;
   end_time: string;
   day_of_week: number;
