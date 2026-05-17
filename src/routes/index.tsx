@@ -36,9 +36,18 @@ export const Route = createFileRoute("/")({
 function Home() {
   const { settings, isPlaying, toggle } = useRadio();
   const dow = new Date().getDay();
-  const { data: featured } = useSuspenseQuery(featuredNewsQuery);
-  const { data: latest } = useSuspenseQuery(latestNewsQuery);
-  const { data: programs } = useSuspenseQuery(programsTodayQueryOptions(dow));
+   const { data: featured } = useSuspenseQuery(featuredNewsQuery);
+   const { data: latest } = useSuspenseQuery(latestNewsQuery);
+   const { data: programs } = useSuspenseQuery(programsTodayQueryOptions(dow));
+ 
+   // Fetch site settings for hero personalization
+   const { data: siteSettings } = useSuspenseQuery(queryOptions({
+     queryKey: ["site-settings-hero"],
+     queryFn: async () => {
+       const { data } = await supabase.from("site_settings").select("*").limit(1).maybeSingle();
+       return data;
+     }
+   }));
 
   return (
     <main>
@@ -61,12 +70,16 @@ function Home() {
              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-gold/40 text-gold text-[10px] md:text-xs uppercase tracking-widest mb-6">
                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" /> No ar agora
              </div>
-             <h1 className="font-display leading-[1.1] mb-6">
-               A música que <span className="text-gradient-gold italic">renova</span> sua fé
-             </h1>
-             <p className="text-base md:text-xl text-white/80 mb-8 max-w-2xl leading-relaxed">
-               {settings?.tagline ?? "Notícias, louvor e palavra 24 horas por dia, levando a mensagem de esperança para todo o mundo."}
-             </p>
+              <h1 className="font-display leading-[1.1] mb-6">
+                {siteSettings?.hero_title ? (
+                  <span dangerouslySetInnerHTML={{ __html: siteSettings.hero_title.replace(/(.+)\s(.+)$/, '$1 <span class="text-gradient-gold italic">$2</span>') }} />
+                ) : (
+                  <>A música que <span className="text-gradient-gold italic">renova</span> sua fé</>
+                )}
+              </h1>
+              <p className="text-base md:text-xl text-white/80 mb-8 max-w-2xl leading-relaxed">
+                {siteSettings?.hero_subtitle || settings?.tagline || "Notícias, louvor e palavra 24 horas por dia, levando a mensagem de esperança para todo o mundo."}
+              </p>
              <div className="flex flex-col sm:flex-row gap-4">
                 <button 
                   onClick={toggle} 

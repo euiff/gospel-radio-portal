@@ -21,16 +21,16 @@ function FooterNavLink({ item }: { item: NavItem }) {
   return <a href={to} target={external ? "_blank" : undefined} rel={external ? "noreferrer" : undefined} className={className}>{label}</a>;
 }
 
-export function Footer() {
-  const { settings } = useRadio();
-
-  const { data: siteSettings } = useQuery({
-    queryKey: ["site-settings-footer"],
-    queryFn: async () => {
-      const { data } = await supabase.from("site_settings").select("logo_url, navigation_menu").limit(1).maybeSingle();
-      return data;
-    }
-  });
+ export function Footer() {
+   const { settings: radioSettings } = useRadio();
+ 
+    const { data: siteSettings } = useQuery({
+      queryKey: ["site-settings-footer"],
+      queryFn: async () => {
+        const { data } = await supabase.from("site_settings").select("*").limit(1).maybeSingle();
+        return data;
+      }
+    });
 
   const nav = (siteSettings?.navigation_menu as NavItem[] | null) || [];
 
@@ -48,9 +48,9 @@ export function Footer() {
                 </>
               )}
             </div>
-            <p className="text-sm mt-4 text-white/60 leading-relaxed max-w-xs">
-              {settings?.tagline ?? "Levando a palavra de Deus e o melhor do louvor para o seu coração, 24 horas por dia."}
-            </p>
+             <p className="text-sm mt-4 text-white/60 leading-relaxed max-w-xs">
+               {siteSettings?.site_description || radioSettings?.tagline || "Levando a palavra de Deus e o melhor do louvor para o seu coração, 24 horas por dia."}
+             </p>
           </div>
           
           <div>
@@ -83,26 +83,32 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="text-gold font-bold text-xs uppercase tracking-[0.2em] mb-6">Fale Conosco</h4>
-            {settings?.whatsapp && (
-              <a 
-                href={`https://wa.me/${settings.whatsapp}`} 
-                target="_blank" 
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-gold/20 hover:border-gold/30 transition-all text-sm group"
-              >
-                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                Chamar no WhatsApp
-              </a>
-            )}
+             <h4 className="text-gold font-bold text-xs uppercase tracking-[0.2em] mb-6">Fale Conosco</h4>
+             {radioSettings?.whatsapp && (
+               <a 
+                 href={`https://wa.me/${radioSettings.whatsapp}`} 
+                 target="_blank" 
+                 rel="noreferrer"
+                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-gold/20 hover:border-gold/30 transition-all text-sm group"
+               >
+                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                 Chamar no WhatsApp
+               </a>
+             )}
             <p className="text-xs mt-6 text-white/40 italic">
               Envie seu pedido de oração ou sugestão musical.
             </p>
           </div>
         </div>
 
-        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] md:text-xs text-white/30 uppercase tracking-widest font-medium">
-          <div>© {new Date().getFullYear()} {settings?.station_name ?? "Rádio Gospel"}.</div>
+         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] md:text-xs text-white/30 uppercase tracking-widest font-medium">
+           <div>
+             {siteSettings?.footer_text ? (
+               <span dangerouslySetInnerHTML={{ __html: siteSettings.footer_text.replace('{year}', new Date().getFullYear().toString()) }} />
+             ) : (
+               <>© {new Date().getFullYear()} {radioSettings?.station_name || "Rádio Gospel"}.</>
+             )}
+           </div>
           <div className="flex items-center gap-6">
             <span className="hover:text-white cursor-pointer transition-colors">Termos de Uso</span>
             <span className="hover:text-white cursor-pointer transition-colors">Privacidade</span>
