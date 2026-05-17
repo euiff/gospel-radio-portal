@@ -7,9 +7,12 @@
  
     useEffect(() => {
       let cancelled = false;
-      supabase.from("site_settings").select("primary_color, accent_color").limit(1).maybeSingle()
-        .then(({ data }) => { if (!cancelled && data) setSettings(data); })
-        .catch(() => {});
+      (async () => {
+        try {
+          const { data } = await supabase.from("site_settings").select("primary_color, accent_color").limit(1).maybeSingle();
+          if (!cancelled && data) setSettings(data);
+        } catch {}
+      })();
       return () => { cancelled = true; };
     }, []);
  
