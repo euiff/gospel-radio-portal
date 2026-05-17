@@ -11,7 +11,7 @@ const days = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sáb
 
 function Programacao() {
   const qc = useQueryClient();
-  const empty = { name: "", host: "", description: "", day_of_week: 1, start_time: "08:00", end_time: "10:00" };
+  const empty = { name: "", host: "", description: "", day_of_week: 0, start_time: "08:00", end_time: "10:00" };
   const [form, setForm] = useState<any>(empty);
 
   const { data } = useQuery({ queryKey: ["progs-admin"], queryFn: async () => (await supabase.from("programs").select("*").order("day_of_week").order("start_time")).data ?? [] });
