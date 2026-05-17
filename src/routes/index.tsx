@@ -14,10 +14,9 @@ const SongRequestForm = lazy(() => import("@/components/site/SongRequestForm").t
 const ScheduleDisplay = lazy(() => import("@/components/site/ScheduleDisplay").then(m => ({ default: m.ScheduleDisplay })));
 const PrayerMural = lazy(() => import("@/components/site/PrayerMural").then(m => ({ default: m.PrayerMural })));
 
-const programsTodayQueryOptions = queryOptions({
-  queryKey: ["programs-today"],
+const programsTodayQueryOptions = (dow: number) => queryOptions({
+  queryKey: ["programs-today", dow],
   queryFn: async () => {
-    const dow = new Date().getDay();
     const { data } = await supabase.from("programs").select("*").eq("day_of_week", dow).order("start_time");
     return data ?? [];
   },
@@ -25,9 +24,10 @@ const programsTodayQueryOptions = queryOptions({
 
 export const Route = createFileRoute("/")({
   loader: ({ context: { queryClient } }) => {
+    const dow = new Date().getDay();
     queryClient.ensureQueryData(featuredNewsQuery);
     queryClient.ensureQueryData(latestNewsQuery);
-    queryClient.ensureQueryData(programsTodayQueryOptions);
+    queryClient.ensureQueryData(programsTodayQueryOptions(dow));
   },
   head: () => ({ meta: [{ title: "Rádio Gospel" }] }),
   component: Home,
@@ -35,9 +35,10 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const { settings, isPlaying, toggle } = useRadio();
+  const dow = new Date().getDay();
   const { data: featured } = useSuspenseQuery(featuredNewsQuery);
   const { data: latest } = useSuspenseQuery(latestNewsQuery);
-  const { data: programs } = useSuspenseQuery(programsTodayQueryOptions);
+  const { data: programs } = useSuspenseQuery(programsTodayQueryOptions(dow));
 
   return (
     <main>
