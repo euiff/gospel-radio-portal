@@ -1,0 +1,2 @@
+ALTER TABLE public.radio_settings ADD COLUMN api_now_playing TEXT;
+COMMENT ON COLUMN public.radio_settings.api_now_playing IS 'URL opcional de uma API JSON que retorne o título da música atual (ex: {"title": "..."})';

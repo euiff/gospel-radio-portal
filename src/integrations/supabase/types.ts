@@ -189,6 +189,7 @@ export type Database = {
       }
       radio_settings: {
         Row: {
+          api_now_playing: string | null
           cover_url: string | null
           facebook: string | null
           id: string
@@ -203,6 +204,7 @@ export type Database = {
           youtube: string | null
         }
         Insert: {
+          api_now_playing?: string | null
           cover_url?: string | null
           facebook?: string | null
           id?: string
@@ -217,6 +219,7 @@ export type Database = {
           youtube?: string | null
         }
         Update: {
+          api_now_playing?: string | null
           cover_url?: string | null
           facebook?: string | null
           id?: string
