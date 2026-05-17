@@ -9,24 +9,26 @@
  // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
  // @cloudflare/vite-plugin builds from this — wrangler.jsonc main alone is insufficient.
  export default defineConfig({
-   tanstackStart: {
-     server: { entry: "server" },
-   },
-   vite: {
-     build: {
-       rollupOptions: {
-         output: {
-           manualChunks: (id) => {
-             if (id.includes("node_modules")) {
-               if (id.includes("@supabase")) return "vendor-supabase";
-               if (id.includes("@tanstack")) return "vendor-tanstack";
-               if (id.includes("react")) return "vendor-react";
-               if (id.includes("lucide-react") || id.includes("@radix-ui")) return "vendor-ui";
-               return "vendor";
-             }
-           },
-         },
-       },
-     },
-   },
+    tanstackStart: {
+      server: { entry: "server" },
+    },
+    vite: {
+      build: {
+        target: "esnext",
+        rollupOptions: {
+          output: {
+            manualChunks: (id) => {
+              if (id.includes("node_modules")) {
+                if (id.includes("@supabase")) return "vendor-supabase";
+                if (id.includes("@tanstack")) return "vendor-tanstack";
+                // Grouping react related packages together to avoid circular dependencies
+                if (id.includes("react") || id.includes("scheduler") || id.includes("prop-types")) return "vendor-react";
+                if (id.includes("lucide-react") || id.includes("@radix-ui")) return "vendor-ui";
+                return "vendor";
+               }
+            },
+          },
+        },
+      },
+    },
  });
