@@ -6,16 +6,36 @@ import { Plus, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/site")({ component: SiteSettings });
 
-const fields: Array<{ key: string; label: string; type?: string }> = [
-  { key: "site_name", label: "Nome do portal" },
-  { key: "logo_url", label: "URL do Logo (Imagem)" },
-  { key: "site_description", label: "Descrição (SEO)" },
-  { key: "hero_title", label: "Título do hero" },
-  { key: "hero_subtitle", label: "Subtítulo do hero" },
-  { key: "footer_text", label: "Texto do rodapé" },
-  { key: "primary_color", label: "Cor Primária", type: "color" },
-  { key: "accent_color", label: "Cor de Destaque", type: "color" },
-];
+ const sections = [
+   {
+     title: "Identidade Visual & Cores",
+     fields: [
+       { key: "site_name", label: "Nome do Portal / Rádio" },
+       { key: "logo_url", label: "URL do Logo (SVG ou PNG transparente recomendado)" },
+       { key: "primary_color", label: "Cor Primária (Fundo, Menus)", type: "color" },
+       { key: "accent_color", label: "Cor de Destaque (Botões, Links)", type: "color" },
+     ]
+   },
+   {
+     title: "SEO & Redes Sociais",
+     fields: [
+       { key: "site_description", label: "Descrição SEO (O que aparece no Google)" },
+     ]
+   },
+   {
+     title: "Página Inicial (Hero)",
+     fields: [
+       { key: "hero_title", label: "Título Principal (Hero)" },
+       { key: "hero_subtitle", label: "Subtítulo / Slogan (Hero)" },
+     ]
+   },
+   {
+     title: "Rodapé",
+     fields: [
+       { key: "footer_text", label: "Texto Personalizado do Rodapé" },
+     ]
+   }
+ ];
 
 function SiteSettings() {
   const [data, setData] = useState<any>(null);
@@ -64,38 +84,41 @@ function SiteSettings() {
       <h1 className="font-display text-4xl text-primary mb-2">Configurar Site</h1>
       <p className="text-muted-foreground mb-8">Textos institucionais e SEO.</p>
        <form onSubmit={save} className="space-y-8">
-        <div className="bg-card border border-border rounded-xl p-6 space-y-6">
-          <h2 className="text-xl font-display text-primary">Informações Gerais</h2>
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-           {fields.map((f) => (
-             <div key={f.key} className={f.type === "color" ? "col-span-1" : "col-span-1 md:col-span-2"}>
-               <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5 block">{f.label}</label>
-               {f.type === "color" ? (
-                 <div className="flex items-center gap-3">
-                   <input 
-                     type="color" 
-                     value={data[f.key] ?? "#000000"} 
-                     onChange={(e) => setData({ ...data, [f.key]: e.target.value })} 
-                     className="w-12 h-12 rounded-lg border-2 border-border cursor-pointer overflow-hidden p-0" 
-                   />
-                   <input 
-                     type="text" 
-                     value={data[f.key] ?? ""} 
-                     onChange={(e) => setData({ ...data, [f.key]: e.target.value })} 
-                     className="flex-1 px-4 py-3 rounded-xl border border-input bg-background font-mono text-sm" 
-                   />
-                 </div>
-               ) : (
-                 <input 
-                   value={data[f.key] ?? ""} 
-                   onChange={(e) => setData({ ...data, [f.key]: e.target.value })} 
-                   className="w-full px-4 py-3 rounded-xl border border-input bg-background focus:ring-2 focus:ring-accent transition" 
-                 />
-               )}
-             </div>
-           ))}
-         </div>
-        </div>
+        {sections.map((section) => (
+          <div key={section.title} className="bg-card border border-border rounded-xl p-6 space-y-6">
+            <h2 className="text-xl font-display text-primary border-b border-border pb-2">{section.title}</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {section.fields.map((f) => (
+                <div key={f.key} className={f.type === "color" ? "col-span-1" : "col-span-1 md:col-span-2"}>
+                  <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5 block">{f.label}</label>
+                  {f.type === "color" ? (
+                    <div className="flex items-center gap-3">
+                      <input 
+                        type="color" 
+                        value={data[f.key] ?? "#000000"} 
+                        onChange={(e) => setData({ ...data, [f.key]: e.target.value })} 
+                        className="w-12 h-12 rounded-lg border-2 border-border cursor-pointer overflow-hidden p-0" 
+                      />
+                      <input 
+                        type="text" 
+                        value={data[f.key] ?? ""} 
+                        onChange={(e) => setData({ ...data, [f.key]: e.target.value })} 
+                        className="flex-1 px-4 py-3 rounded-xl border border-input bg-background font-mono text-sm uppercase" 
+                        placeholder="#000000"
+                      />
+                    </div>
+                  ) : (
+                    <input 
+                      value={data[f.key] ?? ""} 
+                      onChange={(e) => setData({ ...data, [f.key]: e.target.value })} 
+                      className="w-full px-4 py-3 rounded-xl border border-input bg-background focus:ring-2 focus:ring-accent transition shadow-sm" 
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
 
         <div className="bg-card border border-border rounded-xl p-6 space-y-6">
           <div className="flex items-center justify-between">
