@@ -26,7 +26,6 @@ const formSchema = z.object({
 
 export function SongRequestForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
