@@ -34,6 +34,8 @@ function NewsAdmin() {
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault(); if (!editing) return;
+    const current = (news as any[])?.find(n => n.id === editing.id);
+    const wasPublished = current?.published;
     const payload: any = {
       title: editing.title,
       slug: editing.slug || slugify(editing.title),
@@ -43,9 +45,17 @@ function NewsAdmin() {
       category_id: editing.category_id || null,
       published: editing.published,
       featured: editing.featured,
-      published_at: editing.published ? new Date().toISOString() : null,
       author_id: user?.id,
     };
+
+    if (editing.published && !wasPublished) {
+      payload.published_at = new Date().toISOString();
+    } else if (!editing.published) {
+      payload.published_at = null;
+    } else if (wasPublished) {
+      payload.published_at = current.published_at;
+    }
+
     const { error } = editing.id
       ? await supabase.from("news").update(payload).eq("id", editing.id)
       : await supabase.from("news").insert(payload);
