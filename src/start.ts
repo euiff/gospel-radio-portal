@@ -1,4 +1,6 @@
-import { createStart, createMiddleware } from "@tanstack/react-start";
+import { createStart, createMiddleware, StartClient } from "@tanstack/react-start";
+import { createRoot } from "react-dom/client";
+import { getRouter } from "./router";
 
  import { consumeLastCapturedError } from "./lib/error-capture";
  import { renderErrorPage } from "./lib/error-page";
@@ -15,6 +17,15 @@ import { createStart, createMiddleware } from "@tanstack/react-start";
    }
  });
 
- export const startInstance = createStart(() => ({
-   requestMiddleware: [errorMiddleware],
- }));
+export const startInstance = createStart(() => ({
+  router: getRouter(),
+  requestMiddleware: [errorMiddleware],
+}));
+
+if (typeof document !== "undefined") {
+  const rootElement = document.getElementById("root");
+  if (rootElement && !rootElement.innerHTML) {
+    const root = createRoot(rootElement);
+    root.render(<StartClient start={startInstance} />);
+  }
+}
