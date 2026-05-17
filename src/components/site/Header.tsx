@@ -15,7 +15,24 @@ const defaultNav = [
   { to: "/programacao", label: "Programação" },
 ];
 
-  export function Header() {
+type NavItem = { to?: string; label?: string };
+
+function PublicNavLink({ item, className }: { item: NavItem; className: string }) {
+  const label = item.label || "Link";
+  const to = item.to || "/";
+  const categoryMatch = to.match(/^\/categoria\/([^/]+)$/);
+
+  if (to === "/") return <Link to="/" className={className}>{label}</Link>;
+  if (to === "/programacao") return <Link to="/programacao" className={className}>{label}</Link>;
+  if (to === "/login") return <Link to="/login" className={className}>{label}</Link>;
+  if (to === "/admin") return <Link to="/admin" className={className}>{label}</Link>;
+  if (categoryMatch) return <Link to="/categoria/$slug" params={{ slug: categoryMatch[1] }} className={className}>{label}</Link>;
+
+  const external = /^https?:\/\//.test(to);
+  return <a href={to} target={external ? "_blank" : undefined} rel={external ? "noreferrer" : undefined} className={className}>{label}</a>;
+}
+
+export function Header() {
     const { user, isAdmin } = useAuth();
     const path = useRouterState({ select: (r) => r.location.pathname });
      const [isOpen, setIsOpen] = useState(false);
@@ -28,7 +45,7 @@ const defaultNav = [
       }
     });
 
-    const nav = (siteSettings?.navigation_menu as any[]) || defaultNav;
+    const nav = (siteSettings?.navigation_menu as NavItem[] | null) || defaultNav;
    
      // Close menu on path change
      useEffect(() => {
@@ -53,10 +70,11 @@ const defaultNav = [
            {nav.map((n) => {
              const active = path === n.to;
              return (
-               <Link key={n.to} to={n.to}
-                 className={`nav-link text-sm font-medium rounded-md transition ${active ? "text-accent" : "text-foreground/70 hover:text-primary hover:bg-muted"}`}>
-                 {n.label}
-               </Link>
+                <PublicNavLink
+                  key={`${n.to}-${n.label}`}
+                  item={n}
+                  className={`nav-link text-sm font-medium rounded-md transition ${active ? "text-accent" : "text-foreground/70 hover:text-primary hover:bg-muted"}`}
+                />
              );
            })}
          </nav>
@@ -92,10 +110,11 @@ const defaultNav = [
                      {nav.map((n) => {
                        const active = path === n.to;
                        return (
-                         <Link key={n.to} to={n.to}
-                           className={`flex items-center px-4 py-3 rounded-lg text-lg font-medium transition ${active ? "bg-accent/10 text-accent border border-accent/20" : "text-foreground/70 hover:bg-muted"}`}>
-                           {n.label}
-                         </Link>
+                          <PublicNavLink
+                            key={`${n.to}-${n.label}`}
+                            item={n}
+                            className={`flex items-center px-4 py-3 rounded-lg text-lg font-medium transition ${active ? "bg-accent/10 text-accent border border-accent/20" : "text-foreground/70 hover:bg-muted"}`}
+                          />
                        );
                      })}
                      <hr className="my-4 border-border" />
