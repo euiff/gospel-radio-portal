@@ -40,23 +40,23 @@ function Login() {
   return (
     <main className="min-h-[80vh] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md bg-card border border-border rounded-2xl p-8 shadow-glow">
-        <Link to="/" className="text-sm text-muted-foreground hover:text-accent">← Início</Link>
+        <Link to="/" className="text-sm text-muted-foreground hover:text-accent focus-visible:outline-none focus-visible:underline">← Início</Link>
         <h1 className="font-display text-4xl text-primary mt-4 mb-2">{mode === "signin" ? "Entrar" : "Criar conta"}</h1>
         <p className="text-muted-foreground text-sm mb-6">Acesso ao painel administrativo</p>
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
             <label className="text-sm font-medium">E-mail</label>
-            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1 w-full px-3 py-2 rounded-md border border-input bg-background" />
+            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1 w-full px-3 py-2 rounded-md border border-input bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold" />
           </div>
           <div>
             <label className="text-sm font-medium">Senha</label>
-            <input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} className="mt-1 w-full px-3 py-2 rounded-md border border-input bg-background" />
+            <input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} className="mt-1 w-full px-3 py-2 rounded-md border border-input bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold" />
           </div>
-          <button disabled={loading} className="w-full py-3 rounded-md gradient-gold text-gold-foreground font-semibold disabled:opacity-60">
+          <button disabled={loading} className="w-full py-3 rounded-md gradient-gold text-gold-foreground font-semibold disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/50 transition">
             {loading ? "Aguarde…" : (mode === "signin" ? "Entrar" : "Cadastrar")}
           </button>
         </form>
-        <button onClick={() => setMode(mode === "signin" ? "signup" : "signin")} className="mt-4 text-sm text-primary hover:text-accent w-full">
+        <button onClick={() => setMode(mode === "signin" ? "signup" : "signin")} className="mt-4 text-sm text-primary hover:text-accent focus-visible:outline-none focus-visible:underline w-full">
           {mode === "signin" ? "Não tem conta? Cadastre-se" : "Já tem conta? Entrar"}
         </button>
         <p className="text-xs text-muted-foreground mt-6 text-center">Após criar a primeira conta, conceda a si mesmo o papel de admin no painel do Lovable Cloud (tabela <code>user_roles</code>).</p>
