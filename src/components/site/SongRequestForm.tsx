@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useRadio } from "@/lib/radio-context";
 import { Music, MessageSquare } from "lucide-react";
 
 const formSchema = z.object({
@@ -26,6 +27,7 @@ const formSchema = z.object({
 
 export function SongRequestForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const { settings } = useRadio();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -50,8 +52,8 @@ export function SongRequestForm() {
 
       toast.success("Pedido enviado! Sua música foi solicitada com sucesso.");
 
-      // WhatsApp Integration (Example number, should be configurable)
-      const whatsappNumber = "5511999999999"; 
+      // WhatsApp Integration
+      const whatsappNumber = settings?.whatsapp?.replace(/\D/g, "") || "5511999999999"; 
       const text = encodeURIComponent(
         `*Pedido de Música - Portal Gospel*\n\n*Nome:* ${values.userName}\n*Música:* ${values.songTitle}\n*Artista:* ${values.artist}\n*Mensagem:* ${values.message || "Sem mensagem"}`
       );
