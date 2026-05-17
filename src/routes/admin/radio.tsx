@@ -9,7 +9,8 @@ export const Route = createFileRoute("/admin/radio")({ component: RadioSettings 
 const fields: Array<{ key: string; label: string; type?: string; placeholder?: string; hint?: string }> = [
   { key: "station_name", label: "Nome da rádio" },
   { key: "tagline", label: "Slogan" },
-  { key: "stream_url", label: "URL do stream", placeholder: "https://stream.suaradio.com/live", hint: "Aceita Shoutcast / Icecast / HLS / MP3" },
+   { key: "stream_url", label: "URL do stream", placeholder: "https://stream.suaradio.com/live", hint: "Aceita Shoutcast / Icecast / HLS / MP3" },
+   { key: "api_now_playing", label: "API Agora Tocando (JSON)", placeholder: "https://api.suaradio.com/nowplaying", hint: "URL que retorna JSON com campo 'title' ou 'song'" },
   { key: "logo_url", label: "Logo (URL)" },
   { key: "cover_url", label: "Capa (URL)" },
   { key: "whatsapp", label: "WhatsApp", placeholder: "5511999998888", hint: "Somente números com DDI+DDD" },

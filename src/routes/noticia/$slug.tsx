@@ -18,11 +18,15 @@ function NewsPage() {
     },
   });
 
-  useEffect(() => {
-    if (data?.id) supabase.rpc as any; // noop
-    if (data?.id) supabase.from("news").update({ views: (data.views ?? 0) + 1 }).eq("id", data.id).then(() => {});
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data?.id]);
+   const newsId = data?.id;
+   useEffect(() => {
+     if (newsId) {
+       supabase.from("news")
+         .update({ views: (data.views ?? 0) + 1 })
+         .eq("id", newsId)
+         .then(() => {});
+     }
+   }, [newsId]);
 
   if (isLoading) return <div className="container mx-auto py-20 text-center">Carregando…</div>;
   if (!data) return <div className="container mx-auto py-20 text-center">Notícia não encontrada.</div>;

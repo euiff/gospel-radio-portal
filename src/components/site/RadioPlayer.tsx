@@ -1,8 +1,8 @@
-import { Play, Pause, Volume2, Radio as RadioIcon, MessageCircle, Instagram, Facebook, Youtube } from "lucide-react";
+ import { Play, Pause, Volume2, Radio as RadioIcon, MessageCircle, Instagram, Facebook, Youtube, Music } from "lucide-react";
 import { useRadio } from "@/lib/radio-context";
 
 export function RadioPlayer() {
-  const { settings, isPlaying, volume, toggle, setVolume } = useRadio();
+   const { settings, nowPlaying, isPlaying, volume, toggle, setVolume } = useRadio();
   if (!settings) return null;
 
   return (
@@ -21,8 +21,19 @@ export function RadioPlayer() {
             <RadioIcon className="w-3 h-3" />
             {isPlaying ? <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />Ao vivo</span> : "Pronto para tocar"}
           </div>
-          <div className="font-display text-lg md:text-xl truncate">{settings.station_name}</div>
-          {settings.tagline && <div className="text-xs text-white/70 truncate hidden sm:block">{settings.tagline}</div>}
+           <div className="font-display text-lg md:text-xl truncate">
+             {nowPlaying ? (
+               <span className="flex items-center gap-2">
+                 <Music className="w-4 h-4 text-gold animate-bounce" />
+                 {nowPlaying}
+               </span>
+             ) : (
+               settings.station_name
+             )}
+           </div>
+           <div className="text-xs text-white/70 truncate hidden sm:block">
+             {nowPlaying ? settings.station_name : settings.tagline}
+           </div>
         </div>
 
         <div className="hidden md:flex items-center gap-2 w-40">

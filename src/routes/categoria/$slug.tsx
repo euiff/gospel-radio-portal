@@ -10,19 +10,20 @@ function CategoryPage() {
     queryKey: ["cat", slug],
     queryFn: async () => (await supabase.from("categories").select("*").eq("slug", slug).maybeSingle()).data,
   });
-  const { data: news } = useQuery({
-    queryKey: ["cat-news", slug],
-    enabled: !!category?.id,
-    queryFn: async () => {
-      const { data } = await supabase.from("news")
-        .select("id,slug,title,excerpt,cover_image,published_at")
-        .eq("category_id", category!.id).eq("published", true)
-        .order("published_at", { ascending: false });
-      return data ?? [];
-    },
-  });
-
-  return (
+   const categoryId = category?.id;
+   const { data: news } = useQuery({
+     queryKey: ["cat-news", categoryId],
+     enabled: !!categoryId,
+     queryFn: async () => {
+       const { data } = await supabase.from("news")
+         .select("id,slug,title,excerpt,cover_image,published_at")
+         .eq("category_id", categoryId!).eq("published", true)
+         .order("published_at", { ascending: false });
+       return data ?? [];
+     },
+   });
+ 
+   return (
     <main className="container mx-auto px-4 py-12">
       <div className="mb-10">
         <div className="text-xs uppercase tracking-widest text-accent font-semibold mb-1">Categoria</div>
