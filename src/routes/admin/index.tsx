@@ -5,6 +5,14 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin/")({ component: Dashboard });
 
+function AdminCardLink({ to, children }: { to: string; children: React.ReactNode }) {
+  const className = "group bg-card border border-border rounded-2xl p-6 hover:border-accent hover:shadow-xl hover:shadow-accent/5 transition-all duration-300";
+
+  if (to === "/admin/noticias") return <Link to="/admin/noticias" className={className}>{children}</Link>;
+  if (to === "/admin/programacao") return <Link to="/admin/programacao" className={className}>{children}</Link>;
+  return <Link to="/admin" className={className}>{children}</Link>;
+}
+
  function Dashboard() {
    const nav = useNavigate();
    const { data: stats, isLoading } = useQuery({
@@ -39,7 +47,7 @@ export const Route = createFileRoute("/admin/")({ component: Dashboard });
  
          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
            {cards.map((c) => (
-             <Link key={c.label} to={c.to} className="group bg-card border border-border rounded-2xl p-6 hover:border-accent hover:shadow-xl hover:shadow-accent/5 transition-all duration-300">
+              <AdminCardLink key={c.label} to={c.to}>
                <div className="flex items-center justify-between mb-4">
                  <div className="p-2.5 rounded-xl bg-accent/10 text-accent group-hover:bg-accent group-hover:text-accent-foreground transition-colors">
                    <c.icon className="w-5 h-5" />
@@ -47,7 +55,7 @@ export const Route = createFileRoute("/admin/")({ component: Dashboard });
                </div>
                <div className="text-4xl font-display text-primary font-bold">{c.value}</div>
                <div className="text-sm font-medium text-muted-foreground mt-1">{c.label}</div>
-             </Link>
+              </AdminCardLink>
            ))}
          </div>
  
