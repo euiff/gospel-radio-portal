@@ -19,6 +19,7 @@ import { Route as CategoriaSlugRouteImport } from './routes/categoria/$slug'
 import { Route as AdminSiteRouteImport } from './routes/admin/site'
 import { Route as AdminRadioRouteImport } from './routes/admin/radio'
 import { Route as AdminProgramacaoRouteImport } from './routes/admin/programacao'
+import { Route as AdminPedidosRouteImport } from './routes/admin/pedidos'
 import { Route as AdminNoticiasRouteImport } from './routes/admin/noticias'
 import { Route as AdminCategoriasRouteImport } from './routes/admin/categorias'
 
@@ -72,6 +73,11 @@ const AdminProgramacaoRoute = AdminProgramacaoRouteImport.update({
   path: '/programacao',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPedidosRoute = AdminPedidosRouteImport.update({
+  id: '/pedidos',
+  path: '/pedidos',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminNoticiasRoute = AdminNoticiasRouteImport.update({
   id: '/noticias',
   path: '/noticias',
@@ -90,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/programacao': typeof ProgramacaoRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/noticias': typeof AdminNoticiasRoute
+  '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/programacao': typeof AdminProgramacaoRoute
   '/admin/radio': typeof AdminRadioRoute
   '/admin/site': typeof AdminSiteRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/programacao': typeof ProgramacaoRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/noticias': typeof AdminNoticiasRoute
+  '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/programacao': typeof AdminProgramacaoRoute
   '/admin/radio': typeof AdminRadioRoute
   '/admin/site': typeof AdminSiteRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/programacao': typeof ProgramacaoRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/noticias': typeof AdminNoticiasRoute
+  '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/programacao': typeof AdminProgramacaoRoute
   '/admin/radio': typeof AdminRadioRoute
   '/admin/site': typeof AdminSiteRoute
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/programacao'
     | '/admin/categorias'
     | '/admin/noticias'
+    | '/admin/pedidos'
     | '/admin/programacao'
     | '/admin/radio'
     | '/admin/site'
@@ -147,6 +157,7 @@ export interface FileRouteTypes {
     | '/programacao'
     | '/admin/categorias'
     | '/admin/noticias'
+    | '/admin/pedidos'
     | '/admin/programacao'
     | '/admin/radio'
     | '/admin/site'
@@ -161,6 +172,7 @@ export interface FileRouteTypes {
     | '/programacao'
     | '/admin/categorias'
     | '/admin/noticias'
+    | '/admin/pedidos'
     | '/admin/programacao'
     | '/admin/radio'
     | '/admin/site'
@@ -250,6 +262,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProgramacaoRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/pedidos': {
+      id: '/admin/pedidos'
+      path: '/pedidos'
+      fullPath: '/admin/pedidos'
+      preLoaderRoute: typeof AdminPedidosRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/noticias': {
       id: '/admin/noticias'
       path: '/noticias'
@@ -270,6 +289,7 @@ declare module '@tanstack/react-router' {
 interface AdminRouteChildren {
   AdminCategoriasRoute: typeof AdminCategoriasRoute
   AdminNoticiasRoute: typeof AdminNoticiasRoute
+  AdminPedidosRoute: typeof AdminPedidosRoute
   AdminProgramacaoRoute: typeof AdminProgramacaoRoute
   AdminRadioRoute: typeof AdminRadioRoute
   AdminSiteRoute: typeof AdminSiteRoute
@@ -279,6 +299,7 @@ interface AdminRouteChildren {
 const AdminRouteChildren: AdminRouteChildren = {
   AdminCategoriasRoute: AdminCategoriasRoute,
   AdminNoticiasRoute: AdminNoticiasRoute,
+  AdminPedidosRoute: AdminPedidosRoute,
   AdminProgramacaoRoute: AdminProgramacaoRoute,
   AdminRadioRoute: AdminRadioRoute,
   AdminSiteRoute: AdminSiteRoute,
@@ -298,3 +319,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
