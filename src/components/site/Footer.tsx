@@ -1,10 +1,61 @@
 import { Link } from "@tanstack/react-router";
 import { useRadio } from "@/lib/radio-context";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
- export function Footer() {
-   const { settings } = useRadio();
-   return (
-     <footer className="gradient-deep text-white/80 mt-20 pt-16 pb-8">
+export function Footer() {
+  const { settings } = useRadio();
+
+  const { data: siteSettings } = useQuery({
+    queryKey: ["site-settings-footer"],
+    queryFn: async () => {
+      const { data } = await supabase.from("site_settings").select("logo_url, navigation_menu").limit(1).maybeSingle();
+      return data;
+    }
+  });
+
+  const nav = (siteSettings?.navigation_menu as any[]) || [];
+
+  return (
+    <footer className="gradient-deep text-white/80 mt-20 pt-16 pb-8">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+          <div className="col-span-1 lg:col-span-1">
+            <div className="font-display text-3xl text-white font-bold leading-none">
+              {siteSettings?.logo_url ? (
+                <img src={siteSettings.logo_url} alt="Logo" className="h-12 w-auto object-contain filter brightness-0 invert" />
+              ) : (
+                <>
+                  Rádio<span className="text-gold italic">Gospel</span>
+                </>
+              )}
+            </div>
+            <p className="text-sm mt-4 text-white/60 leading-relaxed max-w-xs">
+              {settings?.tagline ?? "Levando a palavra de Deus e o melhor do louvor para o seu coração, 24 horas por dia."}
+            </p>
+          </div>
+          
+          <div>
+            <h4 className="text-gold font-bold text-xs uppercase tracking-[0.2em] mb-6">Menu Principal</h4>
+            <ul className="space-y-4 text-sm">
+              {nav.length > 0 ? (
+                nav.map((item, idx) => (
+                  <li key={idx}>
+                    <Link to={item.to} className="hover:text-gold transition-colors block py-1">{item.label}</Link>
+                  </li>
+                ))
+              ) : (
+                <>
+                  <li><Link to="/" className="hover:text-gold transition-colors block py-1">Início</Link></li>
+                  <li><Link to="/programacao" className="hover:text-gold transition-colors block py-1">Programação Ao Vivo</Link></li>
+                  <li><Link to="/categoria/noticias" className="hover:text-gold transition-colors block py-1">Portal de Notícias</Link></li>
+                </>
+              )}
+              <li><Link to="/login" className="hover:text-gold transition-colors block py-1">Acesso Administrativo</Link></li>
+            </ul>
+          </div>
+
+          <div>
        <div className="container mx-auto px-4">
          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
            <div className="col-span-1 lg:col-span-1">
