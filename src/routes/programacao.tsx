@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Clock } from "lucide-react";
+ import { Clock, Calendar } from "lucide-react";
 
 export const Route = createFileRoute("/programacao")({
   head: () => ({ meta: [{ title: "Programação — Rádio Gospel" }] }),
