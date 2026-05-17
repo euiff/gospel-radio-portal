@@ -3,6 +3,24 @@ import { useRadio } from "@/lib/radio-context";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+type NavItem = { to?: string; label?: string };
+
+function FooterNavLink({ item }: { item: NavItem }) {
+  const label = item.label || "Link";
+  const to = item.to || "/";
+  const className = "hover:text-gold transition-colors block py-1";
+  const categoryMatch = to.match(/^\/categoria\/([^/]+)$/);
+
+  if (to === "/") return <Link to="/" className={className}>{label}</Link>;
+  if (to === "/programacao") return <Link to="/programacao" className={className}>{label}</Link>;
+  if (to === "/login") return <Link to="/login" className={className}>{label}</Link>;
+  if (to === "/admin") return <Link to="/admin" className={className}>{label}</Link>;
+  if (categoryMatch) return <Link to="/categoria/$slug" params={{ slug: categoryMatch[1] }} className={className}>{label}</Link>;
+
+  const external = /^https?:\/\//.test(to);
+  return <a href={to} target={external ? "_blank" : undefined} rel={external ? "noreferrer" : undefined} className={className}>{label}</a>;
+}
+
 export function Footer() {
   const { settings } = useRadio();
 
@@ -14,7 +32,7 @@ export function Footer() {
     }
   });
 
-  const nav = (siteSettings?.navigation_menu as any[]) || [];
+  const nav = (siteSettings?.navigation_menu as NavItem[] | null) || [];
 
   return (
     <footer className="gradient-deep text-white/80 mt-20 pt-16 pb-8">
@@ -41,7 +59,7 @@ export function Footer() {
               {nav.length > 0 ? (
                 nav.map((item: any, idx: number) => (
                   <li key={idx}>
-                    <Link to={item.to} className="hover:text-gold transition-colors block py-1">{item.label}</Link>
+                    <FooterNavLink item={item} />
                   </li>
                 ))
               ) : (

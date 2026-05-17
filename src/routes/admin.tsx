@@ -17,6 +17,20 @@ const menu = [
   { to: "/admin/site", label: "Configurar Site", icon: Settings },
 ];
 
+function AdminMenuLink({ item, active }: { item: (typeof menu)[number]; active: boolean }) {
+  const className = `flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all duration-200 ${active ? "bg-sidebar-primary text-sidebar-primary-foreground font-bold shadow-md shadow-black/20" : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"}`;
+  const content = <><item.icon className="w-5 h-5 shrink-0" /> {item.label}</>;
+
+  if (item.to === "/admin") return <Link to="/admin" className={className}>{content}</Link>;
+  if (item.to === "/admin/noticias") return <Link to="/admin/noticias" className={className}>{content}</Link>;
+  if (item.to === "/admin/categorias") return <Link to="/admin/categorias" className={className}>{content}</Link>;
+  if (item.to === "/admin/programacao") return <Link to="/admin/programacao" className={className}>{content}</Link>;
+  if (item.to === "/admin/pedidos") return <Link to="/admin/pedidos" className={className}>{content}</Link>;
+  if (item.to === "/admin/oracao") return <Link to="/admin/oracao" className={className}>{content}</Link>;
+  if (item.to === "/admin/radio") return <Link to="/admin/radio" className={className}>{content}</Link>;
+  return <Link to="/admin/site" className={className}>{content}</Link>;
+}
+
  function AdminLayout() {
    const { user, isAdmin, loading, signOut } = useAuth();
    const nav = useNavigate();
@@ -77,9 +91,7 @@ const menu = [
          {menu.map((m) => {
            const active = m.exact ? path === m.to : path.startsWith(m.to);
            return (
-             <Link key={m.to} to={m.to} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all duration-200 ${active ? "bg-sidebar-primary text-sidebar-primary-foreground font-bold shadow-md shadow-black/20" : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"}`}>
-               <m.icon className="w-5 h-5 shrink-0" /> {m.label}
-             </Link>
+              <AdminMenuLink key={m.to} item={m} active={active} />
            );
          })}
        </nav>
