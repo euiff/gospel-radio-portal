@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Form,
   FormControl,
@@ -32,8 +33,7 @@ interface PrayerRequest {
 }
 
 export function PrayerMural() {
-  const [prayers, setPrayers] = useState<PrayerRequest[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -43,61 +43,56 @@ export function PrayerMural() {
     },
   });
 
-  useEffect(() => {
-    const fetchPrayers = async () => {
+  const { data: prayers = [], isLoading: isLoadingPrayers } = useQuery({
+    queryKey: ["prayer-requests"],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from("prayer_requests")
         .select("*")
         .eq("status", "approved")
         .order("created_at", { ascending: false })
         .limit(10);
+      if (error) throw error;
+      return data as PrayerRequest[];
+    },
+  });
 
-      if (!error && data) {
-        setPrayers(data);
-      }
-    };
+  const mutation = useMutation({
+    mutationFn: async (values: z.infer<typeof formSchema>) => {
+      const { error } = await supabase.from("prayer_requests").insert({
+        user_name: values.userName,
+        content: values.content,
+        status: "pending",
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Pedido enviado! Seu pedido passará por moderação antes de aparecer no mural.");
+      form.reset();
+    },
+  });
 
-    fetchPrayers();
-
-    // Real-time updates
+  useEffect(() => {
     const channel = supabase
       .channel("public:prayer_requests")
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "prayer_requests" },
-        () => fetchPrayers()
+        () => queryClient.invalidateQueries({ queryKey: ["prayer-requests"] })
       )
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "prayer_requests" },
-        () => fetchPrayers()
+        () => queryClient.invalidateQueries({ queryKey: ["prayer-requests"] })
       )
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [queryClient]);
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
-    try {
-      const { error } = await supabase.from("prayer_requests").insert({
-        user_name: values.userName,
-        content: values.content,
-        status: "pending", // Default to pending for moderation
-      });
-
-      if (error) throw error;
-
-      toast.success("Pedido enviado! Seu pedido passará por moderação antes de aparecer no mural.");
-      form.reset();
-    } catch (error) {
-      toast.error("Erro ao enviar pedido de oração.");
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  const onSubmit = (values: z.infer<typeof formSchema>) => mutation.mutate(values);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -143,9 +138,9 @@ export function PrayerMural() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full gap-2" disabled={isLoading}>
+              <Button type="submit" className="w-full gap-2" disabled={mutation.isPending}>
                 <Send className="w-4 h-4" />
-                {isLoading ? "Enviando..." : "Enviar Pedido"}
+                {mutation.isPending ? "Enviando..." : "Enviar Pedido"}
               </Button>
             </form>
           </Form>
@@ -157,7 +152,11 @@ export function PrayerMural() {
           <MessageCircle className="w-5 h-5 text-primary" />
           Pedidos Recentes
         </h3>
-        {prayers.length > 0 ? (
+        {isLoadingPrayers ? (
+          <div className="space-y-4">
+            {[1, 2, 3].map(i => <div key={i} className="h-32 bg-muted animate-pulse rounded-xl" />)}
+          </div>
+        ) : prayers.length > 0 ? (
           prayers.map((prayer) => (
             <div key={prayer.id} className="bg-card p-5 rounded-xl border shadow-sm transition-all hover:shadow-md">
               <div className="flex justify-between items-start mb-3">
