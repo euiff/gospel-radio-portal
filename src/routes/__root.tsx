@@ -9,8 +9,26 @@ function ThemeSync() {
   const { data: settings } = useQuery({
     queryKey: ["site-settings-theme"],
     queryFn: async () => {
-      const { data } = await supabase.from("site_settings").select("primary_color, accent_color").limit(1).maybeSingle();
-      return data;
+      try {
+        const { data, error } = await supabase
+          .from("site_settings")
+          .select("primary_color, accent_color")
+          .limit(1)
+          .maybeSingle();
+        
+        if (error) {
+          // Handle JWT expired specifically by not throwing, just returning null
+          if (error.code === 'PGRST303' || error.message?.includes('JWT expired')) {
+            console.warn("Supabase JWT expired, falling back to default theme");
+            return null;
+          }
+          throw error;
+        }
+        return data;
+      } catch (e) {
+        console.error("Theme sync error:", e);
+        return null;
+      }
     },
     staleTime: Infinity,
   });
