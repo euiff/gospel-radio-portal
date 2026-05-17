@@ -1,17 +1,6 @@
  {
    "version": 2,
-  "cleanUrls": true,
-  "framework": "tanstack-start",
-  "builds": [
-    {
-      "src": "src/server.ts",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "src/server.ts"
-    }
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
  }
