@@ -39,7 +39,11 @@
                   id.includes("input-otp") ||
                   id.includes("react-resizable-panels") ||
                   id.includes("recharts") ||
-                  id.includes("framer-motion")
+                  id.includes("framer-motion") ||
+                  id.includes("class-variance-authority") ||
+                  id.includes("clsx") ||
+                  id.includes("tailwind-merge") ||
+                  id.includes("tw-animate-css")
                 ) return "vendor-react";
                 return "vendor";
                }
