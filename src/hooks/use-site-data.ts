@@ -19,7 +19,13 @@ export const featuredNewsQuery = queryOptions({
       .select("id,slug,title,excerpt,cover_image,published_at,featured,category:categories(name,slug)")
       .eq("published", true).eq("featured", true)
       .order("published_at", { ascending: false }).limit(1).maybeSingle();
-    if (error) throw error;
+    if (error) {
+      if (error.code === 'PGRST303' || error.message?.includes('JWT expired')) {
+        console.warn("Supabase JWT expired in featuredNewsQuery");
+        return null;
+      }
+      throw error;
+    }
     return data as NewsItem | null;
   },
 });
@@ -30,7 +36,13 @@ export const latestNewsQuery = queryOptions({
     const { data, error } = await supabase.from("news")
       .select("id,slug,title,excerpt,cover_image,published_at,featured,category:categories(name,slug)")
       .eq("published", true).order("published_at", { ascending: false }).limit(6);
-    if (error) throw error;
+    if (error) {
+      if (error.code === 'PGRST303' || error.message?.includes('JWT expired')) {
+        console.warn("Supabase JWT expired in latestNewsQuery");
+        return [];
+      }
+      throw error;
+    }
     return (data ?? []) as NewsItem[];
   },
 });
