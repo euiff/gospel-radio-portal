@@ -38,7 +38,8 @@
                   id.includes("@hookform") ||
                   id.includes("input-otp") ||
                   id.includes("react-resizable-panels") ||
-                  id.includes("recharts")
+                  id.includes("recharts") ||
+                  id.includes("framer-motion")
                 ) return "vendor-react";
                 return "vendor";
                }
