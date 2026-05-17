@@ -1,7 +1,7 @@
  import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Newspaper, Eye, Calendar, Radio } from "lucide-react";
+ import { Newspaper, Eye, Calendar, Radio, Settings } from "lucide-react";
 
 export const Route = createFileRoute("/admin/")({ component: Dashboard });
 
