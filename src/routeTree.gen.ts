@@ -20,6 +20,7 @@ import { Route as AdminSiteRouteImport } from './routes/admin/site'
 import { Route as AdminRadioRouteImport } from './routes/admin/radio'
 import { Route as AdminProgramacaoRouteImport } from './routes/admin/programacao'
 import { Route as AdminPedidosRouteImport } from './routes/admin/pedidos'
+import { Route as AdminOracaoRouteImport } from './routes/admin/oracao'
 import { Route as AdminNoticiasRouteImport } from './routes/admin/noticias'
 import { Route as AdminCategoriasRouteImport } from './routes/admin/categorias'
 
@@ -78,6 +79,11 @@ const AdminPedidosRoute = AdminPedidosRouteImport.update({
   path: '/pedidos',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminOracaoRoute = AdminOracaoRouteImport.update({
+  id: '/oracao',
+  path: '/oracao',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminNoticiasRoute = AdminNoticiasRouteImport.update({
   id: '/noticias',
   path: '/noticias',
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/programacao': typeof ProgramacaoRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/noticias': typeof AdminNoticiasRoute
+  '/admin/oracao': typeof AdminOracaoRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/programacao': typeof AdminProgramacaoRoute
   '/admin/radio': typeof AdminRadioRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/programacao': typeof ProgramacaoRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/noticias': typeof AdminNoticiasRoute
+  '/admin/oracao': typeof AdminOracaoRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/programacao': typeof AdminProgramacaoRoute
   '/admin/radio': typeof AdminRadioRoute
@@ -126,6 +134,7 @@ export interface FileRoutesById {
   '/programacao': typeof ProgramacaoRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/noticias': typeof AdminNoticiasRoute
+  '/admin/oracao': typeof AdminOracaoRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/programacao': typeof AdminProgramacaoRoute
   '/admin/radio': typeof AdminRadioRoute
@@ -143,6 +152,7 @@ export interface FileRouteTypes {
     | '/programacao'
     | '/admin/categorias'
     | '/admin/noticias'
+    | '/admin/oracao'
     | '/admin/pedidos'
     | '/admin/programacao'
     | '/admin/radio'
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
     | '/programacao'
     | '/admin/categorias'
     | '/admin/noticias'
+    | '/admin/oracao'
     | '/admin/pedidos'
     | '/admin/programacao'
     | '/admin/radio'
@@ -172,6 +183,7 @@ export interface FileRouteTypes {
     | '/programacao'
     | '/admin/categorias'
     | '/admin/noticias'
+    | '/admin/oracao'
     | '/admin/pedidos'
     | '/admin/programacao'
     | '/admin/radio'
@@ -269,6 +281,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPedidosRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/oracao': {
+      id: '/admin/oracao'
+      path: '/oracao'
+      fullPath: '/admin/oracao'
+      preLoaderRoute: typeof AdminOracaoRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/noticias': {
       id: '/admin/noticias'
       path: '/noticias'
@@ -289,6 +308,7 @@ declare module '@tanstack/react-router' {
 interface AdminRouteChildren {
   AdminCategoriasRoute: typeof AdminCategoriasRoute
   AdminNoticiasRoute: typeof AdminNoticiasRoute
+  AdminOracaoRoute: typeof AdminOracaoRoute
   AdminPedidosRoute: typeof AdminPedidosRoute
   AdminProgramacaoRoute: typeof AdminProgramacaoRoute
   AdminRadioRoute: typeof AdminRadioRoute
@@ -299,6 +319,7 @@ interface AdminRouteChildren {
 const AdminRouteChildren: AdminRouteChildren = {
   AdminCategoriasRoute: AdminCategoriasRoute,
   AdminNoticiasRoute: AdminNoticiasRoute,
+  AdminOracaoRoute: AdminOracaoRoute,
   AdminPedidosRoute: AdminPedidosRoute,
   AdminProgramacaoRoute: AdminProgramacaoRoute,
   AdminRadioRoute: AdminRadioRoute,
