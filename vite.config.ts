@@ -21,25 +21,9 @@
               if (id.includes("node_modules")) {
                 if (id.includes("@supabase")) return "vendor-supabase";
                 if (id.includes("@tanstack")) return "vendor-tanstack";
-                // Keep React, UI libraries and tslib helpers together to avoid SSR chunk cycles.
-                if (
-                  id.includes("react") ||
-                  id.includes("scheduler") ||
-                  id.includes("prop-types") ||
-                  id.includes("tslib") ||
-                  id.includes("@radix-ui") ||
-                  id.includes("lucide-react") ||
-                  id.includes("sonner") ||
-                  id.includes("cmdk") ||
-                  id.includes("vaul") ||
-                  id.includes("embla-carousel-react") ||
-                  id.includes("react-day-picker") ||
-                  id.includes("react-hook-form") ||
-                  id.includes("@hookform") ||
-                  id.includes("input-otp") ||
-                  id.includes("react-resizable-panels") ||
-                  id.includes("recharts")
-                ) return "vendor-react";
+                // Group all UI and utility libraries together to prevent SSR circular dependency cycles.
+                // Circular dependencies in manual chunks can cause runtime "TypeError: __assign is not a function"
+                // and "Cannot set properties of undefined (setting 'Activity')" during SSR.
                 return "vendor";
                }
             },
