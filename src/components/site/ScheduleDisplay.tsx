@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 
 interface Program {
   id: string;
-  title: string;
+  name: string;
   host: string;
   start_time: string;
   end_time: string;
@@ -21,7 +21,7 @@ export function ScheduleDisplay() {
     const fetchPrograms = async () => {
       const today = new Date().getDay();
       const { data, error } = await supabase
-        .from("programming")
+        .from("programs")
         .select("*")
         .eq("day_of_week", today)
         .order("start_time", { ascending: true });
@@ -69,7 +69,7 @@ export function ScheduleDisplay() {
               {currentProgram.start_time.slice(0, 5)} - {currentProgram.end_time.slice(0, 5)}
             </div>
           </div>
-          <h3 className="text-lg font-bold text-primary mb-1">{currentProgram.title}</h3>
+          <h3 className="text-lg font-bold text-primary mb-1">{currentProgram.name}</h3>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <User className="w-4 h-4" />
             {currentProgram.host}
@@ -90,7 +90,7 @@ export function ScheduleDisplay() {
                 {prog.start_time.slice(0, 5)}
               </div>
               <div className="flex-1 border-l-2 border-transparent group-hover:border-primary pl-3 transition-colors">
-                <p className="text-sm font-medium leading-none mb-1">{prog.title}</p>
+                <p className="text-sm font-medium leading-none mb-1">{prog.name}</p>
                 <p className="text-xs text-muted-foreground">{prog.host}</p>
               </div>
             </div>
