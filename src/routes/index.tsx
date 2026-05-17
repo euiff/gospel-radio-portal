@@ -77,7 +77,7 @@ function Home() {
                  {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
                  {isPlaying ? "Pausar rádio" : "Ouvir agora"}
                </button>
-                <Link to="/categoria/noticias" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-white/30 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white backdrop-blur-sm transition active:scale-95 font-medium">
+                <Link to="/categoria/$slug" params={{ slug: "noticias" }} className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-white/30 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white backdrop-blur-sm transition active:scale-95 font-medium">
                  Explorar notícias <ArrowRight className="w-4 h-4" />
                </Link>
              </div>
@@ -92,7 +92,7 @@ function Home() {
              <div className="text-xs uppercase tracking-widest text-accent font-bold mb-2">Informativo</div>
              <h2 className="font-display text-primary">Portal de Notícias</h2>
            </div>
-            <Link to="/categoria/noticias" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent focus-visible:outline-none focus-visible:underline group transition">
+            <Link to="/categoria/$slug" params={{ slug: "noticias" }} className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent focus-visible:outline-none focus-visible:underline group transition">
              Ver todo o conteúdo 
              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
            </Link>

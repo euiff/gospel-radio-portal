@@ -48,7 +48,7 @@ export function Footer() {
                 <>
                   <li><Link to="/" className="hover:text-gold transition-colors block py-1">Início</Link></li>
                   <li><Link to="/programacao" className="hover:text-gold transition-colors block py-1">Programação Ao Vivo</Link></li>
-                  <li><Link to="/categoria/noticias" className="hover:text-gold transition-colors block py-1">Portal de Notícias</Link></li>
+                  <li><Link to="/categoria/$slug" params={{ slug: "noticias" }} className="hover:text-gold transition-colors block py-1">Portal de Notícias</Link></li>
                 </>
               )}
               <li><Link to="/login" className="hover:text-gold transition-colors block py-1">Acesso Administrativo</Link></li>
@@ -58,9 +58,9 @@ export function Footer() {
           <div>
             <h4 className="text-gold font-bold text-xs uppercase tracking-[0.2em] mb-6">Categorias</h4>
             <ul className="space-y-4 text-sm">
-              <li><Link to="/categoria/musica" className="hover:text-gold transition-colors block py-1">Lançamentos Musicais</Link></li>
-              <li><Link to="/categoria/eventos" className="hover:text-gold transition-colors block py-1">Eventos e Shows</Link></li>
-              <li><Link to="/categoria/devocional" className="hover:text-gold transition-colors block py-1">Mensagens de Fé</Link></li>
+              <li><Link to="/categoria/$slug" params={{ slug: "musica" }} className="hover:text-gold transition-colors block py-1">Lançamentos Musicais</Link></li>
+              <li><Link to="/categoria/$slug" params={{ slug: "eventos" }} className="hover:text-gold transition-colors block py-1">Eventos e Shows</Link></li>
+              <li><Link to="/categoria/$slug" params={{ slug: "devocional" }} className="hover:text-gold transition-colors block py-1">Mensagens de Fé</Link></li>
             </ul>
           </div>
 
