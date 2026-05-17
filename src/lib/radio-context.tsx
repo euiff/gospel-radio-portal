@@ -34,10 +34,11 @@ export function RadioProvider({ children }: { children: ReactNode }) {
   const [volume, setVolumeState] = useState(0.8);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const load = async () => {
-    const { data } = await supabase.from("radio_settings").select("*").limit(1).maybeSingle();
-    if (data) setSettings(data as RadioSettings);
-  };
+   const load = async () => {
+     if (typeof window === "undefined") return;
+     const { data } = await supabase.from("radio_settings").select("*").limit(1).maybeSingle();
+     if (data) setSettings(data as RadioSettings);
+   };
 
   useEffect(() => {
     if (!settings?.api_now_playing) {
@@ -61,7 +62,10 @@ export function RadioProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(interval);
   }, [settings?.api_now_playing]);
 
-  useEffect(() => { load(); }, []);
+   useEffect(() => {
+     if (typeof window === "undefined") return;
+     load();
+   }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
