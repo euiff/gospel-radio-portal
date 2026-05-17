@@ -15,9 +15,6 @@ import { createStart, createMiddleware } from "@tanstack/react-start";
    }
  });
 
-   export const startInstance = createStart(() => ({
-     requestMiddleware: [errorMiddleware],
-     defaultProps: {
-       ssr: false,
-     },
-   }));
+ export const startInstance = createStart(() => ({
+   requestMiddleware: [errorMiddleware],
+ }));
