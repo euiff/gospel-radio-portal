@@ -40,7 +40,7 @@ export const radioSettingsQueryOptions = {
 
 export function RadioProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
-  const { data: settings } = useQuery(radioSettingsQueryOptions);
+  const { data: settings = null } = useQuery(radioSettingsQueryOptions);
   
   const [nowPlaying, setNowPlaying] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
