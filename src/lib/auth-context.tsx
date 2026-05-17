@@ -20,7 +20,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAdmin = async (uid: string | undefined) => {
     if (!uid) { setIsAdmin(false); return; }
-    const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", uid);
+    // Try multiple times if needed, sometimes RLS takes a moment to recognize the session
+    let attempts = 0;
+    let hasAdminRole = false;
+    let lastData = null;
+
+    while (attempts < 3 && !hasAdminRole) {
+      const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", uid);
+      if (error) {
+        console.error("Error checking admin status (attempt " + (attempts + 1) + "):", error);
+      } else {
+        lastData = data;
+        hasAdminRole = !!data?.some((r) => r.role === "admin");
+        if (hasAdminRole) break;
+      }
+      attempts++;
+      if (!hasAdminRole && attempts < 3) await new Promise(r => setTimeout(r, 500));
+    }
+
+    console.log("Admin check for", uid, ":", hasAdminRole, lastData);
+    setIsAdmin(hasAdminRole);
     if (error) {
       console.error("Error checking admin status:", error);
       setIsAdmin(false);
