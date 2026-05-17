@@ -1,38 +1,18 @@
-import { createFileRoute, Link, defer } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { Suspense, lazy } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import heroImg from "@/assets/hero-worship.jpg";
 import { useRadio } from "@/lib/radio-context";
 import { Play, Pause, ArrowRight, Clock } from "lucide-react";
 import { MessageCircle, Heart, Music } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { featuredNewsQuery, latestNewsQuery, type NewsItem } from "@/hooks/use-site-data";
+import { supabase } from "@/integrations/supabase/client";
 
 // Lazy load secondary components to reduce initial bundle size
 const SongRequestForm = lazy(() => import("@/components/site/SongRequestForm").then(m => ({ default: m.SongRequestForm })));
 const ScheduleDisplay = lazy(() => import("@/components/site/ScheduleDisplay").then(m => ({ default: m.ScheduleDisplay })));
 const PrayerMural = lazy(() => import("@/components/site/PrayerMural").then(m => ({ default: m.PrayerMural })));
-
-const featuredNewsQueryOptions = queryOptions({
-  queryKey: ["news-featured"],
-  queryFn: async () => {
-    const { data } = await supabase.from("news")
-      .select("id,slug,title,excerpt,cover_image,published_at,featured,category:categories(name,slug)")
-      .eq("published", true).eq("featured", true)
-      .order("published_at", { ascending: false }).limit(1).maybeSingle();
-    return data as NewsItem | null;
-  },
-});
-
-const latestNewsQueryOptions = queryOptions({
-  queryKey: ["news-latest"],
-  queryFn: async () => {
-    const { data } = await supabase.from("news")
-      .select("id,slug,title,excerpt,cover_image,published_at,featured,category:categories(name,slug)")
-      .eq("published", true).order("published_at", { ascending: false }).limit(6);
-    return (data ?? []) as NewsItem[];
-  },
-});
 
 const programsTodayQueryOptions = queryOptions({
   queryKey: ["programs-today"],
@@ -45,32 +25,18 @@ const programsTodayQueryOptions = queryOptions({
 
 export const Route = createFileRoute("/")({
   loader: ({ context: { queryClient } }) => {
-    // Prefetch queries to reduce TTFB and improve LCP
-    queryClient.ensureQueryData(featuredNewsQueryOptions);
-    queryClient.ensureQueryData(latestNewsQueryOptions);
+    queryClient.ensureQueryData(featuredNewsQuery);
+    queryClient.ensureQueryData(latestNewsQuery);
     queryClient.ensureQueryData(programsTodayQueryOptions);
   },
-  head: () => ({
-    meta: [
-      { title: "Rádio Gospel — Música cristã ao vivo 24h" },
-      { name: "description", content: "Acompanhe notícias gospel, lançamentos, devocional e ouça a rádio cristã ao vivo." },
-    ],
-  }),
+  head: () => ({ meta: [{ title: "Rádio Gospel" }] }),
   component: Home,
 });
 
-interface NewsItem {
-  id: string; slug: string; title: string; excerpt: string | null;
-  cover_image: string | null; published_at: string | null; featured: boolean;
-  category: { name: string; slug: string } | null;
-}
-
 function Home() {
   const { settings, isPlaying, toggle } = useRadio();
-  
-  // useSuspenseQuery for better UX with TanStack Router
-  const { data: featured } = useSuspenseQuery(featuredNewsQueryOptions);
-  const { data: latest } = useSuspenseQuery(latestNewsQueryOptions);
+  const { data: featured } = useSuspenseQuery(featuredNewsQuery);
+  const { data: latest } = useSuspenseQuery(latestNewsQuery);
   const { data: programs } = useSuspenseQuery(programsTodayQueryOptions);
 
   return (
