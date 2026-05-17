@@ -8,4 +8,7 @@ import { renderErrorPage } from "./lib/error-page";
 
  export const startInstance = createStart(() => ({
    requestMiddleware: [errorMiddleware],
+   defaultProps: {
+     ssr: false,
+   },
  }));
