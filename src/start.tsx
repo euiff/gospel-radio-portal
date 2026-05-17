@@ -1,6 +1,6 @@
 import { createStart, createMiddleware } from "@tanstack/react-start";
 import { StartClient } from "@tanstack/react-start/client";
-import { createRoot } from "react-dom/client";
+import { createRoot, hydrateRoot } from "react-dom/client";
 import { getRouter } from "./router";
 
  import { consumeLastCapturedError } from "./lib/error-capture";
@@ -25,8 +25,11 @@ export const startInstance = createStart(() => ({
 
 if (typeof document !== "undefined") {
   const rootElement = document.getElementById("root");
-  if (rootElement && !rootElement.innerHTML) {
-    const root = createRoot(rootElement);
-    root.render(<StartClient />);
+  if (rootElement) {
+    if (rootElement.innerHTML) {
+      hydrateRoot(rootElement, <StartClient />);
+    } else {
+      createRoot(rootElement).render(<StartClient />);
+    }
   }
 }
