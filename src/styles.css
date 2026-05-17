@@ -139,3 +139,7 @@
      @apply active:scale-95 transition-transform;
    }
 }
+
+#lovable-badge {
+  display: none !important;
+}
