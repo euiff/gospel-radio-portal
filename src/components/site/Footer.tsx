@@ -1,32 +1,67 @@
 import { Link } from "@tanstack/react-router";
 import { useRadio } from "@/lib/radio-context";
 
-export function Footer() {
-  const { settings } = useRadio();
-  return (
-    <footer className="gradient-deep text-white/80 mt-20">
-      <div className="container mx-auto px-4 py-12 grid md:grid-cols-3 gap-8">
-        <div>
-          <div className="font-display text-2xl text-white">{settings?.station_name ?? "Rádio Gospel"}</div>
-          <p className="text-sm mt-2 text-white/60">{settings?.tagline}</p>
-        </div>
-        <div>
-          <h4 className="text-gold font-semibold text-sm uppercase tracking-widest mb-3">Navegação</h4>
-          <ul className="space-y-2 text-sm">
-            <li><Link to="/" className="hover:text-gold">Início</Link></li>
-            <li><Link to="/programacao" className="hover:text-gold">Programação</Link></li>
-            <li><Link to="/categoria/noticias" className="hover:text-gold">Notícias</Link></li>
-            <li><Link to="/login" className="hover:text-gold">Área restrita</Link></li>
-          </ul>
-        </div>
-        <div>
-          <h4 className="text-gold font-semibold text-sm uppercase tracking-widest mb-3">Contato</h4>
-          {settings?.whatsapp && <p className="text-sm">WhatsApp: {settings.whatsapp}</p>}
-        </div>
-      </div>
-      <div className="border-t border-white/10 py-4 text-center text-xs text-white/50">
-        © {new Date().getFullYear()} {settings?.station_name ?? "Rádio Gospel"}. Todos os direitos reservados.
-      </div>
-    </footer>
-  );
-}
+ export function Footer() {
+   const { settings } = useRadio();
+   return (
+     <footer className="gradient-deep text-white/80 mt-20 pt-16 pb-8">
+       <div className="container mx-auto px-4">
+         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+           <div className="col-span-1 lg:col-span-1">
+             <div className="font-display text-3xl text-white font-bold leading-none">
+               Rádio<span className="text-gold italic">Gospel</span>
+             </div>
+             <p className="text-sm mt-4 text-white/60 leading-relaxed max-w-xs">
+               {settings?.tagline ?? "Levando a palavra de Deus e o melhor do louvor para o seu coração, 24 horas por dia."}
+             </p>
+           </div>
+           
+           <div>
+             <h4 className="text-gold font-bold text-xs uppercase tracking-[0.2em] mb-6">Menu Principal</h4>
+             <ul className="space-y-4 text-sm">
+               <li><Link to="/" className="hover:text-gold transition-colors block py-1">Início</Link></li>
+               <li><Link to="/programacao" className="hover:text-gold transition-colors block py-1">Programação Ao Vivo</Link></li>
+               <li><Link to="/categoria/noticias" className="hover:text-gold transition-colors block py-1">Portal de Notícias</Link></li>
+               <li><Link to="/login" className="hover:text-gold transition-colors block py-1">Acesso Administrativo</Link></li>
+             </ul>
+           </div>
+ 
+           <div>
+             <h4 className="text-gold font-bold text-xs uppercase tracking-[0.2em] mb-6">Categorias</h4>
+             <ul className="space-y-4 text-sm">
+               <li><Link to="/categoria/musica" className="hover:text-gold transition-colors block py-1">Lançamentos Musicais</Link></li>
+               <li><Link to="/categoria/eventos" className="hover:text-gold transition-colors block py-1">Eventos e Shows</Link></li>
+               <li><Link to="/categoria/devocional" className="hover:text-gold transition-colors block py-1">Mensagens de Fé</Link></li>
+             </ul>
+           </div>
+ 
+           <div>
+             <h4 className="text-gold font-bold text-xs uppercase tracking-[0.2em] mb-6">Fale Conosco</h4>
+             {settings?.whatsapp && (
+               <a 
+                 href={`https://wa.me/${settings.whatsapp}`} 
+                 target="_blank" 
+                 rel="noreferrer"
+                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-gold/20 hover:border-gold/30 transition-all text-sm group"
+               >
+                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                 Chamar no WhatsApp
+               </a>
+             )}
+             <p className="text-xs mt-6 text-white/40 italic">
+               Envie seu pedido de oração ou sugestão musical.
+             </p>
+           </div>
+         </div>
+ 
+         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] md:text-xs text-white/30 uppercase tracking-widest font-medium">
+           <div>© {new Date().getFullYear()} {settings?.station_name ?? "Rádio Gospel"}.</div>
+           <div className="flex items-center gap-6">
+             <span className="hover:text-white cursor-pointer transition-colors">Termos de Uso</span>
+             <span className="hover:text-white cursor-pointer transition-colors">Privacidade</span>
+           </div>
+         </div>
+       </div>
+     </footer>
+   );
+ }

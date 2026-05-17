@@ -85,10 +85,27 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
   }
-  h1, h2, h3, h4, .font-display {
-    font-family: var(--font-display);
-    letter-spacing: -0.01em;
-  }
+   h1, h2, h3, h4, .font-display {
+     font-family: var(--font-display);
+     letter-spacing: -0.01em;
+   }
+ 
+   h1 { font-size: clamp(2.5rem, 8vw + 1rem, 5rem); }
+   h2 { font-size: clamp(2rem, 5vw + 1rem, 3.5rem); }
+   h3 { font-size: clamp(1.5rem, 3vw + 1rem, 2.5rem); }
+ 
+   /* Melhorando a acessibilidade do toque */
+   button, a, input, select, textarea {
+     min-height: 2.75rem; /* ~44px */
+     min-width: 2.75rem;
+   }
+ 
+   /* Links internos não precisam de min-width se forem inline, mas botões de ação sim */
+   .nav-link {
+     min-width: auto;
+     min-height: auto;
+     padding: 0.5rem 0.75rem;
+   }
 }
 
 @layer utilities {
@@ -104,7 +121,21 @@
     background-clip: text;
     color: transparent;
   }
-  .shadow-glow {
-    box-shadow: 0 10px 40px -10px oklch(0.78 0.13 80 / 0.5);
-  }
+   .shadow-glow {
+     box-shadow: 0 10px 40px -10px oklch(0.78 0.13 80 / 0.5);
+   }
+ 
+   /* Utilitários para prevenir overflow horizontal */
+   .no-scrollbar::-webkit-scrollbar { display: none; }
+   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+ 
+   .responsive-table-container {
+     width: 100%;
+     overflow-x: auto;
+     -webkit-overflow-scrolling: touch;
+   }
+ 
+   .touch-safe {
+     @apply active:scale-95 transition-transform;
+   }
 }

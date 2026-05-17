@@ -53,64 +53,89 @@ function Home() {
 
   return (
     <main>
-      {/* HERO */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0">
-          <img src={heroImg} alt="" className="w-full h-full object-cover" width={1600} height={900} />
-          <div className="absolute inset-0 gradient-deep opacity-85" />
-        </div>
-        <div className="relative container mx-auto px-4 py-20 md:py-32 text-white">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-gold/40 text-gold text-xs uppercase tracking-widest mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" /> No ar agora
-            </div>
-            <h1 className="font-display text-5xl md:text-7xl leading-[1.05] mb-6">
-              A música que <span className="text-gradient-gold italic">renova</span> sua fé
-            </h1>
-            <p className="text-lg text-white/80 mb-8 max-w-xl">{settings?.tagline ?? "Notícias, louvor e palavra 24 horas por dia."}</p>
-            <div className="flex flex-wrap gap-3">
-              <button onClick={toggle} className="inline-flex items-center gap-2 px-6 py-3 rounded-full gradient-gold text-gold-foreground font-semibold shadow-glow hover:scale-105 transition">
-                {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-                {isPlaying ? "Pausar transmissão" : "Ouvir ao vivo"}
-              </button>
-              <Link to="/categoria/noticias" className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/30 hover:bg-white/10 transition">
-                Ver notícias <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+       {/* HERO */}
+       <section className="relative overflow-hidden min-h-[70vh] flex items-center">
+         <div className="absolute inset-0 z-0">
+           <img src={heroImg} alt="" className="w-full h-full object-cover" width={1600} height={900} />
+           <div className="absolute inset-0 gradient-deep opacity-90" />
+         </div>
+         <div className="relative z-10 container mx-auto px-4 py-16 md:py-24 text-white">
+           <div className="max-w-3xl">
+             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-gold/40 text-gold text-[10px] md:text-xs uppercase tracking-widest mb-6">
+               <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" /> No ar agora
+             </div>
+             <h1 className="font-display leading-[1.1] mb-6">
+               A música que <span className="text-gradient-gold italic">renova</span> sua fé
+             </h1>
+             <p className="text-base md:text-xl text-white/80 mb-8 max-w-2xl leading-relaxed">
+               {settings?.tagline ?? "Notícias, louvor e palavra 24 horas por dia, levando a mensagem de esperança para todo o mundo."}
+             </p>
+             <div className="flex flex-col sm:flex-row gap-4">
+               <button onClick={toggle} className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full gradient-gold text-gold-foreground font-bold shadow-glow hover:scale-105 active:scale-95 transition min-w-[200px]">
+                 {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
+                 {isPlaying ? "Pausar rádio" : "Ouvir agora"}
+               </button>
+               <Link to="/categoria/noticias" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-white/30 hover:bg-white/10 backdrop-blur-sm transition active:scale-95 font-medium">
+                 Explorar notícias <ArrowRight className="w-4 h-4" />
+               </Link>
+             </div>
+           </div>
+         </div>
+       </section>
 
-      {/* FEATURED + LATEST */}
-      <section className="container mx-auto px-4 py-16">
-        <div className="flex items-end justify-between mb-8">
-          <div>
-            <div className="text-xs uppercase tracking-widest text-accent font-semibold mb-1">Em destaque</div>
-            <h2 className="font-display text-4xl text-primary">Últimas notícias</h2>
-          </div>
-          <Link to="/categoria/noticias" className="text-sm text-primary hover:text-accent flex items-center gap-1">Ver todas <ArrowRight className="w-4 h-4" /></Link>
-        </div>
-
-        <div className="grid lg:grid-cols-3 gap-6">
-          {featured && (
-            <Link to="/noticia/$slug" params={{ slug: featured.slug }} className="lg:col-span-2 lg:row-span-2 group rounded-xl overflow-hidden bg-card border border-border hover:shadow-glow transition">
-              {featured.cover_image && <div className="aspect-[16/10] overflow-hidden"><img src={featured.cover_image} alt={featured.title} className="w-full h-full object-cover group-hover:scale-105 transition" /></div>}
-              <div className="p-6">
-                {featured.category && <span className="text-xs uppercase tracking-widest text-accent font-semibold">{featured.category.name}</span>}
-                <h3 className="font-display text-3xl text-primary mt-2 mb-3 group-hover:text-accent transition">{featured.title}</h3>
-                {featured.excerpt && <p className="text-muted-foreground">{featured.excerpt}</p>}
-              </div>
-            </Link>
-          )}
-          {(latest ?? []).filter(n => !featured || n.id !== featured.id).slice(0, featured ? 4 : 6).map((n) => (
-            <Link key={n.id} to="/noticia/$slug" params={{ slug: n.slug }} className="group rounded-xl overflow-hidden bg-card border border-border hover:shadow-glow transition flex flex-col">
-              {n.cover_image && <div className="aspect-[16/10] overflow-hidden"><img src={n.cover_image} alt={n.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition" /></div>}
-              <div className="p-5 flex-1">
-                {n.category && <span className="text-xs uppercase tracking-widest text-accent font-semibold">{n.category.name}</span>}
-                <h3 className="font-display text-xl text-primary mt-2 group-hover:text-accent transition">{n.title}</h3>
-              </div>
-            </Link>
-          ))}
+       {/* FEATURED + LATEST */}
+       <section className="container mx-auto px-4 py-12 md:py-20">
+         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+           <div>
+             <div className="text-xs uppercase tracking-widest text-accent font-bold mb-2">Informativo</div>
+             <h2 className="font-display text-primary">Portal de Notícias</h2>
+           </div>
+           <Link to="/categoria/noticias" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent group transition">
+             Ver todo o conteúdo 
+             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+           </Link>
+         </div>
+ 
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+           {featured && (
+             <Link to="/noticia/$slug" params={{ slug: featured.slug }} className="md:col-span-2 lg:row-span-2 group rounded-2xl overflow-hidden bg-card border border-border hover:shadow-glow transition-all duration-300 flex flex-col">
+               {featured.cover_image && (
+                 <div className="aspect-[16/9] overflow-hidden">
+                   <img src={featured.cover_image} alt={featured.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                 </div>
+               )}
+               <div className="p-6 md:p-8 flex-1 flex flex-col justify-center">
+                 {featured.category && (
+                   <span className="inline-block px-3 py-1 rounded-full bg-accent/10 text-accent text-[10px] uppercase tracking-wider font-bold mb-4">
+                     {featured.category.name}
+                   </span>
+                 )}
+                 <h3 className="font-display text-2xl md:text-4xl text-primary group-hover:text-accent transition-colors leading-tight">
+                   {featured.title}
+                 </h3>
+                 {featured.excerpt && (
+                   <p className="text-muted-foreground mt-4 text-sm md:text-base line-clamp-3 leading-relaxed">
+                     {featured.excerpt}
+                   </p>
+                 )}
+               </div>
+             </Link>
+           )}
+           {(latest ?? []).filter(n => !featured || n.id !== featured.id).slice(0, featured ? 4 : 6).map((n) => (
+             <Link key={n.id} to="/noticia/$slug" params={{ slug: n.slug }} className="group rounded-xl overflow-hidden bg-card border border-border hover:shadow-md transition-all flex flex-col">
+               {n.cover_image && (
+                 <div className="aspect-[16/10] overflow-hidden shrink-0">
+                   <img src={n.cover_image} alt={n.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                 </div>
+               )}
+               <div className="p-5 flex-1 flex flex-col">
+                 {n.category && <span className="text-[10px] uppercase tracking-widest text-accent font-bold mb-2">{n.category.name}</span>}
+                 <h3 className="font-display text-lg md:text-xl text-primary group-hover:text-accent transition-colors line-clamp-2 leading-snug">
+                   {n.title}
+                 </h3>
+               </div>
+             </Link>
+           ))}
           {(!latest || latest.length === 0) && !featured && (
             <div className="lg:col-span-3 text-center py-20 text-muted-foreground border border-dashed border-border rounded-xl">
               Ainda não há notícias publicadas. Crie a primeira pelo painel administrativo.
@@ -119,32 +144,59 @@ function Home() {
         </div>
       </section>
 
-      {/* PROGRAMMING */}
-      <section className="bg-secondary py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-10">
-            <div className="text-xs uppercase tracking-widest text-accent font-semibold">Hoje na rádio</div>
-            <h2 className="font-display text-4xl text-primary">Programação do dia</h2>
-          </div>
-          {programs && programs.length > 0 ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
-              {programs.map((p: any) => (
-                <div key={p.id} className="bg-card border border-border rounded-xl p-5 hover:border-accent transition">
-                  <div className="flex items-center gap-2 text-accent text-sm font-semibold"><Clock className="w-4 h-4" />{p.start_time?.slice(0,5)} – {p.end_time?.slice(0,5)}</div>
-                  <h3 className="font-display text-2xl text-primary mt-2">{p.name}</h3>
-                  {p.host && <p className="text-sm text-muted-foreground">com {p.host}</p>}
-                  {p.description && <p className="text-sm mt-2">{p.description}</p>}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-center text-muted-foreground">Nenhum programa cadastrado para hoje.</p>
-          )}
-          <div className="text-center mt-8">
-            <Link to="/programacao" className="inline-flex items-center gap-2 text-primary hover:text-accent">Ver programação completa <ArrowRight className="w-4 h-4" /></Link>
-          </div>
-        </div>
-      </section>
+       {/* PROGRAMMING */}
+       <section className="bg-muted/50 py-16 md:py-24 border-y border-border">
+         <div className="container mx-auto px-4">
+           <div className="text-center mb-12">
+             <div className="text-xs uppercase tracking-widest text-accent font-bold mb-3">Sintonize</div>
+             <h2 className="font-display text-primary">Nossa Programação</h2>
+             <p className="text-muted-foreground mt-2">O que está rolando hoje na sua rádio favorita</p>
+           </div>
+           
+           {programs && programs.length > 0 ? (
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+               {programs.map((p: any) => (
+                 <div key={p.id} className="group bg-card border border-border rounded-2xl p-6 hover:border-accent/50 hover:shadow-lg transition-all duration-300 relative overflow-hidden">
+                   <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                     <Clock className="w-12 h-12" />
+                   </div>
+                   <div className="flex items-center gap-2 text-accent text-sm font-bold mb-4">
+                     <span className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-accent/10">
+                       <Clock className="w-3.5 h-3.5" />
+                       {p.start_time?.slice(0,5)} – {p.end_time?.slice(0,5)}
+                     </span>
+                   </div>
+                   <h3 className="font-display text-2xl text-primary mb-2 leading-tight group-hover:text-accent transition-colors">{p.name}</h3>
+                   {p.host && (
+                     <div className="flex items-center gap-2 mb-3">
+                       <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] text-primary font-bold uppercase">
+                         {p.host.slice(0,1)}
+                       </div>
+                       <p className="text-sm font-medium text-primary/80">Com {p.host}</p>
+                     </div>
+                   )}
+                   {p.description && (
+                     <p className="text-sm text-muted-foreground line-clamp-2 italic leading-relaxed">
+                       "{p.description}"
+                     </p>
+                   )}
+                 </div>
+               ))}
+             </div>
+           ) : (
+             <div className="max-w-md mx-auto text-center p-12 bg-card border border-dashed border-border rounded-3xl">
+               <Clock className="w-12 h-12 mx-auto text-muted-foreground/30 mb-4" />
+               <p className="text-muted-foreground">A programação de hoje ainda está sendo preparada. Fique ligado!</p>
+             </div>
+           )}
+           
+           <div className="text-center mt-12">
+             <Link to="/programacao" className="inline-flex items-center gap-2 px-8 py-3 rounded-full border border-primary/20 text-primary font-bold hover:bg-primary hover:text-white transition-all shadow-sm">
+               Grade completa de horários <ArrowRight className="w-4 h-4" />
+             </Link>
+           </div>
+         </div>
+       </section>
     </main>
   );
 }
