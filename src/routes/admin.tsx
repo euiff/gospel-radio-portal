@@ -2,6 +2,7 @@
  import { useEffect, useState } from "react";
  import { useAuth } from "@/lib/auth-context";
  import { LayoutDashboard, Newspaper, Radio, Settings, Calendar, FolderTree, LogOut, Home, Menu, X } from "lucide-react";
+import { MessageSquare, Heart } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({ component: AdminLayout });
 
@@ -10,6 +11,8 @@ const menu = [
   { to: "/admin/noticias", label: "Notícias", icon: Newspaper },
   { to: "/admin/categorias", label: "Categorias", icon: FolderTree },
   { to: "/admin/programacao", label: "Programação", icon: Calendar },
+  { to: "/admin/pedidos", label: "Pedidos de Música", icon: MessageSquare },
+  { to: "/admin/oracao", label: "Mural de Oração", icon: Heart },
   { to: "/admin/radio", label: "Configurar Rádio", icon: Radio },
   { to: "/admin/site", label: "Configurar Site", icon: Settings },
 ];
