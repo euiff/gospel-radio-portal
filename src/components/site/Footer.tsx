@@ -24,19 +24,13 @@ function FooterNavLink({ item }: { item: NavItem }) {
  export function Footer() {
    const { settings: radioSettings } = useRadio();
  
-   const { data: siteSettings, isLoading } = useQuery({
-     queryKey: ["site-settings-footer"],
-     queryFn: async () => {
-       const { data } = await supabase.from("site_settings").select("*").limit(1).maybeSingle();
-       return data;
-     }
-   });
-    queryKey: ["site-settings-footer"],
-    queryFn: async () => {
-      const { data } = await supabase.from("site_settings").select("logo_url, navigation_menu").limit(1).maybeSingle();
-      return data;
-    }
-  });
+    const { data: siteSettings } = useQuery({
+      queryKey: ["site-settings-footer"],
+      queryFn: async () => {
+        const { data } = await supabase.from("site_settings").select("*").limit(1).maybeSingle();
+        return data;
+      }
+    });
 
   const nav = (siteSettings?.navigation_menu as NavItem[] | null) || [];
 
@@ -89,18 +83,18 @@ function FooterNavLink({ item }: { item: NavItem }) {
           </div>
 
           <div>
-            <h4 className="text-gold font-bold text-xs uppercase tracking-[0.2em] mb-6">Fale Conosco</h4>
-            {settings?.whatsapp && (
-              <a 
-                href={`https://wa.me/${settings.whatsapp}`} 
-                target="_blank" 
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-gold/20 hover:border-gold/30 transition-all text-sm group"
-              >
-                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                Chamar no WhatsApp
-              </a>
-            )}
+             <h4 className="text-gold font-bold text-xs uppercase tracking-[0.2em] mb-6">Fale Conosco</h4>
+             {radioSettings?.whatsapp && (
+               <a 
+                 href={`https://wa.me/${radioSettings.whatsapp}`} 
+                 target="_blank" 
+                 rel="noreferrer"
+                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-gold/20 hover:border-gold/30 transition-all text-sm group"
+               >
+                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                 Chamar no WhatsApp
+               </a>
+             )}
             <p className="text-xs mt-6 text-white/40 italic">
               Envie seu pedido de oração ou sugestão musical.
             </p>
