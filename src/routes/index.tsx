@@ -71,11 +71,16 @@ function Home() {
                {settings?.tagline ?? "Notícias, louvor e palavra 24 horas por dia, levando a mensagem de esperança para todo o mundo."}
              </p>
              <div className="flex flex-col sm:flex-row gap-4">
-               <button onClick={toggle} className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full gradient-gold text-gold-foreground font-bold shadow-glow hover:scale-105 active:scale-95 transition min-w-[200px]">
+                <button 
+                  onClick={toggle} 
+                  aria-label={isPlaying ? "Pausar rádio" : "Ouvir agora"}
+                  aria-pressed={isPlaying}
+                  className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full gradient-gold text-gold-foreground font-bold shadow-glow hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/50 transition min-w-[200px]"
+                >
                  {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
                  {isPlaying ? "Pausar rádio" : "Ouvir agora"}
                </button>
-               <Link to="/categoria/noticias" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-white/30 hover:bg-white/10 backdrop-blur-sm transition active:scale-95 font-medium">
+                <Link to="/categoria/noticias" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-white/30 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white backdrop-blur-sm transition active:scale-95 font-medium">
                  Explorar notícias <ArrowRight className="w-4 h-4" />
                </Link>
              </div>
@@ -90,18 +95,22 @@ function Home() {
              <div className="text-xs uppercase tracking-widest text-accent font-bold mb-2">Informativo</div>
              <h2 className="font-display text-primary">Portal de Notícias</h2>
            </div>
-           <Link to="/categoria/noticias" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent group transition">
+            <Link to="/categoria/noticias" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent focus-visible:outline-none focus-visible:underline group transition">
              Ver todo o conteúdo 
              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
            </Link>
          </div>
  
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-           {featured && (
-             <Link to="/noticia/$slug" params={{ slug: featured.slug }} className="md:col-span-2 lg:row-span-2 group rounded-2xl overflow-hidden bg-card border border-border hover:shadow-glow transition-all duration-300 flex flex-col">
+            {featured && (
+              <Link 
+                to="/noticia/$slug" 
+                params={{ slug: featured.slug }} 
+                className="md:col-span-2 lg:row-span-2 group rounded-2xl overflow-hidden bg-card border border-border hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent transition-all duration-300 flex flex-col"
+              >
                {featured.cover_image && (
                  <div className="aspect-[16/9] overflow-hidden">
-                   <img src={featured.cover_image} alt={featured.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img src={featured.cover_image} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                  </div>
                )}
                <div className="p-6 md:p-8 flex-1 flex flex-col justify-center">
@@ -122,10 +131,15 @@ function Home() {
              </Link>
            )}
            {(latest ?? []).filter(n => !featured || n.id !== featured.id).slice(0, featured ? 4 : 6).map((n) => (
-             <Link key={n.id} to="/noticia/$slug" params={{ slug: n.slug }} className="group rounded-xl overflow-hidden bg-card border border-border hover:shadow-md transition-all flex flex-col">
+              <Link 
+                key={n.id} 
+                to="/noticia/$slug" 
+                params={{ slug: n.slug }} 
+                className="group rounded-xl overflow-hidden bg-card border border-border hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent transition-all flex flex-col"
+              >
                {n.cover_image && (
                  <div className="aspect-[16/10] overflow-hidden shrink-0">
-                   <img src={n.cover_image} alt={n.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <img src={n.cover_image} alt="" loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                  </div>
                )}
                <div className="p-5 flex-1 flex flex-col">
@@ -191,7 +205,7 @@ function Home() {
            )}
            
            <div className="text-center mt-12">
-             <Link to="/programacao" className="inline-flex items-center gap-2 px-8 py-3 rounded-full border border-primary/20 text-primary font-bold hover:bg-primary hover:text-white transition-all shadow-sm">
+              <Link to="/programacao" className="inline-flex items-center gap-2 px-8 py-3 rounded-full border border-primary/20 text-primary font-bold hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-all shadow-sm">
                Grade completa de horários <ArrowRight className="w-4 h-4" />
              </Link>
            </div>
