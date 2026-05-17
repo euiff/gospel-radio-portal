@@ -3,7 +3,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, Trash2, Edit, X, Star } from "lucide-react";
+ import { Plus, Trash2, Edit, Star } from "lucide-react";
+ import { ResponsiveModal } from "@/components/ui/responsive-modal";
 import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/admin/noticias")({ component: NewsAdmin });
@@ -145,111 +146,69 @@ function NewsAdmin() {
          </div>
        </div>
  
-       {editing && (
-         <div className="fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-4 backdrop-blur-sm">
-           <form 
-             onSubmit={save} 
-             className="bg-card rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200"
-           >
-             <div className="p-6 border-b border-border flex items-center justify-between bg-muted/20">
-               <h2 className="font-display text-2xl text-primary">{editing.id ? "Editar notícia" : "Nova notícia"}</h2>
-               <button 
-                 type="button" 
-                 onClick={() => setEditing(null)}
-                 className="p-2 hover:bg-muted rounded-full transition"
-               >
-                 <X className="w-6 h-6" />
-               </button>
-             </div>
-             
-             <div className="p-6 overflow-y-auto max-h-[70vh] space-y-6">
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                 <div>
-                   <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Título</label>
-                   <input required value={editing.title} onChange={(e) => setEditing({ ...editing, title: e.target.value, slug: editing.slug || slugify(e.target.value) })} className="mt-1.5 w-full px-4 py-3 rounded-xl border border-input bg-background focus:ring-2 focus:ring-accent transition" />
-                 </div>
-                 <div>
-                   <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Slug (URL)</label>
-                   <input required value={editing.slug} onChange={(e) => setEditing({ ...editing, slug: slugify(e.target.value) })} className="mt-1.5 w-full px-4 py-3 rounded-xl border border-input bg-background focus:ring-2 focus:ring-accent transition" />
-                 </div>
-               </div>
- 
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                 <div>
-                   <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Categoria</label>
-                   <select value={editing.category_id} onChange={(e) => setEditing({ ...editing, category_id: e.target.value })} className="mt-1.5 w-full px-4 py-3 rounded-xl border border-input bg-background focus:ring-2 focus:ring-accent transition">
-                     <option value="">— sem categoria —</option>
-                     {(cats ?? []).map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                   </select>
-                 </div>
-                 <div>
-                   <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Imagem de capa (URL)</label>
-                   <input value={editing.cover_image} onChange={(e) => setEditing({ ...editing, cover_image: e.target.value })} placeholder="https://..." className="mt-1.5 w-full px-4 py-3 rounded-xl border border-input bg-background focus:ring-2 focus:ring-accent transition" />
-                 </div>
-               </div>
- 
-               <div>
-                 <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Resumo (opcional)</label>
-                 <textarea value={editing.excerpt} onChange={(e) => setEditing({ ...editing, excerpt: e.target.value })} rows={2} className="mt-1.5 w-full px-4 py-3 rounded-xl border border-input bg-background focus:ring-2 focus:ring-accent transition" />
-               </div>
- 
-               <div>
-                 <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Conteúdo Completo</label>
-                 <textarea required value={editing.content} onChange={(e) => setEditing({ ...editing, content: e.target.value })} rows={8} className="mt-1.5 w-full px-4 py-3 rounded-xl border border-input bg-background focus:ring-2 focus:ring-accent transition" />
-               </div>
- 
-               <div className="flex flex-wrap gap-8 p-4 bg-muted/30 rounded-xl">
-                 <label className="flex items-center gap-3 cursor-pointer group">
-                   <input type="checkbox" checked={editing.published} onChange={(e) => setEditing({ ...editing, published: e.target.checked })} className="w-5 h-5 rounded border-input text-accent focus:ring-accent" />
-                   <span className="text-sm font-bold text-primary group-hover:text-accent transition">Publicar notícia</span>
-                 </label>
-                 <label className="flex items-center gap-3 cursor-pointer group">
-                   <input type="checkbox" checked={editing.featured} onChange={(e) => setEditing({ ...editing, featured: e.target.checked })} className="w-5 h-5 rounded border-input text-accent focus:ring-accent" />
-                   <span className="text-sm font-bold text-primary group-hover:text-accent transition">Destaque na Home</span>
-                 </label>
-               </div>
-             </div>
- 
-             <div className="p-6 bg-muted/20 border-t border-border flex gap-3">
-               <button type="button" onClick={() => setEditing(null)} className="flex-1 py-3 rounded-xl border border-border font-bold hover:bg-muted transition">Cancelar</button>
-               <button className="flex-[2] py-3 rounded-xl gradient-gold text-gold-foreground font-bold shadow-lg hover:scale-[1.02] active:scale-95 transition">Salvar Notícia</button>
-             </div>
-           </form>
-         </div>
-       )}
+        <ResponsiveModal
+          open={!!editing}
+          onOpenChange={(open) => !open && setEditing(null)}
+          title={editing?.id ? "Editar notícia" : "Nova notícia"}
+          className="max-w-2xl"
+        >
+          {editing && (
+            <form onSubmit={save} className="space-y-6">
+              <div className="p-6 pt-0 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Título</label>
+                    <input required value={editing.title} onChange={(e) => setEditing({ ...editing, title: e.target.value, slug: editing.slug || slugify(e.target.value) })} className="mt-1.5 w-full px-4 py-3 rounded-xl border border-input bg-background focus:ring-2 focus:ring-accent transition" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Slug (URL)</label>
+                    <input required value={editing.slug} onChange={(e) => setEditing({ ...editing, slug: slugify(e.target.value) })} className="mt-1.5 w-full px-4 py-3 rounded-xl border border-input bg-background focus:ring-2 focus:ring-accent transition" />
+                  </div>
+                </div>
 
-      {editing && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <form onSubmit={save} className="bg-card rounded-xl w-full max-w-2xl p-6 my-8 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display text-2xl text-primary">{editing.id ? "Editar notícia" : "Nova notícia"}</h2>
-              <button type="button" onClick={() => setEditing(null)}><X className="w-5 h-5" /></button>
-            </div>
-            <div className="space-y-3">
-              <div><label className="text-sm font-medium">Título</label>
-                <input required value={editing.title} onChange={(e) => setEditing({ ...editing, title: e.target.value, slug: editing.slug || slugify(e.target.value) })} className="mt-1 w-full px-3 py-2 rounded border border-input bg-background" /></div>
-              <div><label className="text-sm font-medium">Slug (URL)</label>
-                <input required value={editing.slug} onChange={(e) => setEditing({ ...editing, slug: slugify(e.target.value) })} className="mt-1 w-full px-3 py-2 rounded border border-input bg-background" /></div>
-              <div><label className="text-sm font-medium">Categoria</label>
-                <select value={editing.category_id} onChange={(e) => setEditing({ ...editing, category_id: e.target.value })} className="mt-1 w-full px-3 py-2 rounded border border-input bg-background">
-                  <option value="">— sem categoria —</option>
-                  {(cats ?? []).map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select></div>
-              <div><label className="text-sm font-medium">Imagem de capa (URL)</label>
-                <input value={editing.cover_image} onChange={(e) => setEditing({ ...editing, cover_image: e.target.value })} placeholder="https://..." className="mt-1 w-full px-3 py-2 rounded border border-input bg-background" /></div>
-              <div><label className="text-sm font-medium">Resumo</label>
-                <textarea value={editing.excerpt} onChange={(e) => setEditing({ ...editing, excerpt: e.target.value })} rows={2} className="mt-1 w-full px-3 py-2 rounded border border-input bg-background" /></div>
-              <div><label className="text-sm font-medium">Conteúdo</label>
-                <textarea required value={editing.content} onChange={(e) => setEditing({ ...editing, content: e.target.value })} rows={10} className="mt-1 w-full px-3 py-2 rounded border border-input bg-background" /></div>
-              <div className="flex gap-6">
-                <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={editing.published} onChange={(e) => setEditing({ ...editing, published: e.target.checked })} /> Publicada</label>
-                <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={editing.featured} onChange={(e) => setEditing({ ...editing, featured: e.target.checked })} /> Destaque na home</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Categoria</label>
+                    <select value={editing.category_id} onChange={(e) => setEditing({ ...editing, category_id: e.target.value })} className="mt-1.5 w-full px-4 py-3 rounded-xl border border-input bg-background focus:ring-2 focus:ring-accent transition">
+                      <option value="">— sem categoria —</option>
+                      {(cats ?? []).map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Imagem de capa (URL)</label>
+                    <input value={editing.cover_image} onChange={(e) => setEditing({ ...editing, cover_image: e.target.value })} placeholder="https://..." className="mt-1.5 w-full px-4 py-3 rounded-xl border border-input bg-background focus:ring-2 focus:ring-accent transition" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Resumo (opcional)</label>
+                  <textarea value={editing.excerpt} onChange={(e) => setEditing({ ...editing, excerpt: e.target.value })} rows={2} className="mt-1.5 w-full px-4 py-3 rounded-xl border border-input bg-background focus:ring-2 focus:ring-accent transition" />
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Conteúdo Completo</label>
+                  <textarea required value={editing.content} onChange={(e) => setEditing({ ...editing, content: e.target.value })} rows={8} className="mt-1.5 w-full px-4 py-3 rounded-xl border border-input bg-background focus:ring-2 focus:ring-accent transition" />
+                </div>
+
+                <div className="flex flex-wrap gap-8 p-4 bg-muted/30 rounded-xl">
+                  <label className="flex items-center gap-3 cursor-pointer group">
+                    <input type="checkbox" checked={editing.published} onChange={(e) => setEditing({ ...editing, published: e.target.checked })} className="w-5 h-5 rounded border-input text-accent focus:ring-accent" />
+                    <span className="text-sm font-bold text-primary group-hover:text-accent transition">Publicar notícia</span>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer group">
+                    <input type="checkbox" checked={editing.featured} onChange={(e) => setEditing({ ...editing, featured: e.target.checked })} className="w-5 h-5 rounded border-input text-accent focus:ring-accent" />
+                    <span className="text-sm font-bold text-primary group-hover:text-accent transition">Destaque na Home</span>
+                  </label>
+                </div>
               </div>
-              <button className="w-full py-3 rounded gradient-gold text-gold-foreground font-semibold mt-2">Salvar</button>
-            </div>
-          </form>
-        </div>
-      )}
+
+              <div className="p-6 pt-0 bg-muted/20 flex gap-3">
+                <button type="button" onClick={() => setEditing(null)} className="flex-1 py-3 rounded-xl border border-border font-bold hover:bg-muted transition">Cancelar</button>
+                <button className="flex-[2] py-3 rounded-xl gradient-gold text-gold-foreground font-bold shadow-lg hover:scale-[1.02] active:scale-95 transition">Salvar Notícia</button>
+              </div>
+            </form>
+          )}
+        </ResponsiveModal>
     </div>
   );
 }

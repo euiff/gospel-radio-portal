@@ -64,14 +64,16 @@ import { useRadio } from "@/lib/radio-context";
            {settings.whatsapp && (
              <a href={`https://wa.me/${settings.whatsapp}`} target="_blank" rel="noreferrer" 
                 className="w-10 h-10 rounded-full bg-white/5 hover:bg-gold hover:text-gold-foreground flex items-center justify-center transition active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
-               title="WhatsApp">
+                title="WhatsApp"
+                aria-label={`Falar com ${settings.station_name} no WhatsApp`}>
                <MessageCircle className="w-5 h-5" />
              </a>
            )}
            {settings.instagram && (
              <a href={settings.instagram} target="_blank" rel="noreferrer" 
                 className="w-10 h-10 rounded-full bg-white/5 hover:bg-gold hover:text-gold-foreground flex items-center justify-center transition active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
-               title="Instagram">
+                title="Instagram"
+                aria-label={`Seguir ${settings.station_name} no Instagram`}>
                <Instagram className="w-5 h-5" />
              </a>
            )}
@@ -79,14 +81,16 @@ import { useRadio } from "@/lib/radio-context";
              {settings.facebook && (
                <a href={settings.facebook} target="_blank" rel="noreferrer" 
                   className="w-10 h-10 rounded-full bg-white/5 hover:bg-gold hover:text-gold-foreground flex items-center justify-center transition active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
-                 title="Facebook">
+                  title="Facebook"
+                  aria-label={`Seguir ${settings.station_name} no Facebook`}>
                  <Facebook className="w-5 h-5" />
                </a>
              )}
              {settings.youtube && (
                <a href={settings.youtube} target="_blank" rel="noreferrer" 
                   className="w-10 h-10 rounded-full bg-white/5 hover:bg-gold hover:text-gold-foreground flex items-center justify-center transition active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
-                 title="YouTube">
+                  title="YouTube"
+                  aria-label={`Inscrever-se no canal da ${settings.station_name} no YouTube`}>
                  <Youtube className="w-5 h-5" />
                </a>
              )}
