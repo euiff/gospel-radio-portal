@@ -8,20 +8,21 @@ export const Route = createFileRoute("/admin/")({ component: Dashboard });
  function Dashboard() {
    const nav = useNavigate();
    const { data: stats, isLoading } = useQuery({
+     queryKey: ["admin-stats"],
+     queryFn: async () => {
+       const [news, published, programs, views] = await Promise.all([
+         supabase.from("news").select("id", { count: "exact", head: true }),
+         supabase.from("news").select("id", { count: "exact", head: true }).eq("published", true),
+         supabase.from("programs").select("id", { count: "exact", head: true }),
+         supabase.from("news").select("views"),
+       ]);
+       const totalViews = (views.data ?? []).reduce((s, n: any) => s + (n.views ?? 0), 0);
+       return { total: news.count ?? 0, published: published.count ?? 0, programs: programs.count ?? 0, views: totalViews };
+     },
+   });
+ 
    if (isLoading) return <div className="p-10 text-center text-muted-foreground">Carregando estatísticas...</div>;
  
-    queryKey: ["admin-stats"],
-    queryFn: async () => {
-      const [news, published, programs, views] = await Promise.all([
-        supabase.from("news").select("id", { count: "exact", head: true }),
-        supabase.from("news").select("id", { count: "exact", head: true }).eq("published", true),
-        supabase.from("programs").select("id", { count: "exact", head: true }),
-        supabase.from("news").select("views"),
-      ]);
-      const totalViews = (views.data ?? []).reduce((s, n: any) => s + (n.views ?? 0), 0);
-      return { total: news.count ?? 0, published: published.count ?? 0, programs: programs.count ?? 0, views: totalViews };
-    },
-  });
   const cards = [
     { label: "Total de notícias", value: stats?.total ?? 0, icon: Newspaper, to: "/admin/noticias" },
     { label: "Publicadas", value: stats?.published ?? 0, icon: Eye, to: "/admin/noticias" },
