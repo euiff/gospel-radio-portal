@@ -14,7 +14,11 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminSiteRouteImport } from './routes/admin/site'
+import { Route as AdminRadioRouteImport } from './routes/admin/radio'
+import { Route as AdminProgramacaoRouteImport } from './routes/admin/programacao'
 import { Route as AdminNoticiasRouteImport } from './routes/admin/noticias'
+import { Route as AdminCategoriasRouteImport } from './routes/admin/categorias'
 
 const ProgramacaoRoute = ProgramacaoRouteImport.update({
   id: '/programacao',
@@ -41,9 +45,29 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminSiteRoute = AdminSiteRouteImport.update({
+  id: '/site',
+  path: '/site',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminRadioRoute = AdminRadioRouteImport.update({
+  id: '/radio',
+  path: '/radio',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProgramacaoRoute = AdminProgramacaoRouteImport.update({
+  id: '/programacao',
+  path: '/programacao',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminNoticiasRoute = AdminNoticiasRouteImport.update({
   id: '/noticias',
   path: '/noticias',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCategoriasRoute = AdminCategoriasRouteImport.update({
+  id: '/categorias',
+  path: '/categorias',
   getParentRoute: () => AdminRoute,
 } as any)
 
@@ -52,14 +76,22 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/login': typeof LoginRoute
   '/programacao': typeof ProgramacaoRoute
+  '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/noticias': typeof AdminNoticiasRoute
+  '/admin/programacao': typeof AdminProgramacaoRoute
+  '/admin/radio': typeof AdminRadioRoute
+  '/admin/site': typeof AdminSiteRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/programacao': typeof ProgramacaoRoute
+  '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/noticias': typeof AdminNoticiasRoute
+  '/admin/programacao': typeof AdminProgramacaoRoute
+  '/admin/radio': typeof AdminRadioRoute
+  '/admin/site': typeof AdminSiteRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
@@ -68,7 +100,11 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/login': typeof LoginRoute
   '/programacao': typeof ProgramacaoRoute
+  '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/noticias': typeof AdminNoticiasRoute
+  '/admin/programacao': typeof AdminProgramacaoRoute
+  '/admin/radio': typeof AdminRadioRoute
+  '/admin/site': typeof AdminSiteRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -78,17 +114,34 @@ export interface FileRouteTypes {
     | '/admin'
     | '/login'
     | '/programacao'
+    | '/admin/categorias'
     | '/admin/noticias'
+    | '/admin/programacao'
+    | '/admin/radio'
+    | '/admin/site'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/programacao' | '/admin/noticias' | '/admin'
+  to:
+    | '/'
+    | '/login'
+    | '/programacao'
+    | '/admin/categorias'
+    | '/admin/noticias'
+    | '/admin/programacao'
+    | '/admin/radio'
+    | '/admin/site'
+    | '/admin'
   id:
     | '__root__'
     | '/'
     | '/admin'
     | '/login'
     | '/programacao'
+    | '/admin/categorias'
     | '/admin/noticias'
+    | '/admin/programacao'
+    | '/admin/radio'
+    | '/admin/site'
     | '/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -136,6 +189,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/site': {
+      id: '/admin/site'
+      path: '/site'
+      fullPath: '/admin/site'
+      preLoaderRoute: typeof AdminSiteRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/radio': {
+      id: '/admin/radio'
+      path: '/radio'
+      fullPath: '/admin/radio'
+      preLoaderRoute: typeof AdminRadioRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/programacao': {
+      id: '/admin/programacao'
+      path: '/programacao'
+      fullPath: '/admin/programacao'
+      preLoaderRoute: typeof AdminProgramacaoRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/noticias': {
       id: '/admin/noticias'
       path: '/noticias'
@@ -143,16 +217,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminNoticiasRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/categorias': {
+      id: '/admin/categorias'
+      path: '/categorias'
+      fullPath: '/admin/categorias'
+      preLoaderRoute: typeof AdminCategoriasRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
 interface AdminRouteChildren {
+  AdminCategoriasRoute: typeof AdminCategoriasRoute
   AdminNoticiasRoute: typeof AdminNoticiasRoute
+  AdminProgramacaoRoute: typeof AdminProgramacaoRoute
+  AdminRadioRoute: typeof AdminRadioRoute
+  AdminSiteRoute: typeof AdminSiteRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminCategoriasRoute: AdminCategoriasRoute,
   AdminNoticiasRoute: AdminNoticiasRoute,
+  AdminProgramacaoRoute: AdminProgramacaoRoute,
+  AdminRadioRoute: AdminRadioRoute,
+  AdminSiteRoute: AdminSiteRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
