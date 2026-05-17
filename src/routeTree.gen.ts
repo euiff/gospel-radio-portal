@@ -14,6 +14,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as NoticiaSlugRouteImport } from './routes/noticia/$slug'
 import { Route as CategoriaSlugRouteImport } from './routes/categoria/$slug'
 import { Route as AdminSiteRouteImport } from './routes/admin/site'
 import { Route as AdminRadioRouteImport } from './routes/admin/radio'
@@ -45,6 +46,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const NoticiaSlugRoute = NoticiaSlugRouteImport.update({
+  id: '/noticia/$slug',
+  path: '/noticia/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
   id: '/categoria/$slug',
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/admin/radio': typeof AdminRadioRoute
   '/admin/site': typeof AdminSiteRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
+  '/noticia/$slug': typeof NoticiaSlugRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/admin/radio': typeof AdminRadioRoute
   '/admin/site': typeof AdminSiteRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
+  '/noticia/$slug': typeof NoticiaSlugRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/admin/radio': typeof AdminRadioRoute
   '/admin/site': typeof AdminSiteRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
+  '/noticia/$slug': typeof NoticiaSlugRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
     | '/admin/radio'
     | '/admin/site'
     | '/categoria/$slug'
+    | '/noticia/$slug'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -141,6 +151,7 @@ export interface FileRouteTypes {
     | '/admin/radio'
     | '/admin/site'
     | '/categoria/$slug'
+    | '/noticia/$slug'
     | '/admin'
   id:
     | '__root__'
@@ -154,6 +165,7 @@ export interface FileRouteTypes {
     | '/admin/radio'
     | '/admin/site'
     | '/categoria/$slug'
+    | '/noticia/$slug'
     | '/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -163,6 +175,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   ProgramacaoRoute: typeof ProgramacaoRoute
   CategoriaSlugRoute: typeof CategoriaSlugRoute
+  NoticiaSlugRoute: typeof NoticiaSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -201,6 +214,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/noticia/$slug': {
+      id: '/noticia/$slug'
+      path: '/noticia/$slug'
+      fullPath: '/noticia/$slug'
+      preLoaderRoute: typeof NoticiaSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/categoria/$slug': {
       id: '/categoria/$slug'
@@ -273,6 +293,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   ProgramacaoRoute: ProgramacaoRoute,
   CategoriaSlugRoute: CategoriaSlugRoute,
+  NoticiaSlugRoute: NoticiaSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
