@@ -1,5 +1,4 @@
-import { createStart, createMiddleware } from "@tanstack/react-start";
-import { StartClient } from "@tanstack/react-router";
+import { createStart, createMiddleware, StartClient } from "@tanstack/react-start";
 import { createRoot } from "react-dom/client";
 import { getRouter } from "./router";
 
