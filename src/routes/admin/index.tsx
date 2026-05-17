@@ -6,6 +6,9 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/admin/")({ component: Dashboard });
 
  function Dashboard() {
+   const { data: stats, isLoading } = useQuery({
+   if (isLoading) return <div className="p-10 text-center text-muted-foreground">Carregando estatísticas...</div>;
+ 
    const nav = useNavigate();
   const { data: stats } = useQuery({
     queryKey: ["admin-stats"],
