@@ -4,7 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { Clock, Calendar } from "lucide-react";
 
 export const Route = createFileRoute("/programacao")({
-  head: () => ({ meta: [{ title: "Programação — Alternativa gospel" }] }),
+  head: ({ loaderData }) => {
+    const { radio } = (loaderData as any) || {};
+    const stationName = radio?.station_name || "Alternativa gospel";
+    return {
+      meta: [{ title: `Programação — ${stationName}` }],
+    };
+  },
   component: Programacao,
 });
 
