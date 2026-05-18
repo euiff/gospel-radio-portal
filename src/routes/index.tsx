@@ -6,7 +6,8 @@ import { useRadio } from "@/lib/radio-context";
 import { Play, Pause, ArrowRight, Clock } from "lucide-react";
 import { MessageCircle, Heart, Music } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { featuredNewsQuery, latestNewsQuery, type NewsItem } from "@/hooks/use-site-data";
+import { featuredNewsQuery, latestNewsQuery, siteSettingsQuery, type NewsItem } from "@/hooks/use-site-data";
+import { radioSettingsQueryOptions } from "@/lib/radio-context";
 import { supabase } from "@/integrations/supabase/client";
 
 // Lazy load secondary components to reduce initial bundle size
@@ -34,11 +35,38 @@ const programsTodayQueryOptions = (dow: number) =>
   });
 
 export const Route = createFileRoute("/")({
-  loader: ({ context: { queryClient } }) => {
+  loader: async ({ context: { queryClient } }) => {
     const dow = new Date().getDay();
-    queryClient.ensureQueryData(featuredNewsQuery);
-    queryClient.ensureQueryData(latestNewsQuery);
-    queryClient.ensureQueryData(programsTodayQueryOptions(dow));
+    const [radio, site] = await Promise.all([
+      queryClient.ensureQueryData(radioSettingsQueryOptions),
+      queryClient.ensureQueryData(siteSettingsQuery),
+      queryClient.ensureQueryData(featuredNewsQuery),
+      queryClient.ensureQueryData(latestNewsQuery),
+      queryClient.ensureQueryData(programsTodayQueryOptions(dow)),
+    ]);
+    return { radio, site };
+  },
+  head: ({ loaderData }) => {
+    const { radio, site } = loaderData || {};
+    const title = radio?.station_name 
+      ? `${radio.station_name} | ${radio.tagline || 'Portal de Notícias'}` 
+      : "Alternativa gospel";
+    const description = site?.site_description || radio?.tagline || "Portal de notícias e música cristã";
+    const ogImage = site?.logo_url || radio?.logo_url || "";
+
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:image", content: ogImage },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        { name: "twitter:image", content: ogImage },
+        { name: "twitter:card", content: "summary_large_image" },
+      ],
+    };
   },
   component: Home,
 });
