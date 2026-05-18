@@ -86,12 +86,12 @@ export function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           <div className="col-span-1 lg:col-span-1">
-            <div className="font-display text-3xl text-white font-bold leading-none">
+            <div className="font-display text-3xl text-white font-bold leading-none flex items-center">
               {hydratedSiteSettings?.logo_url ? (
                 <img
                   src={hydratedSiteSettings.logo_url}
                   alt="Logo"
-                  className="h-12 w-auto object-contain filter brightness-0 invert"
+                  className="h-16 md:h-24 w-auto max-w-[200px] md:max-w-[280px] object-contain filter brightness-0 invert transition-all hover:opacity-100 opacity-90"
                 />
               ) : (
                 <span className="flex items-center gap-1">{stationName}</span>

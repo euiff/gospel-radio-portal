@@ -106,12 +106,12 @@ export function Header() {
   return (
     <header className="bg-background border-b border-border sticky top-0 z-40 lg:relative lg:z-auto">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
-        <Link to="/" className="font-display text-2xl font-bold text-primary shrink-0">
+        <Link to="/" className="font-display text-2xl md:text-3xl font-bold text-primary shrink-0 flex items-center h-full">
           {hydratedSiteSettings?.logo_url ? (
             <img
               src={hydratedSiteSettings.logo_url}
               alt="Logo"
-              className="h-10 w-auto object-contain"
+              className="h-14 md:h-20 w-auto max-w-[180px] md:max-w-[240px] object-contain transition-all duration-300 hover:scale-105"
             />
           ) : (
             <span className="flex items-center gap-1">{stationName}</span>
