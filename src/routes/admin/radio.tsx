@@ -13,6 +13,7 @@ const fields: Array<{
   type?: string;
   placeholder?: string;
   hint?: string;
+  aspect?: number;
 }> = [
   { key: "station_name", label: "Nome da rádio" },
   { key: "tagline", label: "Slogan" },
@@ -28,8 +29,8 @@ const fields: Array<{
     placeholder: "https://api.suaradio.com/nowplaying",
     hint: "URL que retorna JSON com campo 'title' ou 'song'",
   },
-  { key: "logo_url", label: "Logo da Rádio", type: "image" },
-  { key: "cover_url", label: "Capa do Player", type: "image" },
+  { key: "logo_url", label: "Logo da Rádio", type: "image", aspect: 1 },
+  { key: "cover_url", label: "Capa do Player", type: "image", aspect: 1.777 },
   {
     key: "whatsapp",
     label: "WhatsApp",
@@ -88,6 +89,7 @@ function RadioSettings() {
                 label={f.label}
                 value={data[f.key] ?? ""}
                 onChange={(url) => setData({ ...data, [f.key]: url })}
+                aspect={(f as any).aspect}
               />
             ) : (
               <>

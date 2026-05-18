@@ -79,7 +79,7 @@ export function Header() {
     queryFn: async () => {
       const { data } = await supabase
         .from("site_settings")
-        .select("logo_url, navigation_menu")
+        .select("logo_url, navigation_menu, logo_settings")
         .limit(1)
         .maybeSingle();
       return data;
@@ -97,17 +97,25 @@ export function Header() {
   return (
     <header className="bg-background border-b border-border sticky top-0 z-40 lg:relative lg:z-auto">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
-        <Link to="/" className="font-display text-2xl md:text-3xl font-bold text-primary shrink-0 flex items-center h-full">
-          {siteSettings?.logo_url ? (
-            <img
-              src={siteSettings.logo_url}
-              alt="Logo"
-              className="h-14 md:h-20 w-auto max-w-[180px] md:max-w-[240px] object-contain transition-all duration-300 hover:scale-105"
-            />
-          ) : (
-            <span className="flex items-center gap-1">{stationName}</span>
-          )}
-        </Link>
+        {(() => {
+          const logoSettings = (siteSettings as any)?.logo_settings || { mobile: "small", desktop: "medium" };
+          const mobileHeight = logoSettings.mobile === 'small' ? 'h-8' : logoSettings.mobile === 'large' ? 'h-14' : 'h-10';
+          const desktopHeight = logoSettings.desktop === 'small' ? 'md:h-12' : logoSettings.desktop === 'large' ? 'md:h-24' : 'md:h-16';
+
+          return (
+            <Link to="/" className="font-display text-2xl md:text-3xl font-bold text-primary shrink-0 flex items-center h-full">
+              {siteSettings?.logo_url ? (
+                <img
+                  src={siteSettings.logo_url}
+                  alt="Logo"
+                  className={`${mobileHeight} ${desktopHeight} w-auto max-w-[200px] md:max-w-[300px] object-contain transition-all duration-300 hover:scale-105`}
+                />
+              ) : (
+                <span className="flex items-center gap-1">{stationName}</span>
+              )}
+            </Link>
+          );
+        })()}
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-1">
