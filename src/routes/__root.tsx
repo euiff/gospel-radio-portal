@@ -144,10 +144,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       site?.site_description ||
       radio?.tagline ||
       "Ouça a melhor música gospel ao vivo e acompanhe as notícias do mundo cristão.";
-    const logoUrl =
-      site?.logo_url ||
-      radio?.logo_url ||
-      "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/07e6355f-44f7-4464-8a3d-991a257d1c13/id-preview-7d19905f--200fef07-f222-45f8-bb31-f063c40ad46e.lovable.app-1778977090172.png";
+    const logoUrl = site?.logo_url || radio?.logo_url;
+    const fallbackIcon = "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/07e6355f-44f7-4464-8a3d-991a257d1c13/id-preview-7d19905f--200fef07-f222-45f8-bb31-f063c40ad46e.lovable.app-1778977090172.png";
 
     return {
       meta: [
@@ -159,13 +157,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         { name: "twitter:title", content: title },
         { property: "og:description", content: description },
         { name: "twitter:description", content: description },
-        { property: "og:image", content: logoUrl },
-        { name: "twitter:image", content: logoUrl },
+        { property: "og:image", content: logoUrl || fallbackIcon },
+        { name: "twitter:image", content: logoUrl || fallbackIcon },
         { name: "twitter:card", content: "summary_large_image" },
       ],
       links: [
         { rel: "stylesheet", href: appCss },
-        { rel: "icon", href: logoUrl },
+        { rel: "icon", href: logoUrl || fallbackIcon },
       ],
     };
   },
