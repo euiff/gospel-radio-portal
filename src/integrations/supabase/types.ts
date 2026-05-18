@@ -301,6 +301,7 @@ export type Database = {
           hero_subtitle: string | null
           hero_title: string | null
           id: string
+          logo_settings: Json | null
           logo_url: string | null
           navigation_menu: Json | null
           primary_color: string | null
@@ -314,6 +315,7 @@ export type Database = {
           hero_subtitle?: string | null
           hero_title?: string | null
           id?: string
+          logo_settings?: Json | null
           logo_url?: string | null
           navigation_menu?: Json | null
           primary_color?: string | null
@@ -327,6 +329,7 @@ export type Database = {
           hero_subtitle?: string | null
           hero_title?: string | null
           id?: string
+          logo_settings?: Json | null
           logo_url?: string | null
           navigation_menu?: Json | null
           primary_color?: string | null
