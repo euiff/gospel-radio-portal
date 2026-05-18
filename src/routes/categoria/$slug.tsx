@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, queryOptions } from "@tanstack/react-query";
+import { radioSettingsQueryOptions } from "@/lib/radio-context";
 import { supabase } from "@/integrations/supabase/client";
 
 const categoryQuery = (slug: string) =>
@@ -10,16 +11,22 @@ const categoryQuery = (slug: string) =>
   });
 
 export const Route = createFileRoute("/categoria/$slug")({
-  loader: ({ params: { slug }, context: { queryClient } }) =>
-    queryClient.ensureQueryData(categoryQuery(slug)),
+  loader: async ({ params: { slug }, context: { queryClient } }) => {
+    const [category, radio] = await Promise.all([
+      queryClient.ensureQueryData(categoryQuery(slug)),
+      queryClient.ensureQueryData(radioSettingsQueryOptions),
+    ]);
+    return { category, radio };
+  },
   head: ({ loaderData, params: { slug } }) => {
-    const name = loaderData?.name || slug;
+    const name = loaderData?.category?.name || slug;
+    const stationName = loaderData?.radio?.station_name || "Alternativa gospel";
     return {
       meta: [
-        { title: `Categoria: ${name}` },
+        { title: `${name} | ${stationName}` },
         {
           name: "description",
-          content: loaderData?.description || `Confira as últimas notícias sobre ${name}`,
+          content: loaderData?.category?.description || `Confira as últimas notícias sobre ${name}`,
         },
       ],
     };
