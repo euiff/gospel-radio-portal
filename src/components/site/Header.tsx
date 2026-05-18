@@ -88,28 +88,21 @@ export function Header() {
     },
   });
 
-  const hydratedSiteSettings = hasHydrated ? siteSettings : null;
-  const stationName = hasHydrated
-    ? radioSettings?.station_name || FALLBACK_STATION_NAME
-    : FALLBACK_STATION_NAME;
-  const nav = (hydratedSiteSettings?.navigation_menu as NavItem[] | null) || defaultNav;
+  const stationName = radioSettings?.station_name || FALLBACK_STATION_NAME;
+  const nav = (siteSettings?.navigation_menu as NavItem[] | null) || defaultNav;
 
   // Close menu on path change
   useEffect(() => {
     setIsOpen(false);
   }, [path]);
 
-  useEffect(() => {
-    setHasHydrated(true);
-  }, []);
-
   return (
     <header className="bg-background border-b border-border sticky top-0 z-40 lg:relative lg:z-auto">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
         <Link to="/" className="font-display text-2xl md:text-3xl font-bold text-primary shrink-0 flex items-center h-full">
-          {hydratedSiteSettings?.logo_url ? (
+          {siteSettings?.logo_url ? (
             <img
-              src={hydratedSiteSettings.logo_url}
+              src={siteSettings.logo_url}
               alt="Logo"
               className="h-14 md:h-20 w-auto max-w-[180px] md:max-w-[240px] object-contain transition-all duration-300 hover:scale-105"
             />
