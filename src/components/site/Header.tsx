@@ -74,8 +74,6 @@ export function Header() {
   const { settings: radioSettings } = useRadio();
   const path = useRouterState({ select: (r) => r.location.pathname });
   const [isOpen, setIsOpen] = useState(false);
-  const [hasHydrated, setHasHydrated] = useState(false);
-
   const { data: siteSettings } = useQuery({
     queryKey: ["site-settings-header"],
     queryFn: async () => {
