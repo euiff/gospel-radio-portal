@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Plus, Trash2 } from "lucide-react";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 export const Route = createFileRoute("/admin/site")({ component: SiteSettings });
 
@@ -11,7 +12,7 @@ const sections = [
     title: "Identidade Visual & Cores",
     fields: [
       { key: "site_name", label: "Nome do Portal / Rádio" },
-      { key: "logo_url", label: "URL do Logo (SVG ou PNG transparente recomendado)" },
+      { key: "logo_url", label: "Logo do Site", type: "image" },
       { key: "primary_color", label: "Cor Primária (Fundo, Menus)", type: "color" },
       { key: "accent_color", label: "Cor de Destaque (Botões, Links)", type: "color" },
     ],
@@ -99,33 +100,46 @@ function SiteSettings() {
               {section.fields.map((f) => (
                 <div
                   key={f.key}
-                  className={f.type === "color" ? "col-span-1" : "col-span-1 md:col-span-2"}
+                  className={f.type === "color" || f.type === "image" ? "col-span-1" : "col-span-1 md:col-span-2"}
                 >
-                  <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5 block">
-                    {f.label}
-                  </label>
-                  {f.type === "color" ? (
-                    <div className="flex items-center gap-3">
+                  {f.type === "image" ? (
+                    <ImageUpload
+                      label={f.label}
+                      value={data[f.key] ?? ""}
+                      onChange={(url) => setData({ ...data, [f.key]: url })}
+                    />
+                  ) : f.type === "color" ? (
+                    <>
+                      <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5 block">
+                        {f.label}
+                      </label>
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="color"
+                          value={data[f.key] ?? "#000000"}
+                          onChange={(e) => setData({ ...data, [f.key]: e.target.value })}
+                          className="w-12 h-12 rounded-lg border-2 border-border cursor-pointer overflow-hidden p-0"
+                        />
+                        <input
+                          type="text"
+                          value={data[f.key] ?? ""}
+                          onChange={(e) => setData({ ...data, [f.key]: e.target.value })}
+                          className="flex-1 px-4 py-3 rounded-xl border border-input bg-background font-mono text-sm uppercase"
+                          placeholder="#000000"
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5 block">
+                        {f.label}
+                      </label>
                       <input
-                        type="color"
-                        value={data[f.key] ?? "#000000"}
-                        onChange={(e) => setData({ ...data, [f.key]: e.target.value })}
-                        className="w-12 h-12 rounded-lg border-2 border-border cursor-pointer overflow-hidden p-0"
-                      />
-                      <input
-                        type="text"
                         value={data[f.key] ?? ""}
                         onChange={(e) => setData({ ...data, [f.key]: e.target.value })}
-                        className="flex-1 px-4 py-3 rounded-xl border border-input bg-background font-mono text-sm uppercase"
-                        placeholder="#000000"
+                        className="w-full px-4 py-3 rounded-xl border border-input bg-background focus:ring-2 focus:ring-accent transition shadow-sm"
                       />
-                    </div>
-                  ) : (
-                    <input
-                      value={data[f.key] ?? ""}
-                      onChange={(e) => setData({ ...data, [f.key]: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-input bg-background focus:ring-2 focus:ring-accent transition shadow-sm"
-                    />
+                    </>
                   )}
                 </div>
               ))}
