@@ -1,30 +1,57 @@
- import { useState } from "react";
+ import { useState, useRef } from "react";
  import { supabase } from "@/integrations/supabase/client";
  import { Loader2, Upload, X } from "lucide-react";
  import { toast } from "sonner";
+ import { ImageCropperModal } from "./ImageCropperModal";
  
  interface ImageUploadProps {
    value: string;
    onChange: (url: string) => void;
    label: string;
+   aspect?: number;
+   enableCropper?: boolean;
  }
  
- export function ImageUpload({ value, onChange, label }: ImageUploadProps) {
+ export function ImageUpload({ 
+   value, 
+   onChange, 
+   label, 
+   aspect = 1,
+   enableCropper = true 
+ }: ImageUploadProps) {
    const [uploading, setUploading] = useState(false);
+   const [tempImage, setTempImage] = useState<string | null>(null);
+   const [isCropperOpen, setIsCropperOpen] = useState(false);
+   const fileInputRef = useRef<HTMLInputElement>(null);
  
-   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+   const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
      const file = e.target.files?.[0];
      if (!file) return;
  
+     if (enableCropper) {
+       const reader = new FileReader();
+       reader.onload = () => {
+         setTempImage(reader.result as string);
+         setIsCropperOpen(true);
+       };
+       reader.readAsDataURL(file);
+     } else {
+       uploadFile(file);
+     }
+   };
+
+   const uploadFile = async (file: File | Blob) => {
      try {
        setUploading(true);
-       const fileExt = file.name.split(".").pop();
+       const fileExt = (file as File).name?.split(".").pop() || "png";
        const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
        const filePath = `${fileName}`;
  
        const { error: uploadError, data } = await supabase.storage
          .from("site-assets")
-         .upload(filePath, file);
+         .upload(filePath, file, {
+           contentType: (file as File).type || 'image/png'
+         });
  
        if (uploadError) throw uploadError;
  
@@ -41,6 +68,13 @@
      }
    };
  
+   const handleCropComplete = (croppedImage: Blob) => {
+     uploadFile(croppedImage);
+     if (fileInputRef.current) {
+       fileInputRef.current.value = "";
+     }
+   };
+
    return (
      <div className="space-y-2">
        <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground block">
@@ -73,10 +107,11 @@
                </>
              )}
              <input
+               ref={fileInputRef}
                type="file"
                className="hidden"
                accept="image/*"
-               onChange={handleUpload}
+               onChange={onFileSelect}
                disabled={uploading}
              />
            </label>
@@ -90,6 +125,16 @@
            />
          </div>
        </div>
+
+       {tempImage && (
+         <ImageCropperModal
+           image={tempImage}
+           open={isCropperOpen}
+           onOpenChange={setIsCropperOpen}
+           onCropComplete={handleCropComplete}
+           aspect={aspect}
+         />
+       )}
      </div>
    );
  }
