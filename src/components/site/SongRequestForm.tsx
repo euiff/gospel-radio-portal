@@ -53,9 +53,9 @@ export function SongRequestForm() {
       toast.success("Pedido enviado! Sua música foi solicitada com sucesso.");
 
       // WhatsApp Integration
-      const whatsappNumber = settings?.whatsapp?.replace(/\D/g, "") || "5511999999999"; 
+      const whatsappNumber = settings?.whatsapp?.replace(/\D/g, "") || "5511999999999";
       const text = encodeURIComponent(
-        `*Pedido de Música - Portal Gospel*\n\n*Nome:* ${values.userName}\n*Música:* ${values.songTitle}\n*Artista:* ${values.artist}\n*Mensagem:* ${values.message || "Sem mensagem"}`
+        `*Pedido de Música - Portal Gospel*\n\n*Nome:* ${values.userName}\n*Música:* ${values.songTitle}\n*Artista:* ${values.artist}\n*Mensagem:* ${values.message || "Sem mensagem"}`,
       );
       window.open(`https://wa.me/${whatsappNumber}?text=${text}`, "_blank");
 
@@ -124,10 +124,10 @@ export function SongRequestForm() {
               <FormItem>
                 <FormLabel>Oferecimento/Mensagem (Opcional)</FormLabel>
                 <FormControl>
-                  <Textarea 
-                    placeholder="Para quem você oferece essa música?" 
+                  <Textarea
+                    placeholder="Para quem você oferece essa música?"
                     className="resize-none"
-                    {...field} 
+                    {...field}
                   />
                 </FormControl>
                 <FormMessage />

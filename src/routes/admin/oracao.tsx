@@ -1,7 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Heart, Check, X, Trash2 } from "lucide-react";
@@ -23,11 +30,8 @@ function AdminPrayer() {
   });
 
   const updateStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string, status: string }) => {
-      const { error } = await supabase
-        .from("prayer_requests")
-        .update({ status })
-        .eq("id", id);
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const { error } = await supabase.from("prayer_requests").update({ status }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -53,7 +57,9 @@ function AdminPrayer() {
     <div className="space-y-6">
       <header>
         <h1 className="font-display text-4xl text-primary">Mural de Oração</h1>
-        <p className="text-muted-foreground">Modere os pedidos de oração antes que apareçam no site.</p>
+        <p className="text-muted-foreground">
+          Modere os pedidos de oração antes que apareçam no site.
+        </p>
       </header>
 
       <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
@@ -72,25 +78,49 @@ function AdminPrayer() {
                 <TableCell className="font-medium">{p.user_name}</TableCell>
                 <TableCell className="max-w-md truncate">{p.content}</TableCell>
                 <TableCell>
-                  <Badge variant={p.status === 'approved' ? 'default' : p.status === 'pending' ? 'secondary' : 'destructive'}>
-                    {p.status === 'approved' ? 'Aprovado' : p.status === 'pending' ? 'Pendente' : 'Arquivado'}
+                  <Badge
+                    variant={
+                      p.status === "approved"
+                        ? "default"
+                        : p.status === "pending"
+                          ? "secondary"
+                          : "destructive"
+                    }
+                  >
+                    {p.status === "approved"
+                      ? "Aprovado"
+                      : p.status === "pending"
+                        ? "Pendente"
+                        : "Arquivado"}
                   </Badge>
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-2">
-                    {p.status !== 'approved' && (
-                      <Button size="icon" variant="outline" onClick={() => updateStatus.mutate({ id: p.id, status: 'approved' })}>
+                    {p.status !== "approved" && (
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={() => updateStatus.mutate({ id: p.id, status: "approved" })}
+                      >
                         <Check className="w-4 h-4 text-green-500" />
                       </Button>
                     )}
-                    {p.status !== 'archived' && (
-                      <Button size="icon" variant="outline" onClick={() => updateStatus.mutate({ id: p.id, status: 'archived' })}>
+                    {p.status !== "archived" && (
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={() => updateStatus.mutate({ id: p.id, status: "archived" })}
+                      >
                         <X className="w-4 h-4 text-orange-500" />
                       </Button>
                     )}
-                    <Button size="icon" variant="destructive" onClick={() => {
-                      if(confirm("Deseja excluir permanentemente?")) deleteRequest.mutate(p.id);
-                    }}>
+                    <Button
+                      size="icon"
+                      variant="destructive"
+                      onClick={() => {
+                        if (confirm("Deseja excluir permanentemente?")) deleteRequest.mutate(p.id);
+                      }}
+                    >
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>

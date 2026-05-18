@@ -15,12 +15,18 @@ export interface NewsItem {
 export const featuredNewsQuery = queryOptions({
   queryKey: ["news", "featured"],
   queryFn: async () => {
-    const { data, error } = await supabase.from("news")
-      .select("id,slug,title,excerpt,cover_image,published_at,featured,category:categories(name,slug)")
-      .eq("published", true).eq("featured", true)
-      .order("published_at", { ascending: false }).limit(1).maybeSingle();
+    const { data, error } = await supabase
+      .from("news")
+      .select(
+        "id,slug,title,excerpt,cover_image,published_at,featured,category:categories(name,slug)",
+      )
+      .eq("published", true)
+      .eq("featured", true)
+      .order("published_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
     if (error) {
-      if (error.code === 'PGRST303' || error.message?.includes('JWT expired')) {
+      if (error.code === "PGRST303" || error.message?.includes("JWT expired")) {
         console.warn("Supabase JWT expired in featuredNewsQuery");
         return null;
       }
@@ -33,11 +39,16 @@ export const featuredNewsQuery = queryOptions({
 export const latestNewsQuery = queryOptions({
   queryKey: ["news", "latest"],
   queryFn: async () => {
-    const { data, error } = await supabase.from("news")
-      .select("id,slug,title,excerpt,cover_image,published_at,featured,category:categories(name,slug)")
-      .eq("published", true).order("published_at", { ascending: false }).limit(6);
+    const { data, error } = await supabase
+      .from("news")
+      .select(
+        "id,slug,title,excerpt,cover_image,published_at,featured,category:categories(name,slug)",
+      )
+      .eq("published", true)
+      .order("published_at", { ascending: false })
+      .limit(6);
     if (error) {
-      if (error.code === 'PGRST303' || error.message?.includes('JWT expired')) {
+      if (error.code === "PGRST303" || error.message?.includes("JWT expired")) {
         console.warn("Supabase JWT expired in latestNewsQuery");
         return [];
       }
