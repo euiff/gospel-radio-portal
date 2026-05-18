@@ -61,8 +61,6 @@ function FooterNavLink({ item }: { item: NavItem }) {
 
 export function Footer() {
   const { settings: radioSettings } = useRadio();
-  const [hasHydrated, setHasHydrated] = useState(false);
-
   const { data: siteSettings } = useQuery({
     queryKey: ["site-settings-footer"],
     queryFn: async () => {
@@ -71,15 +69,8 @@ export function Footer() {
     },
   });
 
-  useEffect(() => {
-    setHasHydrated(true);
-  }, []);
-
-  const hydratedSiteSettings = hasHydrated ? siteSettings : null;
-  const stationName = hasHydrated
-    ? radioSettings?.station_name || FALLBACK_STATION_NAME
-    : FALLBACK_STATION_NAME;
-  const nav = (hydratedSiteSettings?.navigation_menu as NavItem[] | null) || [];
+  const stationName = radioSettings?.station_name || FALLBACK_STATION_NAME;
+  const nav = (siteSettings?.navigation_menu as NavItem[] | null) || [];
 
   return (
     <footer className="gradient-deep text-white/80 mt-20 pt-16 pb-8">
@@ -87,9 +78,9 @@ export function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           <div className="col-span-1 lg:col-span-1">
             <div className="font-display text-3xl text-white font-bold leading-none flex items-center">
-              {hydratedSiteSettings?.logo_url ? (
+              {siteSettings?.logo_url ? (
                 <img
-                  src={hydratedSiteSettings.logo_url}
+                  src={siteSettings.logo_url}
                   alt="Logo"
                   className="h-16 md:h-24 w-auto max-w-[200px] md:max-w-[280px] object-contain filter brightness-0 invert transition-all hover:opacity-100 opacity-90"
                 />
@@ -98,8 +89,8 @@ export function Footer() {
               )}
             </div>
             <p className="text-sm mt-4 text-white/60 leading-relaxed max-w-xs">
-              {hydratedSiteSettings?.site_description ||
-                (hasHydrated ? radioSettings?.tagline : null) ||
+              {siteSettings?.site_description ||
+                radioSettings?.tagline ||
                 "Levando a palavra de Deus e o melhor do louvor para o seu coração, 24 horas por dia."}
             </p>
           </div>
@@ -207,10 +198,10 @@ export function Footer() {
 
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] md:text-xs text-white/30 uppercase tracking-widest font-medium">
           <div>
-            {hydratedSiteSettings?.footer_text ? (
+            {siteSettings?.footer_text ? (
               <span
                 dangerouslySetInnerHTML={{
-                  __html: hydratedSiteSettings.footer_text.replace("{year}", CURRENT_YEAR),
+                  __html: siteSettings.footer_text.replace("{year}", CURRENT_YEAR),
                 }}
               />
             ) : (
