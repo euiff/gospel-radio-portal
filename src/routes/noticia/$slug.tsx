@@ -55,7 +55,6 @@ function NewsPage() {
     }
   }, [newsId]);
 
-  if (isLoading) return <div className="container mx-auto py-20 text-center">Carregando…</div>;
   if (!data)
     return <div className="container mx-auto py-20 text-center">Notícia não encontrada.</div>;
 
