@@ -35,16 +35,21 @@ export const Route = createFileRoute("/noticia/$slug")({
     const title = `${news.title} | ${stationName}`;
     const description = news.excerpt || news.title;
 
+    // Tenta encontrar a primeira imagem no conteúdo se não houver imagem de capa
+    const contentImageMatch = news.content?.match(/https?:\/\/[^\s"'<>]+\.(?:png|jpg|jpeg|gif|webp)/i);
+    const ogImage = news.cover_image || (contentImageMatch ? contentImageMatch[0] : radio?.logo_url);
+
     return {
       meta: [
         { title },
         { name: "description", content: description },
         { property: "og:title", content: title },
         { property: "og:description", content: description },
-        { property: "og:image", content: news.cover_image || "" },
+        { property: "og:image", content: ogImage || "" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description },
-        { name: "twitter:image", content: news.cover_image || "" },
+        { name: "twitter:image", content: ogImage || "" },
+        { name: "twitter:card", content: "summary_large_image" },
       ],
     };
   },
