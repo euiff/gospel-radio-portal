@@ -13,6 +13,7 @@ const fields: Array<{
   type?: string;
   placeholder?: string;
   hint?: string;
+  aspect?: number;
 }> = [
   { key: "station_name", label: "Nome da rádio" },
   { key: "tagline", label: "Slogan" },
