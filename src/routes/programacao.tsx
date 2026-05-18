@@ -3,10 +3,15 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Clock, Calendar } from "lucide-react";
 
+import { radioSettingsQueryOptions } from "@/lib/radio-context";
+
 export const Route = createFileRoute("/programacao")({
+  loader: async ({ context: { queryClient } }) => {
+    const radio = await queryClient.ensureQueryData(radioSettingsQueryOptions);
+    return { radio };
+  },
   head: ({ loaderData }) => {
-    const { radio } = (loaderData as any) || {};
-    const stationName = radio?.station_name || "Alternativa gospel";
+    const stationName = loaderData?.radio?.station_name || "Alternativa gospel";
     return {
       meta: [{ title: `Programação — ${stationName}` }],
     };

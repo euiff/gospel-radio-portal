@@ -40,12 +40,6 @@ export const Route = createFileRoute("/")({
     queryClient.ensureQueryData(latestNewsQuery);
     queryClient.ensureQueryData(programsTodayQueryOptions(dow));
   },
-  head: ({ loaderData }) => {
-    const { radio } = (loaderData as any) || {};
-    return {
-      meta: [{ title: radio?.station_name || "Alternativa gospel" }],
-    };
-  },
   component: Home,
 });
 
