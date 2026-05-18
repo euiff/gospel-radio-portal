@@ -2,7 +2,6 @@ import { Link } from "@tanstack/react-router";
 import { useRadio } from "@/lib/radio-context";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
 
 type NavItem = { to?: string; label?: string };
 
