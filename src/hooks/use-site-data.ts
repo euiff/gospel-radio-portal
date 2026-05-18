@@ -4,7 +4,7 @@ export const siteSettingsQuery = queryOptions({
   queryFn: async () => {
     const { data, error } = await supabase
       .from("site_settings")
-      .select("*")
+      .select("*, logo_settings")
       .limit(1)
       .maybeSingle();
     if (error) {
