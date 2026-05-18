@@ -62,7 +62,7 @@ function PublicNavLink({ item, className }: { item: NavItem; className: string }
               <img src={siteSettings.logo_url} alt="Logo" className="h-10 w-auto object-contain" />
             ) : (
               <span className="flex items-center gap-1">
-                {radioSettings?.station_name || "Rádio Gospel"}
+                {radioSettings?.station_name || "Alternativa gospel"}
               </span>
             )}
           </Link>
@@ -132,7 +132,7 @@ function PublicNavLink({ item, className }: { item: NavItem; className: string }
                      )}
                    </nav>
                     <div className="p-6 text-center text-xs text-muted-foreground border-t border-border">
-                      {radioSettings?.station_name || "Rádio Gospel"} © {new Date().getFullYear()}
+                      {radioSettings?.station_name || "Alternativa gospel"} © {new Date().getFullYear()}
                     </div>
                  </div>
                </SheetContent>

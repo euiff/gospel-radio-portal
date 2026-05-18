@@ -106,7 +106,7 @@ function FooterNavLink({ item }: { item: NavItem }) {
              {siteSettings?.footer_text ? (
                <span dangerouslySetInnerHTML={{ __html: siteSettings.footer_text.replace('{year}', new Date().getFullYear().toString()) }} />
              ) : (
-               <>© {new Date().getFullYear()} {radioSettings?.station_name || "Rádio Gospel"}.</>
+                <>© {new Date().getFullYear()} {radioSettings?.station_name || "Alternativa gospel"}.</>
              )}
            </div>
           <div className="flex items-center gap-6">
