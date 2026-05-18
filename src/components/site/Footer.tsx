@@ -110,7 +110,7 @@ export function Footer() {
             </h4>
             <ul className="space-y-4 text-sm">
               {nav.length > 0 ? (
-                nav.map((item: any, idx: number) => (
+                nav.map((item, idx) => (
                   <li key={idx}>
                     <FooterNavLink item={item} />
                   </li>
