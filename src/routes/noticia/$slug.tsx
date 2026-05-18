@@ -1,25 +1,48 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, queryOptions } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Calendar } from "lucide-react";
 
-export const Route = createFileRoute("/noticia/$slug")({ component: NewsPage });
-
-function NewsPage() {
-  const { slug } = Route.useParams();
-  const { data, isLoading } = useQuery({
+const newsDetailQuery = (slug: string) =>
+  queryOptions({
     queryKey: ["news", slug],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("news")
         .select("*,category:categories(name,slug)")
         .eq("slug", slug)
         .eq("published", true)
         .maybeSingle();
+      if (error) throw error;
       return data;
     },
   });
+
+export const Route = createFileRoute("/noticia/$slug")({
+  loader: ({ params: { slug }, context: { queryClient } }) =>
+    queryClient.ensureQueryData(newsDetailQuery(slug)),
+  head: ({ loaderData, params: { slug } }) => {
+    if (!loaderData) return { title: "Notícia não encontrada" };
+    return {
+      meta: [
+        { title: `${loaderData.title} | Notícias` },
+        { name: "description", content: loaderData.excerpt || loaderData.title },
+        { property: "og:title", content: loaderData.title },
+        { property: "og:description", content: loaderData.excerpt || loaderData.title },
+        { property: "og:image", content: loaderData.cover_image || "" },
+        { name: "twitter:title", content: loaderData.title },
+        { name: "twitter:description", content: loaderData.excerpt || loaderData.title },
+        { name: "twitter:image", content: loaderData.cover_image || "" },
+      ],
+    };
+  },
+  component: NewsPage,
+});
+
+function NewsPage() {
+  const { slug } = Route.useParams();
+  const { data } = useQuery(newsDetailQuery(slug));
 
   const newsId = data?.id;
   useEffect(() => {
