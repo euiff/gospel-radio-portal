@@ -55,7 +55,8 @@ export function RadioProvider({ children }: { children: ReactNode }) {
   const { data: settings = null } = useQuery(radioSettingsQueryOptions);
 
   const [nowPlaying, setNowPlaying] = useState<string | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+   const [isPlaying, setIsPlaying] = useState(false);
+   const hasAttemptedAutoplay = useRef(false);
   const [volume, setVolumeState] = useState(0.8);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -87,14 +88,25 @@ export function RadioProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(interval);
   }, [settings?.api_now_playing]);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (!audioRef.current) {
-      audioRef.current = new Audio();
-      audioRef.current.preload = "none";
-    }
-    if (settings?.stream_url) audioRef.current.src = settings.stream_url;
-  }, [settings?.stream_url]);
+   useEffect(() => {
+     if (typeof window === "undefined") return;
+     if (!audioRef.current) {
+       audioRef.current = new Audio();
+       audioRef.current.preload = "auto";
+     }
+     if (settings?.stream_url) {
+       audioRef.current.src = settings.stream_url;
+       
+       if (!hasAttemptedAutoplay.current) {
+         hasAttemptedAutoplay.current = true;
+         audioRef.current.play()
+           .then(() => setIsPlaying(true))
+           .catch((e) => {
+             console.debug("Autoplay blocked by browser, waiting for user interaction.", e);
+           });
+       }
+     }
+   }, [settings?.stream_url]);
 
   useEffect(() => {
     if (audioRef.current) audioRef.current.volume = volume;
