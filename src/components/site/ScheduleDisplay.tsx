@@ -43,16 +43,14 @@ export function ScheduleDisplay() {
     const now = new Date();
     const currentTimeStr = now.toLocaleTimeString("pt-BR", { hour12: false });
 
-    const current = allPrograms.find(p => {
+    const current = allPrograms.find((p) => {
       // Ensure consistent format (HH:MM:SS) for comparison
       const start = p.start_time.length === 5 ? `${p.start_time}:00` : p.start_time;
       const end = p.end_time.length === 5 ? `${p.end_time}:00` : p.end_time;
       return currentTimeStr >= start && currentTimeStr < end;
     });
 
-    const upcoming = allPrograms.filter(p => 
-      p.start_time > currentTimeStr
-    ).slice(0, 3);
+    const upcoming = allPrograms.filter((p) => p.start_time > currentTimeStr).slice(0, 3);
 
     setCurrentProgram(current || null);
     setUpcomingPrograms(upcoming);
@@ -68,7 +66,9 @@ export function ScheduleDisplay() {
       {currentProgram ? (
         <div className="mb-8 p-4 bg-primary/5 rounded-lg border border-primary/10">
           <div className="flex justify-between items-start mb-2">
-            <Badge variant="default" className="bg-red-500 hover:bg-red-600 animate-pulse">AO VIVO</Badge>
+            <Badge variant="default" className="bg-red-500 hover:bg-red-600 animate-pulse">
+              AO VIVO
+            </Badge>
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <Clock className="w-3 h-3" />
               {currentProgram.start_time.slice(0, 5)} - {currentProgram.end_time.slice(0, 5)}
@@ -87,7 +87,9 @@ export function ScheduleDisplay() {
       )}
 
       <div className="space-y-4">
-        <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Próximos Programas</h4>
+        <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          Próximos Programas
+        </h4>
         {upcomingPrograms.length > 0 ? (
           upcomingPrograms.map((prog) => (
             <div key={prog.id} className="flex items-center gap-4 group">

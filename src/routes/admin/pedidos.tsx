@@ -1,7 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Music, CheckCircle, XCircle, Trash2 } from "lucide-react";
@@ -23,11 +30,8 @@ function AdminRequests() {
   });
 
   const updateStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string, status: string }) => {
-      const { error } = await supabase
-        .from("song_requests")
-        .update({ status })
-        .eq("id", id);
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const { error } = await supabase.from("song_requests").update({ status }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -66,18 +70,38 @@ function AdminRequests() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={req.status === 'played' ? 'default' : req.status === 'pending' ? 'secondary' : 'destructive'}>
-                    {req.status === 'played' ? 'Tocado' : req.status === 'pending' ? 'Pendente' : 'Recusado'}
+                  <Badge
+                    variant={
+                      req.status === "played"
+                        ? "default"
+                        : req.status === "pending"
+                          ? "secondary"
+                          : "destructive"
+                    }
+                  >
+                    {req.status === "played"
+                      ? "Tocado"
+                      : req.status === "pending"
+                        ? "Pendente"
+                        : "Recusado"}
                   </Badge>
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-2">
-                    {req.status === 'pending' && (
+                    {req.status === "pending" && (
                       <>
-                        <Button size="icon" variant="outline" onClick={() => updateStatus.mutate({ id: req.id, status: 'played' })}>
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          onClick={() => updateStatus.mutate({ id: req.id, status: "played" })}
+                        >
                           <CheckCircle className="w-4 h-4 text-green-500" />
                         </Button>
-                        <Button size="icon" variant="outline" onClick={() => updateStatus.mutate({ id: req.id, status: 'rejected' })}>
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          onClick={() => updateStatus.mutate({ id: req.id, status: "rejected" })}
+                        >
                           <XCircle className="w-4 h-4 text-red-500" />
                         </Button>
                       </>

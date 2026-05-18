@@ -19,7 +19,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const checkAdmin = async (uid: string | undefined) => {
-    if (!uid) { setIsAdmin(false); return; }
+    if (!uid) {
+      setIsAdmin(false);
+      return;
+    }
     // Try multiple times if needed, sometimes RLS takes a moment to recognize the session
     let attempts = 0;
     let hasAdminRole = false;
@@ -35,32 +38,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (hasAdminRole) break;
       }
       attempts++;
-      if (!hasAdminRole && attempts < 3) await new Promise(r => setTimeout(r, 500));
+      if (!hasAdminRole && attempts < 3) await new Promise((r) => setTimeout(r, 500));
     }
 
     console.log("Admin check for", uid, ":", hasAdminRole, lastData);
     setIsAdmin(hasAdminRole);
   };
 
-   useEffect(() => {
-     if (typeof window === "undefined") {
-       setLoading(false);
-       return;
-     }
-     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
-       setSession(s); setUser(s?.user ?? null);
-       setTimeout(() => checkAdmin(s?.user?.id), 0);
-     });
-     supabase.auth.getSession().then(({ data: { session: s } }) => {
-       setSession(s); setUser(s?.user ?? null);
-       checkAdmin(s?.user?.id).finally(() => setLoading(false));
-     });
-     return () => subscription.unsubscribe();
-   }, []);
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      setLoading(false);
+      return;
+    }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_e, s) => {
+      setSession(s);
+      setUser(s?.user ?? null);
+      setTimeout(() => checkAdmin(s?.user?.id), 0);
+    });
+    supabase.auth.getSession().then(({ data: { session: s } }) => {
+      setSession(s);
+      setUser(s?.user ?? null);
+      checkAdmin(s?.user?.id).finally(() => setLoading(false));
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
-  const signOut = async () => { await supabase.auth.signOut(); };
+  const signOut = async () => {
+    await supabase.auth.signOut();
+  };
 
-  return <Ctx.Provider value={{ user, session, isAdmin, loading, signOut }}>{children}</Ctx.Provider>;
+  return (
+    <Ctx.Provider value={{ user, session, isAdmin, loading, signOut }}>{children}</Ctx.Provider>
+  );
 }
 
 export const useAuth = () => {

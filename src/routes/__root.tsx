@@ -1,6 +1,15 @@
 import { useEffect } from "react";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
-import { Outlet, createRootRouteWithContext, useRouter, useRouterState, HeadContent, Scripts, Link, ErrorComponentProps } from "@tanstack/react-router";
+import {
+  Outlet,
+  createRootRouteWithContext,
+  useRouter,
+  useRouterState,
+  HeadContent,
+  Scripts,
+  Link,
+  ErrorComponentProps,
+} from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { AlertCircle, RefreshCw, Home as HomeIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,10 +24,10 @@ function ThemeSync() {
           .select("primary_color, accent_color")
           .limit(1)
           .maybeSingle();
-        
+
         if (error) {
           // Handle JWT expired specifically by not throwing, just returning null
-          if (error.code === 'PGRST303' || error.message?.includes('JWT expired')) {
+          if (error.code === "PGRST303" || error.message?.includes("JWT expired")) {
             console.warn("Supabase JWT expired, falling back to default theme");
             return null;
           }
@@ -49,7 +58,7 @@ function ThemeSync() {
 
   return null;
 }
- 
+
 import { Toaster } from "@/components/ui/sonner";
 import appCss from "../styles.css?url";
 import { RadioProvider } from "@/lib/radio-context";
@@ -64,7 +73,12 @@ function NotFoundComponent() {
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-display font-bold text-primary">404</h1>
         <p className="mt-2 text-muted-foreground">Página não encontrada.</p>
-        <Link to="/" className="mt-6 inline-flex px-4 py-2 rounded-md gradient-gold text-gold-foreground font-medium">Voltar ao início</Link>
+        <Link
+          to="/"
+          className="mt-6 inline-flex px-4 py-2 rounded-md gradient-gold text-gold-foreground font-medium"
+        >
+          Voltar ao início
+        </Link>
       </div>
     </div>
   );
@@ -89,14 +103,20 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
           )}
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Button 
-            variant="default" 
+          <Button
+            variant="default"
             className="gap-2 rounded-xl h-12 px-6"
-            onClick={() => { router.invalidate(); reset(); }}
+            onClick={() => {
+              router.invalidate();
+              reset();
+            }}
           >
             <RefreshCw className="w-4 h-4" /> Tentar novamente
           </Button>
-          <Link to="/" className="inline-flex items-center justify-center gap-2 px-6 h-12 bg-muted rounded-xl font-medium hover:bg-muted/80 transition text-sm">
+          <Link
+            to="/"
+            className="inline-flex items-center justify-center gap-2 px-6 h-12 bg-muted rounded-xl font-medium hover:bg-muted/80 transition text-sm"
+          >
             <HomeIcon className="w-4 h-4" /> Voltar ao Início
           </Link>
         </div>
@@ -111,18 +131,44 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Rádio Alternativa Gospel  Portal de notícias e música cristã" },
-      { name: "description", content: "Ouça a melhor música gospel ao vivo e acompanhe as notícias do mundo cristão." },
-      { property: "og:title", content: "Rádio Alternativa Gospel  Portal de notícias e música cristã" },
-      { name: "twitter:title", content: "Rádio Alternativa Gospel  Portal de notícias e música cristã" },
-      { property: "og:description", content: "Ouça a melhor música gospel ao vivo e acompanhe as notícias do mundo cristão." },
-      { name: "twitter:description", content: "Ouça a melhor música gospel ao vivo e acompanhe as notícias do mundo cristão." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/07e6355f-44f7-4464-8a3d-991a257d1c13/id-preview-7d19905f--200fef07-f222-45f8-bb31-f063c40ad46e.lovable.app-1778977090172.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/07e6355f-44f7-4464-8a3d-991a257d1c13/id-preview-7d19905f--200fef07-f222-45f8-bb31-f063c40ad46e.lovable.app-1778977090172.png" },
+      {
+        name: "description",
+        content: "Ouça a melhor música gospel ao vivo e acompanhe as notícias do mundo cristão.",
+      },
+      {
+        property: "og:title",
+        content: "Rádio Alternativa Gospel  Portal de notícias e música cristã",
+      },
+      {
+        name: "twitter:title",
+        content: "Rádio Alternativa Gospel  Portal de notícias e música cristã",
+      },
+      {
+        property: "og:description",
+        content: "Ouça a melhor música gospel ao vivo e acompanhe as notícias do mundo cristão.",
+      },
+      {
+        name: "twitter:description",
+        content: "Ouça a melhor música gospel ao vivo e acompanhe as notícias do mundo cristão.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/07e6355f-44f7-4464-8a3d-991a257d1c13/id-preview-7d19905f--200fef07-f222-45f8-bb31-f063c40ad46e.lovable.app-1778977090172.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/07e6355f-44f7-4464-8a3d-991a257d1c13/id-preview-7d19905f--200fef07-f222-45f8-bb31-f063c40ad46e.lovable.app-1778977090172.png",
+      },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/07e6355f-44f7-4464-8a3d-991a257d1c13/id-preview-7d19905f--200fef07-f222-45f8-bb31-f063c40ad46e.lovable.app-1778977090172.png" }
+      {
+        rel: "icon",
+        href: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/07e6355f-44f7-4464-8a3d-991a257d1c13/id-preview-7d19905f--200fef07-f222-45f8-bb31-f063c40ad46e.lovable.app-1778977090172.png",
+      },
     ],
   }),
   shellComponent: RootShell,
@@ -134,36 +180,41 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
-      <head><HeadContent /></head>
-      <body>{children}<Scripts /></body>
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        {children}
+        <Scripts />
+      </body>
     </html>
   );
 }
 
- function RootComponent() {
-   const { queryClient } = Route.useRouteContext();
-   const path = useRouterState({ select: (r) => r.location.pathname });
-   const isAdmin = path.startsWith("/admin");
-   return (
-     <QueryClientProvider client={queryClient}>
-       <AuthProvider>
-         <RadioProvider>
-           <a 
-             href="#main-content" 
-             className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-accent"
-           >
-             Pular para o conteúdo
-           </a>
-           <RadioPlayer />
-           {!isAdmin && <Header />}
-           <main id="main-content">
-             <Outlet />
-           </main>
-           {!isAdmin && <Footer />}
-            <ThemeSync />
-            <Toaster />
-         </RadioProvider>
-       </AuthProvider>
-     </QueryClientProvider>
-   );
- }
+function RootComponent() {
+  const { queryClient } = Route.useRouteContext();
+  const path = useRouterState({ select: (r) => r.location.pathname });
+  const isAdmin = path.startsWith("/admin");
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <RadioProvider>
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-accent"
+          >
+            Pular para o conteúdo
+          </a>
+          <RadioPlayer />
+          {!isAdmin && <Header />}
+          <main id="main-content">
+            <Outlet />
+          </main>
+          {!isAdmin && <Footer />}
+          <ThemeSync />
+          <Toaster />
+        </RadioProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+}

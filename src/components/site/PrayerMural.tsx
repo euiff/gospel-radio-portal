@@ -75,15 +75,11 @@ export function PrayerMural() {
   useEffect(() => {
     const channel = supabase
       .channel("public:prayer_requests")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "prayer_requests" },
-        () => queryClient.invalidateQueries({ queryKey: ["prayer-requests"] })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "prayer_requests" }, () =>
+        queryClient.invalidateQueries({ queryKey: ["prayer-requests"] }),
       )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "prayer_requests" },
-        () => queryClient.invalidateQueries({ queryKey: ["prayer-requests"] })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "prayer_requests" }, () =>
+        queryClient.invalidateQueries({ queryKey: ["prayer-requests"] }),
       )
       .subscribe();
 
@@ -103,7 +99,8 @@ export function PrayerMural() {
             <h2 className="text-xl font-display font-bold">Mural de Oração</h2>
           </div>
           <p className="text-sm text-muted-foreground mb-6">
-            Deixe aqui seu pedido de oração. Nossa equipe e comunidade estarão intercedendo por você.
+            Deixe aqui seu pedido de oração. Nossa equipe e comunidade estarão intercedendo por
+            você.
           </p>
 
           <Form {...form}>
@@ -128,10 +125,10 @@ export function PrayerMural() {
                   <FormItem>
                     <FormLabel>Pedido de Oração</FormLabel>
                     <FormControl>
-                      <Textarea 
-                        placeholder="Pelo que você gostaria que orássemos?" 
+                      <Textarea
+                        placeholder="Pelo que você gostaria que orássemos?"
                         className="resize-none h-32"
-                        {...field} 
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -154,15 +151,23 @@ export function PrayerMural() {
         </h3>
         {isLoadingPrayers ? (
           <div className="space-y-4">
-            {[1, 2, 3].map(i => <div key={i} className="h-32 bg-muted animate-pulse rounded-xl" />)}
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-32 bg-muted animate-pulse rounded-xl" />
+            ))}
           </div>
         ) : prayers.length > 0 ? (
           prayers.map((prayer) => (
-            <div key={prayer.id} className="bg-card p-5 rounded-xl border shadow-sm transition-all hover:shadow-md">
+            <div
+              key={prayer.id}
+              className="bg-card p-5 rounded-xl border shadow-sm transition-all hover:shadow-md"
+            >
               <div className="flex justify-between items-start mb-3">
                 <span className="font-bold text-primary">{prayer.user_name}</span>
                 <span className="text-xs text-muted-foreground">
-                  {formatDistanceToNow(new Date(prayer.created_at), { addSuffix: true, locale: ptBR })}
+                  {formatDistanceToNow(new Date(prayer.created_at), {
+                    addSuffix: true,
+                    locale: ptBR,
+                  })}
                 </span>
               </div>
               <p className="text-sm text-foreground/80 italic leading-relaxed">
