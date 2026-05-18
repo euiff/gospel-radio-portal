@@ -61,11 +61,12 @@ function ThemeSync() {
 
 import { Toaster } from "@/components/ui/sonner";
 import appCss from "../styles.css?url";
-import { RadioProvider } from "@/lib/radio-context";
+import { RadioProvider, radioSettingsQueryOptions } from "@/lib/radio-context";
 import { AuthProvider } from "@/lib/auth-context";
 import { RadioPlayer } from "@/components/site/RadioPlayer";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
+import { siteSettingsQuery } from "@/hooks/use-site-data";
 
 function NotFoundComponent() {
   return (
@@ -126,51 +127,48 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  head: () => ({
-    meta: [
-      { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Rádio Alternativa Gospel  Portal de notícias e música cristã" },
-      {
-        name: "description",
-        content: "Ouça a melhor música gospel ao vivo e acompanhe as notícias do mundo cristão.",
-      },
-      {
-        property: "og:title",
-        content: "Rádio Alternativa Gospel  Portal de notícias e música cristã",
-      },
-      {
-        name: "twitter:title",
-        content: "Rádio Alternativa Gospel  Portal de notícias e música cristã",
-      },
-      {
-        property: "og:description",
-        content: "Ouça a melhor música gospel ao vivo e acompanhe as notícias do mundo cristão.",
-      },
-      {
-        name: "twitter:description",
-        content: "Ouça a melhor música gospel ao vivo e acompanhe as notícias do mundo cristão.",
-      },
-      {
-        property: "og:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/07e6355f-44f7-4464-8a3d-991a257d1c13/id-preview-7d19905f--200fef07-f222-45f8-bb31-f063c40ad46e.lovable.app-1778977090172.png",
-      },
-      {
-        name: "twitter:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/07e6355f-44f7-4464-8a3d-991a257d1c13/id-preview-7d19905f--200fef07-f222-45f8-bb31-f063c40ad46e.lovable.app-1778977090172.png",
-      },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    links: [
-      { rel: "stylesheet", href: appCss },
-      {
-        rel: "icon",
-        href: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/07e6355f-44f7-4464-8a3d-991a257d1c13/id-preview-7d19905f--200fef07-f222-45f8-bb31-f063c40ad46e.lovable.app-1778977090172.png",
-      },
-    ],
-  }),
+  loader: async ({ context: { queryClient } }) => {
+    const [radio, site] = await Promise.all([
+      queryClient.ensureQueryData(radioSettingsQueryOptions),
+      queryClient.ensureQueryData(siteSettingsQuery),
+    ]);
+    return { radio, site };
+  },
+  head: ({ loaderData }) => {
+    const { radio, site } = loaderData || {};
+    const title =
+      radio?.station_name && radio?.tagline
+        ? `${radio.station_name} | ${radio.tagline}`
+        : radio?.station_name || "Portal de Rádio Gospel";
+    const description =
+      site?.site_description ||
+      radio?.tagline ||
+      "Ouça a melhor música gospel ao vivo e acompanhe as notícias do mundo cristão.";
+    const logoUrl =
+      site?.logo_url ||
+      radio?.logo_url ||
+      "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/07e6355f-44f7-4464-8a3d-991a257d1c13/id-preview-7d19905f--200fef07-f222-45f8-bb31-f063c40ad46e.lovable.app-1778977090172.png";
+
+    return {
+      meta: [
+        { charSet: "utf-8" },
+        { name: "viewport", content: "width=device-width, initial-scale=1" },
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { name: "twitter:title", content: title },
+        { property: "og:description", content: description },
+        { name: "twitter:description", content: description },
+        { property: "og:image", content: logoUrl },
+        { name: "twitter:image", content: logoUrl },
+        { name: "twitter:card", content: "summary_large_image" },
+      ],
+      links: [
+        { rel: "stylesheet", href: appCss },
+        { rel: "icon", href: logoUrl },
+      ],
+    };
+  },
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
