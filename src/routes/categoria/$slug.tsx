@@ -1,16 +1,42 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, queryOptions } from "@tanstack/react-query";
+import { radioSettingsQueryOptions } from "@/lib/radio-context";
 import { supabase } from "@/integrations/supabase/client";
 
-export const Route = createFileRoute("/categoria/$slug")({ component: CategoryPage });
-
-function CategoryPage() {
-  const { slug } = Route.useParams();
-  const { data: category } = useQuery({
+const categoryQuery = (slug: string) =>
+  queryOptions({
     queryKey: ["cat", slug],
     queryFn: async () =>
       (await supabase.from("categories").select("*").eq("slug", slug).maybeSingle()).data,
   });
+
+export const Route = createFileRoute("/categoria/$slug")({
+  loader: async ({ params: { slug }, context: { queryClient } }) => {
+    const [category, radio] = await Promise.all([
+      queryClient.ensureQueryData(categoryQuery(slug)),
+      queryClient.ensureQueryData(radioSettingsQueryOptions),
+    ]);
+    return { category, radio };
+  },
+  head: ({ loaderData, params: { slug } }) => {
+    const name = loaderData?.category?.name || slug;
+    const stationName = loaderData?.radio?.station_name || "Alternativa gospel";
+    return {
+      meta: [
+        { title: `${name} | ${stationName}` },
+        {
+          name: "description",
+          content: loaderData?.category?.description || `Confira as últimas notícias sobre ${name}`,
+        },
+      ],
+    };
+  },
+  component: CategoryPage,
+});
+
+function CategoryPage() {
+  const { slug } = Route.useParams();
+  const { data: category } = useQuery(categoryQuery(slug));
   const categoryId = category?.id;
   const { data: news } = useQuery({
     queryKey: ["cat-news", categoryId],

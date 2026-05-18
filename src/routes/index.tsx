@@ -40,7 +40,6 @@ export const Route = createFileRoute("/")({
     queryClient.ensureQueryData(latestNewsQuery);
     queryClient.ensureQueryData(programsTodayQueryOptions(dow));
   },
-  head: () => ({ meta: [{ title: "Alternativa gospel" }] }),
   component: Home,
 });
 

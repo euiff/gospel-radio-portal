@@ -1,25 +1,59 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, queryOptions } from "@tanstack/react-query";
+import { radioSettingsQueryOptions } from "@/lib/radio-context";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Calendar } from "lucide-react";
 
-export const Route = createFileRoute("/noticia/$slug")({ component: NewsPage });
-
-function NewsPage() {
-  const { slug } = Route.useParams();
-  const { data, isLoading } = useQuery({
+const newsDetailQuery = (slug: string) =>
+  queryOptions({
     queryKey: ["news", slug],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("news")
         .select("*,category:categories(name,slug)")
         .eq("slug", slug)
         .eq("published", true)
         .maybeSingle();
+      if (error) throw error;
       return data;
     },
   });
+
+export const Route = createFileRoute("/noticia/$slug")({
+  loader: async ({ params: { slug }, context: { queryClient } }) => {
+    const [news, radio] = await Promise.all([
+      queryClient.ensureQueryData(newsDetailQuery(slug)),
+      queryClient.ensureQueryData(radioSettingsQueryOptions),
+    ]);
+    return { news, radio };
+  },
+  head: ({ loaderData }) => {
+    if (!loaderData?.news) return { title: "Notícia não encontrada" };
+    const { news, radio } = loaderData;
+    const stationName = radio?.station_name || "Alternativa gospel";
+    const title = `${news.title} | ${stationName}`;
+    const description = news.excerpt || news.title;
+
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:image", content: news.cover_image || "" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        { name: "twitter:image", content: news.cover_image || "" },
+      ],
+    };
+  },
+  component: NewsPage,
+});
+
+function NewsPage() {
+  const { slug } = Route.useParams();
+  const { data } = useQuery(newsDetailQuery(slug));
 
   const newsId = data?.id;
   useEffect(() => {
@@ -32,7 +66,6 @@ function NewsPage() {
     }
   }, [newsId]);
 
-  if (isLoading) return <div className="container mx-auto py-20 text-center">Carregando…</div>;
   if (!data)
     return <div className="container mx-auto py-20 text-center">Notícia não encontrada.</div>;
 
