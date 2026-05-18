@@ -43,9 +43,9 @@ function FooterNavLink({ item }: { item: NavItem }) {
               {siteSettings?.logo_url ? (
                 <img src={siteSettings.logo_url} alt="Logo" className="h-12 w-auto object-contain filter brightness-0 invert" />
               ) : (
-                <>
-                  Rádio<span className="text-gold italic">Gospel</span>
-                </>
+                 <span className="flex items-center gap-1">
+                   {radioSettings?.station_name || "Alternativa gospel"}
+                 </span>
               )}
             </div>
              <p className="text-sm mt-4 text-white/60 leading-relaxed max-w-xs">
