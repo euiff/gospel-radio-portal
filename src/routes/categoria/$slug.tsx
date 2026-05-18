@@ -21,13 +21,21 @@ export const Route = createFileRoute("/categoria/$slug")({
   head: ({ loaderData, params: { slug } }) => {
     const name = loaderData?.category?.name || slug;
     const stationName = loaderData?.radio?.station_name || "Alternativa gospel";
+    const title = `${name} | ${stationName}`;
+    const description = loaderData?.category?.description || `Confira as últimas notícias sobre ${name}`;
+    const ogImage = loaderData?.radio?.logo_url || "";
+
     return {
       meta: [
-        { title: `${name} | ${stationName}` },
-        {
-          name: "description",
-          content: loaderData?.category?.description || `Confira as últimas notícias sobre ${name}`,
-        },
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:image", content: ogImage },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        { name: "twitter:image", content: ogImage },
+        { name: "twitter:card", content: "summary_large_image" },
       ],
     };
   },
