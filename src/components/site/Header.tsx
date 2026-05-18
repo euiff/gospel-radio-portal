@@ -1,6 +1,6 @@
- import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+ import { Link, useRouterState } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth-context";
-import { LayoutDashboard, LogIn, Menu, X } from "lucide-react";
+import { LayoutDashboard, LogIn, Menu } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useQuery } from "@tanstack/react-query";
@@ -15,6 +15,8 @@ const defaultNav = [
   { to: "/categoria/devocional", label: "Devocional" },
   { to: "/programacao", label: "Programação" },
 ];
+
+const FALLBACK_STATION_NAME = "Alternativa gospel";
 
 type NavItem = { to?: string; label?: string };
 
@@ -38,6 +40,7 @@ function PublicNavLink({ item, className }: { item: NavItem; className: string }
      const { settings: radioSettings } = useRadio();
      const path = useRouterState({ select: (r) => r.location.pathname });
      const [isOpen, setIsOpen] = useState(false);
+     const [hasHydrated, setHasHydrated] = useState(false);
  
      const { data: siteSettings } = useQuery({
        queryKey: ["site-settings-header"],
@@ -47,22 +50,28 @@ function PublicNavLink({ item, className }: { item: NavItem; className: string }
        }
      });
  
-     const nav = (siteSettings?.navigation_menu as NavItem[] | null) || defaultNav;
+     const hydratedSiteSettings = hasHydrated ? siteSettings : null;
+     const stationName = hasHydrated ? radioSettings?.station_name || FALLBACK_STATION_NAME : FALLBACK_STATION_NAME;
+     const nav = (hydratedSiteSettings?.navigation_menu as NavItem[] | null) || defaultNav;
    
      // Close menu on path change
      useEffect(() => {
        setIsOpen(false);
      }, [path]);
+
+     useEffect(() => {
+       setHasHydrated(true);
+     }, []);
   
     return (
       <header className="bg-background border-b border-border sticky top-0 z-40 lg:relative lg:z-auto">
        <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
           <Link to="/" className="font-display text-2xl font-bold text-primary shrink-0">
-            {siteSettings?.logo_url ? (
-              <img src={siteSettings.logo_url} alt="Logo" className="h-10 w-auto object-contain" />
+            {hydratedSiteSettings?.logo_url ? (
+              <img src={hydratedSiteSettings.logo_url} alt="Logo" className="h-10 w-auto object-contain" />
             ) : (
               <span className="flex items-center gap-1">
-                {radioSettings?.station_name || "Alternativa gospel"}
+                {stationName}
               </span>
             )}
           </Link>
@@ -132,7 +141,7 @@ function PublicNavLink({ item, className }: { item: NavItem; className: string }
                      )}
                    </nav>
                     <div className="p-6 text-center text-xs text-muted-foreground border-t border-border">
-                      {radioSettings?.station_name || "Alternativa gospel"} © {new Date().getFullYear()}
+                      {stationName} © 2026
                     </div>
                  </div>
                </SheetContent>
