@@ -119,6 +119,7 @@ function SiteSettings() {
                       label={f.label}
                       value={data[f.key] ?? ""}
                       onChange={(url) => setData({ ...data, [f.key]: url })}
+                      aspect={(f as any).aspect}
                     />
                   ) : f.type === "color" ? (
                     <>
