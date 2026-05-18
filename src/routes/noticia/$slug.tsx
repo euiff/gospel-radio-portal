@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, queryOptions } from "@tanstack/react-query";
+import { radioSettingsQueryOptions } from "@/lib/radio-context";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Calendar } from "lucide-react";
@@ -20,20 +21,30 @@ const newsDetailQuery = (slug: string) =>
   });
 
 export const Route = createFileRoute("/noticia/$slug")({
-  loader: ({ params: { slug }, context: { queryClient } }) =>
-    queryClient.ensureQueryData(newsDetailQuery(slug)),
-  head: ({ loaderData, params: { slug } }) => {
-    if (!loaderData) return { title: "Notícia não encontrada" };
+  loader: async ({ params: { slug }, context: { queryClient } }) => {
+    const [news, radio] = await Promise.all([
+      queryClient.ensureQueryData(newsDetailQuery(slug)),
+      queryClient.ensureQueryData(radioSettingsQueryOptions),
+    ]);
+    return { news, radio };
+  },
+  head: ({ loaderData }) => {
+    if (!loaderData?.news) return { title: "Notícia não encontrada" };
+    const { news, radio } = loaderData;
+    const stationName = radio?.station_name || "Alternativa gospel";
+    const title = `${news.title} | ${stationName}`;
+    const description = news.excerpt || news.title;
+
     return {
       meta: [
-        { title: `${loaderData.title} | Notícias` },
-        { name: "description", content: loaderData.excerpt || loaderData.title },
-        { property: "og:title", content: loaderData.title },
-        { property: "og:description", content: loaderData.excerpt || loaderData.title },
-        { property: "og:image", content: loaderData.cover_image || "" },
-        { name: "twitter:title", content: loaderData.title },
-        { name: "twitter:description", content: loaderData.excerpt || loaderData.title },
-        { name: "twitter:image", content: loaderData.cover_image || "" },
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:image", content: news.cover_image || "" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        { name: "twitter:image", content: news.cover_image || "" },
       ],
     };
   },
