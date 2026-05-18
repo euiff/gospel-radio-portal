@@ -35,30 +35,41 @@ export function RadioPlayer() {
           )}
         </button>
 
-        <div className="flex-1 min-w-0 py-1" role="status" aria-live="polite">
-          <div className="flex items-center gap-2 text-[10px] md:text-xs uppercase tracking-widest text-gold font-bold">
-            <RadioIcon className="w-3 h-3" />
-            {isPlaying ? (
-              <span className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
-                Ao vivo
-              </span>
-            ) : (
-              "Pronto para tocar"
-            )}
-          </div>
-          <div className="font-display text-base md:text-xl lg:text-2xl truncate leading-tight mt-0.5">
-            {nowPlaying ? (
-              <span className="flex items-center gap-2">
-                <Music className="w-4 h-4 text-gold animate-bounce shrink-0" aria-hidden="true" />
-                {nowPlaying}
-              </span>
-            ) : (
-              settings.station_name
-            )}
-          </div>
-          <div className="text-[10px] md:text-xs text-white/60 truncate mt-0.5">
-            {nowPlaying ? settings.station_name : settings.tagline}
+        <div className="flex-1 min-w-0 py-1 flex items-center gap-3" role="status" aria-live="polite">
+          {settings.logo_url && (
+            <div className="hidden sm:block shrink-0 bg-white/10 p-1 rounded-lg border border-white/10 backdrop-blur-sm">
+              <img 
+                src={settings.logo_url} 
+                alt="" 
+                className="h-10 w-10 md:h-12 md:w-12 object-contain"
+              />
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 text-[10px] md:text-xs uppercase tracking-widest text-gold font-bold">
+              <RadioIcon className="w-3 h-3" />
+              {isPlaying ? (
+                <span className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
+                  Ao vivo
+                </span>
+              ) : (
+                "Pronto para tocar"
+              )}
+            </div>
+            <div className="font-display text-base md:text-xl lg:text-2xl truncate leading-tight mt-0.5">
+              {nowPlaying ? (
+                <span className="flex items-center gap-2">
+                  <Music className="w-4 h-4 text-gold animate-bounce shrink-0" aria-hidden="true" />
+                  {nowPlaying}
+                </span>
+              ) : (
+                settings.station_name
+              )}
+            </div>
+            <div className="text-[10px] md:text-xs text-white/60 truncate mt-0.5">
+              {nowPlaying ? settings.station_name : settings.tagline}
+            </div>
           </div>
         </div>
 
