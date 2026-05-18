@@ -2,8 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { useRadio } from "@/lib/radio-context";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
 
 type NavItem = { to?: string; label?: string };
+
+const FALLBACK_STATION_NAME = "Alternativa gospel";
+const CURRENT_YEAR = "2026";
 
 function FooterNavLink({ item }: { item: NavItem }) {
   const label = item.label || "Link";
@@ -23,6 +27,7 @@ function FooterNavLink({ item }: { item: NavItem }) {
 
  export function Footer() {
    const { settings: radioSettings } = useRadio();
+   const [hasHydrated, setHasHydrated] = useState(false);
  
     const { data: siteSettings } = useQuery({
       queryKey: ["site-settings-footer"],
@@ -32,7 +37,13 @@ function FooterNavLink({ item }: { item: NavItem }) {
       }
     });
 
-  const nav = (siteSettings?.navigation_menu as NavItem[] | null) || [];
+  useEffect(() => {
+    setHasHydrated(true);
+  }, []);
+
+  const hydratedSiteSettings = hasHydrated ? siteSettings : null;
+  const stationName = hasHydrated ? radioSettings?.station_name || FALLBACK_STATION_NAME : FALLBACK_STATION_NAME;
+  const nav = (hydratedSiteSettings?.navigation_menu as NavItem[] | null) || [];
 
   return (
     <footer className="gradient-deep text-white/80 mt-20 pt-16 pb-8">
@@ -40,16 +51,16 @@ function FooterNavLink({ item }: { item: NavItem }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           <div className="col-span-1 lg:col-span-1">
             <div className="font-display text-3xl text-white font-bold leading-none">
-              {siteSettings?.logo_url ? (
-                <img src={siteSettings.logo_url} alt="Logo" className="h-12 w-auto object-contain filter brightness-0 invert" />
+              {hydratedSiteSettings?.logo_url ? (
+                <img src={hydratedSiteSettings.logo_url} alt="Logo" className="h-12 w-auto object-contain filter brightness-0 invert" />
               ) : (
                  <span className="flex items-center gap-1">
-                   {radioSettings?.station_name || "Alternativa gospel"}
+                   {stationName}
                  </span>
               )}
             </div>
              <p className="text-sm mt-4 text-white/60 leading-relaxed max-w-xs">
-               {siteSettings?.site_description || radioSettings?.tagline || "Levando a palavra de Deus e o melhor do louvor para o seu coração, 24 horas por dia."}
+               {hydratedSiteSettings?.site_description || (hasHydrated ? radioSettings?.tagline : null) || "Levando a palavra de Deus e o melhor do louvor para o seu coração, 24 horas por dia."}
              </p>
           </div>
           
@@ -103,10 +114,10 @@ function FooterNavLink({ item }: { item: NavItem }) {
 
          <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] md:text-xs text-white/30 uppercase tracking-widest font-medium">
            <div>
-             {siteSettings?.footer_text ? (
-               <span dangerouslySetInnerHTML={{ __html: siteSettings.footer_text.replace('{year}', new Date().getFullYear().toString()) }} />
+              {hydratedSiteSettings?.footer_text ? (
+                <span dangerouslySetInnerHTML={{ __html: hydratedSiteSettings.footer_text.replace('{year}', CURRENT_YEAR) }} />
              ) : (
-                <>© {new Date().getFullYear()} {radioSettings?.station_name || "Alternativa gospel"}.</>
+                 <>© {CURRENT_YEAR} {stationName}.</>
              )}
            </div>
           <div className="flex items-center gap-6">
