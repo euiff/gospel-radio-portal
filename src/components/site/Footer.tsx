@@ -81,7 +81,7 @@ export function Footer() {
                 <img
                   src={siteSettings.logo_url}
                   alt="Logo"
-                  className="h-16 md:h-24 w-auto max-w-[200px] md:max-w-[280px] object-contain filter brightness-0 invert transition-all hover:opacity-100 opacity-90"
+                  className="h-12 md:h-20 w-auto max-w-[200px] md:max-w-[300px] object-contain filter brightness-0 invert transition-all hover:opacity-100 opacity-90"
                 />
               ) : (
                 <span className="flex items-center gap-1">{stationName}</span>
