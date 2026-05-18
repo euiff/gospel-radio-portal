@@ -1,520 +1,528 @@
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5";
-  };
+    PostgrestVersion: "14.5"
+  }
   public: {
     Tables: {
       banners: {
         Row: {
-          active: boolean;
-          created_at: string;
-          id: string;
-          image_url: string;
-          link_url: string | null;
-          position: string;
-          sort_order: number;
-          title: string;
-        };
+          active: boolean
+          created_at: string
+          id: string
+          image_url: string
+          link_url: string | null
+          position: string
+          sort_order: number
+          title: string
+        }
         Insert: {
-          active?: boolean;
-          created_at?: string;
-          id?: string;
-          image_url: string;
-          link_url?: string | null;
-          position?: string;
-          sort_order?: number;
-          title: string;
-        };
+          active?: boolean
+          created_at?: string
+          id?: string
+          image_url: string
+          link_url?: string | null
+          position?: string
+          sort_order?: number
+          title: string
+        }
         Update: {
-          active?: boolean;
-          created_at?: string;
-          id?: string;
-          image_url?: string;
-          link_url?: string | null;
-          position?: string;
-          sort_order?: number;
-          title?: string;
-        };
-        Relationships: [];
-      };
+          active?: boolean
+          created_at?: string
+          id?: string
+          image_url?: string
+          link_url?: string | null
+          position?: string
+          sort_order?: number
+          title?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
-          created_at: string;
-          description: string | null;
-          id: string;
-          name: string;
-          slug: string;
-        };
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          slug: string
+        }
         Insert: {
-          created_at?: string;
-          description?: string | null;
-          id?: string;
-          name: string;
-          slug: string;
-        };
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          slug: string
+        }
         Update: {
-          created_at?: string;
-          description?: string | null;
-          id?: string;
-          name?: string;
-          slug?: string;
-        };
-        Relationships: [];
-      };
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       news: {
         Row: {
-          author_id: string | null;
-          category_id: string | null;
-          content: string;
-          cover_image: string | null;
-          created_at: string;
-          excerpt: string | null;
-          featured: boolean;
-          id: string;
-          published: boolean;
-          published_at: string | null;
-          slug: string;
-          title: string;
-          updated_at: string;
-          views: number;
-        };
+          author_id: string | null
+          category_id: string | null
+          content: string
+          cover_image: string | null
+          created_at: string
+          excerpt: string | null
+          featured: boolean
+          id: string
+          published: boolean
+          published_at: string | null
+          slug: string
+          title: string
+          updated_at: string
+          views: number
+        }
         Insert: {
-          author_id?: string | null;
-          category_id?: string | null;
-          content: string;
-          cover_image?: string | null;
-          created_at?: string;
-          excerpt?: string | null;
-          featured?: boolean;
-          id?: string;
-          published?: boolean;
-          published_at?: string | null;
-          slug: string;
-          title: string;
-          updated_at?: string;
-          views?: number;
-        };
+          author_id?: string | null
+          category_id?: string | null
+          content: string
+          cover_image?: string | null
+          created_at?: string
+          excerpt?: string | null
+          featured?: boolean
+          id?: string
+          published?: boolean
+          published_at?: string | null
+          slug: string
+          title: string
+          updated_at?: string
+          views?: number
+        }
         Update: {
-          author_id?: string | null;
-          category_id?: string | null;
-          content?: string;
-          cover_image?: string | null;
-          created_at?: string;
-          excerpt?: string | null;
-          featured?: boolean;
-          id?: string;
-          published?: boolean;
-          published_at?: string | null;
-          slug?: string;
-          title?: string;
-          updated_at?: string;
-          views?: number;
-        };
+          author_id?: string | null
+          category_id?: string | null
+          content?: string
+          cover_image?: string | null
+          created_at?: string
+          excerpt?: string | null
+          featured?: boolean
+          id?: string
+          published?: boolean
+          published_at?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string
+          views?: number
+        }
         Relationships: [
           {
-            foreignKeyName: "news_category_id_fkey";
-            columns: ["category_id"];
-            isOneToOne: false;
-            referencedRelation: "categories";
-            referencedColumns: ["id"];
+            foreignKeyName: "news_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       prayer_comments: {
         Row: {
-          content: string;
-          created_at: string;
-          id: string;
-          prayer_request_id: string | null;
-          user_name: string;
-        };
+          content: string
+          created_at: string
+          id: string
+          prayer_request_id: string | null
+          user_name: string
+        }
         Insert: {
-          content: string;
-          created_at?: string;
-          id?: string;
-          prayer_request_id?: string | null;
-          user_name: string;
-        };
+          content: string
+          created_at?: string
+          id?: string
+          prayer_request_id?: string | null
+          user_name: string
+        }
         Update: {
-          content?: string;
-          created_at?: string;
-          id?: string;
-          prayer_request_id?: string | null;
-          user_name?: string;
-        };
+          content?: string
+          created_at?: string
+          id?: string
+          prayer_request_id?: string | null
+          user_name?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "prayer_comments_prayer_request_id_fkey";
-            columns: ["prayer_request_id"];
-            isOneToOne: false;
-            referencedRelation: "prayer_requests";
-            referencedColumns: ["id"];
+            foreignKeyName: "prayer_comments_prayer_request_id_fkey"
+            columns: ["prayer_request_id"]
+            isOneToOne: false
+            referencedRelation: "prayer_requests"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       prayer_requests: {
         Row: {
-          content: string;
-          created_at: string;
-          id: string;
-          is_private: boolean | null;
-          status: string;
-          updated_at: string;
-          user_name: string;
-        };
+          content: string
+          created_at: string
+          id: string
+          is_private: boolean | null
+          status: string
+          updated_at: string
+          user_name: string
+        }
         Insert: {
-          content: string;
-          created_at?: string;
-          id?: string;
-          is_private?: boolean | null;
-          status?: string;
-          updated_at?: string;
-          user_name: string;
-        };
+          content: string
+          created_at?: string
+          id?: string
+          is_private?: boolean | null
+          status?: string
+          updated_at?: string
+          user_name: string
+        }
         Update: {
-          content?: string;
-          created_at?: string;
-          id?: string;
-          is_private?: boolean | null;
-          status?: string;
-          updated_at?: string;
-          user_name?: string;
-        };
-        Relationships: [];
-      };
+          content?: string
+          created_at?: string
+          id?: string
+          is_private?: boolean | null
+          status?: string
+          updated_at?: string
+          user_name?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
-          avatar_url: string | null;
-          created_at: string;
-          display_name: string | null;
-          id: string;
-        };
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+        }
         Insert: {
-          avatar_url?: string | null;
-          created_at?: string;
-          display_name?: string | null;
-          id: string;
-        };
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+        }
         Update: {
-          avatar_url?: string | null;
-          created_at?: string;
-          display_name?: string | null;
-          id?: string;
-        };
-        Relationships: [];
-      };
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
       programs: {
         Row: {
-          cover_image: string | null;
-          created_at: string;
-          day_of_week: number;
-          description: string | null;
-          end_time: string;
-          host: string | null;
-          id: string;
-          name: string;
-          start_time: string;
-        };
+          cover_image: string | null
+          created_at: string
+          day_of_week: number
+          description: string | null
+          end_time: string
+          host: string | null
+          id: string
+          name: string
+          start_time: string
+        }
         Insert: {
-          cover_image?: string | null;
-          created_at?: string;
-          day_of_week: number;
-          description?: string | null;
-          end_time: string;
-          host?: string | null;
-          id?: string;
-          name: string;
-          start_time: string;
-        };
+          cover_image?: string | null
+          created_at?: string
+          day_of_week: number
+          description?: string | null
+          end_time: string
+          host?: string | null
+          id?: string
+          name: string
+          start_time: string
+        }
         Update: {
-          cover_image?: string | null;
-          created_at?: string;
-          day_of_week?: number;
-          description?: string | null;
-          end_time?: string;
-          host?: string | null;
-          id?: string;
-          name?: string;
-          start_time?: string;
-        };
-        Relationships: [];
-      };
+          cover_image?: string | null
+          created_at?: string
+          day_of_week?: number
+          description?: string | null
+          end_time?: string
+          host?: string | null
+          id?: string
+          name?: string
+          start_time?: string
+        }
+        Relationships: []
+      }
       radio_settings: {
         Row: {
-          api_now_playing: string | null;
-          cover_url: string | null;
-          facebook: string | null;
-          id: string;
-          instagram: string | null;
-          logo_url: string | null;
-          station_name: string;
-          stream_url: string;
-          tagline: string | null;
-          updated_at: string;
-          whatsapp: string | null;
-          youtube: string | null;
-        };
+          api_now_playing: string | null
+          cover_url: string | null
+          facebook: string | null
+          id: string
+          instagram: string | null
+          logo_url: string | null
+          station_name: string
+          stream_url: string
+          tagline: string | null
+          updated_at: string
+          whatsapp: string | null
+          youtube: string | null
+        }
         Insert: {
-          api_now_playing?: string | null;
-          cover_url?: string | null;
-          facebook?: string | null;
-          id?: string;
-          instagram?: string | null;
-          logo_url?: string | null;
-          station_name?: string;
-          stream_url?: string;
-          tagline?: string | null;
-          updated_at?: string;
-          whatsapp?: string | null;
-          youtube?: string | null;
-        };
+          api_now_playing?: string | null
+          cover_url?: string | null
+          facebook?: string | null
+          id?: string
+          instagram?: string | null
+          logo_url?: string | null
+          station_name?: string
+          stream_url?: string
+          tagline?: string | null
+          updated_at?: string
+          whatsapp?: string | null
+          youtube?: string | null
+        }
         Update: {
-          api_now_playing?: string | null;
-          cover_url?: string | null;
-          facebook?: string | null;
-          id?: string;
-          instagram?: string | null;
-          logo_url?: string | null;
-          station_name?: string;
-          stream_url?: string;
-          tagline?: string | null;
-          updated_at?: string;
-          whatsapp?: string | null;
-          youtube?: string | null;
-        };
-        Relationships: [];
-      };
+          api_now_playing?: string | null
+          cover_url?: string | null
+          facebook?: string | null
+          id?: string
+          instagram?: string | null
+          logo_url?: string | null
+          station_name?: string
+          stream_url?: string
+          tagline?: string | null
+          updated_at?: string
+          whatsapp?: string | null
+          youtube?: string | null
+        }
+        Relationships: []
+      }
       site_settings: {
         Row: {
-          accent_color: string | null;
-          footer_text: string | null;
-          hero_subtitle: string | null;
-          hero_title: string | null;
-          id: string;
-          logo_url: string | null;
-          navigation_menu: Json | null;
-          primary_color: string | null;
-          site_description: string | null;
-          site_name: string;
-          updated_at: string;
-        };
+          accent_color: string | null
+          footer_text: string | null
+          hero_subtitle: string | null
+          hero_title: string | null
+          id: string
+          logo_url: string | null
+          navigation_menu: Json | null
+          primary_color: string | null
+          site_description: string | null
+          site_name: string
+          updated_at: string
+        }
         Insert: {
-          accent_color?: string | null;
-          footer_text?: string | null;
-          hero_subtitle?: string | null;
-          hero_title?: string | null;
-          id?: string;
-          logo_url?: string | null;
-          navigation_menu?: Json | null;
-          primary_color?: string | null;
-          site_description?: string | null;
-          site_name?: string;
-          updated_at?: string;
-        };
+          accent_color?: string | null
+          footer_text?: string | null
+          hero_subtitle?: string | null
+          hero_title?: string | null
+          id?: string
+          logo_url?: string | null
+          navigation_menu?: Json | null
+          primary_color?: string | null
+          site_description?: string | null
+          site_name?: string
+          updated_at?: string
+        }
         Update: {
-          accent_color?: string | null;
-          footer_text?: string | null;
-          hero_subtitle?: string | null;
-          hero_title?: string | null;
-          id?: string;
-          logo_url?: string | null;
-          navigation_menu?: Json | null;
-          primary_color?: string | null;
-          site_description?: string | null;
-          site_name?: string;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
+          accent_color?: string | null
+          footer_text?: string | null
+          hero_subtitle?: string | null
+          hero_title?: string | null
+          id?: string
+          logo_url?: string | null
+          navigation_menu?: Json | null
+          primary_color?: string | null
+          site_description?: string | null
+          site_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       song_requests: {
         Row: {
-          artist: string;
-          created_at: string;
-          id: string;
-          message: string | null;
-          song_title: string;
-          status: string;
-          user_name: string;
-        };
+          artist: string
+          created_at: string
+          id: string
+          message: string | null
+          song_title: string
+          status: string
+          user_name: string
+        }
         Insert: {
-          artist: string;
-          created_at?: string;
-          id?: string;
-          message?: string | null;
-          song_title: string;
-          status?: string;
-          user_name: string;
-        };
+          artist: string
+          created_at?: string
+          id?: string
+          message?: string | null
+          song_title: string
+          status?: string
+          user_name: string
+        }
         Update: {
-          artist?: string;
-          created_at?: string;
-          id?: string;
-          message?: string | null;
-          song_title?: string;
-          status?: string;
-          user_name?: string;
-        };
-        Relationships: [];
-      };
+          artist?: string
+          created_at?: string
+          id?: string
+          message?: string | null
+          song_title?: string
+          status?: string
+          user_name?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
-          id: string;
-          role: Database["public"]["Enums"]["app_role"];
-          user_id: string;
-        };
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
         Insert: {
-          id?: string;
-          role: Database["public"]["Enums"]["app_role"];
-          user_id: string;
-        };
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
         Update: {
-          id?: string;
-          role?: Database["public"]["Enums"]["app_role"];
-          user_id?: string;
-        };
-        Relationships: [];
-      };
-    };
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+    }
     Views: {
-      [_ in never]: never;
-    };
+      [_ in never]: never
+    }
     Functions: {
       has_role: {
         Args: {
-          _role: Database["public"]["Enums"]["app_role"];
-          _user_id: string;
-        };
-        Returns: boolean;
-      };
-      increment_news_views: { Args: { news_id: string }; Returns: undefined };
-    };
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      increment_news_views: { Args: { news_id: string }; Returns: undefined }
+    }
     Enums: {
-      app_role: "admin" | "editor" | "user";
-    };
+      app_role: "admin" | "editor" | "user"
+    }
     CompositeTypes: {
-      [_ in never]: never;
-    };
-  };
-};
+      [_ in never]: never
+    }
+  }
+}
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">];
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R;
+      Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R;
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
       }
       ? R
       : never
-    : never;
+    : never
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I;
+      Insert: infer I
     }
     ? I
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I;
+        Insert: infer I
       }
       ? I
       : never
-    : never;
+    : never
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U;
+      Update: infer U
     }
     ? U
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U;
+        Update: infer U
       }
       ? U
       : never
-    : never;
+    : never
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never;
+    : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never;
+    : never
 
 export const Constants = {
   public: {
@@ -522,4 +530,4 @@ export const Constants = {
       app_role: ["admin", "editor", "user"],
     },
   },
-} as const;
+} as const
