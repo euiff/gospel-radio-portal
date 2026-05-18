@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useRadio } from "@/lib/radio-context";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 export const Route = createFileRoute("/admin/radio")({ component: RadioSettings });
 
@@ -27,8 +28,8 @@ const fields: Array<{
     placeholder: "https://api.suaradio.com/nowplaying",
     hint: "URL que retorna JSON com campo 'title' ou 'song'",
   },
-  { key: "logo_url", label: "Logo (URL)" },
-  { key: "cover_url", label: "Capa (URL)" },
+  { key: "logo_url", label: "Logo da Rádio", type: "image" },
+  { key: "cover_url", label: "Capa do Player", type: "image" },
   {
     key: "whatsapp",
     label: "WhatsApp",
@@ -82,13 +83,23 @@ function RadioSettings() {
       <form onSubmit={save} className="bg-card border border-border rounded-xl p-6 space-y-4">
         {fields.map((f) => (
           <div key={f.key}>
-            <label className="text-sm font-medium">{f.label}</label>
-            <input
-              value={data[f.key] ?? ""}
-              placeholder={f.placeholder}
-              onChange={(e) => setData({ ...data, [f.key]: e.target.value })}
-              className="mt-1 w-full px-3 py-2 rounded border border-input bg-background"
-            />
+            {f.type === "image" ? (
+              <ImageUpload
+                label={f.label}
+                value={data[f.key] ?? ""}
+                onChange={(url) => setData({ ...data, [f.key]: url })}
+              />
+            ) : (
+              <>
+                <label className="text-sm font-medium">{f.label}</label>
+                <input
+                  value={data[f.key] ?? ""}
+                  placeholder={f.placeholder}
+                  onChange={(e) => setData({ ...data, [f.key]: e.target.value })}
+                  className="mt-1 w-full px-3 py-2 rounded border border-input bg-background"
+                />
+              </>
+            )}
             {f.hint && <p className="text-xs text-muted-foreground mt-1">{f.hint}</p>}
           </div>
         ))}
