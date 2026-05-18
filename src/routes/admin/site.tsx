@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, Trash2 } from "lucide-react";
+ import { Plus, Trash2, Monitor, Tablet, Smartphone } from "lucide-react";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 
 export const Route = createFileRoute("/admin/site")({ component: SiteSettings });
@@ -12,7 +12,7 @@ const sections = [
     title: "Identidade Visual & Cores",
     fields: [
       { key: "site_name", label: "Nome do Portal / Rádio" },
-      { key: "logo_url", label: "Logo do Site", type: "image" },
+      { key: "logo_url", label: "Logo do Site", type: "image", aspect: 3 },
       { key: "primary_color", label: "Cor Primária (Fundo, Menus)", type: "color" },
       { key: "accent_color", label: "Cor de Destaque (Botões, Links)", type: "color" },
     ],
@@ -63,7 +63,19 @@ function SiteSettings() {
     else toast.success("Site atualizado!");
   };
 
-  if (!data) return <div>Carregando…</div>;
+  if (!data) return <div className="p-12 text-center text-muted-foreground">Carregando…</div>;
+
+  const logoSettings = data.logo_settings || { mobile: "small", desktop: "medium" };
+
+  const updateLogoSettings = (device: 'mobile' | 'desktop', size: string) => {
+    setData({
+      ...data,
+      logo_settings: {
+        ...logoSettings,
+        [device]: size
+      }
+    });
+  };
 
   const addMenuItem = () => {
     const menu = [...(data.navigation_menu || [])];
@@ -146,6 +158,57 @@ function SiteSettings() {
             </div>
           </div>
         ))}
+
+        <div className="bg-card border border-border rounded-xl p-6 space-y-6">
+          <h2 className="text-xl font-display text-primary border-b border-border pb-2">
+            Configurações da Logo
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                <Monitor className="w-4 h-4" /> Tamanho em Desktop
+              </div>
+              <div className="flex gap-2">
+                {['small', 'medium', 'large'].map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => updateLogoSettings('desktop', size)}
+                    className={`flex-1 py-2 rounded-lg border text-sm font-medium transition ${
+                      logoSettings.desktop === size 
+                        ? 'bg-accent text-accent-foreground border-accent shadow-md' 
+                        : 'bg-background border-border hover:border-accent/50'
+                    }`}
+                  >
+                    {size === 'small' ? 'Pequena' : size === 'medium' ? 'Média' : 'Grande'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                <Smartphone className="w-4 h-4" /> Tamanho em Mobile
+              </div>
+              <div className="flex gap-2">
+                {['small', 'medium', 'large'].map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => updateLogoSettings('mobile', size)}
+                    className={`flex-1 py-2 rounded-lg border text-sm font-medium transition ${
+                      logoSettings.mobile === size 
+                        ? 'bg-accent text-accent-foreground border-accent shadow-md' 
+                        : 'bg-background border-border hover:border-accent/50'
+                    }`}
+                  >
+                    {size === 'small' ? 'Pequena' : size === 'medium' ? 'Média' : 'Grande'}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div className="bg-card border border-border rounded-xl p-6 space-y-6">
           <div className="flex items-center justify-between">
