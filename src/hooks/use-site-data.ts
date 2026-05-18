@@ -1,4 +1,27 @@
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
+import { queryOptions, useSuspenseQuery, useQuery } from "@tanstack/react-query";
+export const siteSettingsQuery = queryOptions({
+  queryKey: ["site-settings"],
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from("site_settings")
+      .select("*")
+      .limit(1)
+      .maybeSingle();
+    if (error) {
+      if (error.code === "PGRST303" || error.message?.includes("JWT expired")) {
+        console.warn("Supabase JWT expired in siteSettingsQuery");
+        return null;
+      }
+      throw error;
+    }
+    return data;
+  },
+});
+
+export function useSiteSettings() {
+  return useQuery(siteSettingsQuery);
+}
+
 import { supabase } from "@/integrations/supabase/client";
 
 export interface NewsItem {
