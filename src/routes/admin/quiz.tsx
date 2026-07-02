@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { BookOpen, Plus, Trash2, Edit3, X, Check } from "lucide-react";
+import { logAudit } from "@/lib/audit-log";
+import { BookOpen, Plus, Trash2, Edit3, X, Check, Search, ArrowUpDown, ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 
 export const Route = createFileRoute("/admin/quiz")({ component: AdminQuiz });
 
@@ -14,6 +15,8 @@ interface Q {
   reference: string | null;
   active: boolean;
   created_at: string;
+  starts_at: string | null;
+  ends_at: string | null;
 }
 
 interface Draft {
@@ -23,6 +26,8 @@ interface Draft {
   correct_index: number;
   reference: string;
   active: boolean;
+  starts_at: string;
+  ends_at: string;
 }
 
 const emptyDraft = (): Draft => ({
@@ -32,12 +37,19 @@ const emptyDraft = (): Draft => ({
   correct_index: 0,
   reference: "",
   active: true,
+  starts_at: "",
+  ends_at: "",
 });
 
 function AdminQuiz() {
   const [items, setItems] = useState<Q[]>([]);
   const [loading, setLoading] = useState(true);
   const [draft, setDraft] = useState<Draft | null>(null);
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<"newest" | "oldest" | "az">("newest");
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "draft" | "scheduled">("all");
+  const [page, setPage] = useState(1);
+  const pageSize = 15;
 
   const load = async () => {
     setLoading(true);
@@ -63,11 +75,14 @@ function AdminQuiz() {
       correct_index: draft.correct_index,
       reference: draft.reference.trim() || null,
       active: draft.active,
+      starts_at: draft.starts_at ? new Date(draft.starts_at).toISOString() : null,
+      ends_at: draft.ends_at ? new Date(draft.ends_at).toISOString() : null,
     };
     const q = draft.id
       ? await (supabase as any).from("quiz_questions").update(payload).eq("id", draft.id)
       : await (supabase as any).from("quiz_questions").insert(payload);
     if (q.error) return toast.error("Erro ao salvar");
+    await logAudit(draft.id ? "update" : "create", "quiz_question", draft.id, { question: payload.question });
     toast.success(draft.id ? "Pergunta atualizada" : "Pergunta criada");
     setDraft(null);
     load();
@@ -75,19 +90,29 @@ function AdminQuiz() {
 
   const remove = async (id: string) => {
     if (!confirm("Excluir esta pergunta?")) return;
+    const target = items.find((x) => x.id === id);
     const { error } = await supabase.from("quiz_questions").delete().eq("id", id);
     if (error) return toast.error("Erro ao excluir");
+    await logAudit("delete", "quiz_question", id, { question: target?.question });
     toast.success("Excluída");
     load();
   };
 
   const toggleActive = async (q: Q) => {
     await (supabase as any).from("quiz_questions").update({ active: !q.active }).eq("id", q.id);
+    await logAudit(q.active ? "deactivate" : "activate", "quiz_question", q.id, {});
+    toast.success(q.active ? "Pergunta ocultada" : "Pergunta publicada");
     load();
   };
 
   const editItem = (q: Q) => {
     const opts = Array.isArray(q.options) ? q.options : [];
+    const toLocal = (v: string | null) => {
+      if (!v) return "";
+      const d = new Date(v);
+      const pad = (n: number) => String(n).padStart(2, "0");
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    };
     setDraft({
       id: q.id,
       question: q.question,
@@ -95,8 +120,35 @@ function AdminQuiz() {
       correct_index: q.correct_index,
       reference: q.reference ?? "",
       active: q.active,
+      starts_at: toLocal(q.starts_at),
+      ends_at: toLocal(q.ends_at),
     });
   };
+
+  const filtered = useMemo(() => {
+    const now = new Date();
+    const inWindow = (q: Q) => {
+      const s = q.starts_at ? new Date(q.starts_at) : null;
+      const e = q.ends_at ? new Date(q.ends_at) : null;
+      if (s && s > now) return false;
+      if (e && e < now) return false;
+      return true;
+    };
+    let list = items.slice();
+    if (statusFilter === "active") list = list.filter((q) => q.active && inWindow(q));
+    else if (statusFilter === "draft") list = list.filter((q) => !q.active);
+    else if (statusFilter === "scheduled") list = list.filter((q) => q.starts_at && new Date(q.starts_at) > now);
+    const term = query.trim().toLowerCase();
+    if (term) list = list.filter((q) => q.question.toLowerCase().includes(term) || (q.reference ?? "").toLowerCase().includes(term));
+    if (sort === "oldest") list.sort((a, b) => a.created_at.localeCompare(b.created_at));
+    else if (sort === "az") list.sort((a, b) => a.question.localeCompare(b.question));
+    else list.sort((a, b) => b.created_at.localeCompare(a.created_at));
+    return list;
+  }, [items, statusFilter, query, sort]);
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, pageCount);
+  const pageItems = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  useEffect(() => setPage(1), [query, sort, statusFilter]);
 
   return (
     <div className="space-y-6">
@@ -195,6 +247,34 @@ function AdminQuiz() {
             Publicada (aparece no site)
           </label>
 
+          <div className="grid sm:grid-cols-2 gap-3">
+            <label className="block text-sm">
+              <span className="text-xs uppercase tracking-wider font-bold text-muted-foreground flex items-center gap-1">
+                <Calendar className="w-3 h-3" /> Início automático (opcional)
+              </span>
+              <input
+                type="datetime-local"
+                value={draft.starts_at}
+                onChange={(e) => setDraft({ ...draft, starts_at: e.target.value })}
+                className="mt-1 w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="text-xs uppercase tracking-wider font-bold text-muted-foreground flex items-center gap-1">
+                <Calendar className="w-3 h-3" /> Fim automático (opcional)
+              </span>
+              <input
+                type="datetime-local"
+                value={draft.ends_at}
+                onChange={(e) => setDraft({ ...draft, ends_at: e.target.value })}
+                className="mt-1 w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
+              />
+            </label>
+          </div>
+          <p className="text-[11px] text-muted-foreground">
+            Se preenchidos, a pergunta só aparece no site dentro deste período (além de precisar estar Publicada).
+          </p>
+
           <div className="flex justify-end gap-2 pt-2">
             <button
               onClick={() => setDraft(null)}
@@ -212,17 +292,39 @@ function AdminQuiz() {
         </div>
       )}
 
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="relative flex-1 min-w-[220px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar por pergunta ou referência…" className="w-full pl-9 pr-3 py-2 rounded-lg border border-input bg-background text-sm" />
+        </div>
+        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)} className="px-2 py-1.5 rounded-md border border-input bg-background text-xs font-bold">
+          <option value="all">Todas</option>
+          <option value="active">Ativas agora</option>
+          <option value="scheduled">Agendadas</option>
+          <option value="draft">Rascunhos</option>
+        </select>
+        <label className="inline-flex items-center gap-2 text-xs text-muted-foreground font-bold">
+          <ArrowUpDown className="w-4 h-4" />
+          <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} className="px-2 py-1.5 rounded-md border border-input bg-background text-xs">
+            <option value="newest">Mais recentes</option>
+            <option value="oldest">Mais antigas</option>
+            <option value="az">A–Z</option>
+          </select>
+        </label>
+        <span className="text-xs text-muted-foreground">{filtered.length} resultado(s)</span>
+      </div>
+
       <div className="bg-card border border-border rounded-2xl overflow-hidden">
         {loading && (
           <div className="p-10 text-center text-muted-foreground text-sm">Carregando…</div>
         )}
-        {!loading && items.length === 0 && (
+        {!loading && pageItems.length === 0 && (
           <div className="p-10 text-center text-muted-foreground text-sm">
-            Nenhuma pergunta cadastrada ainda.
+            Nenhuma pergunta neste filtro.
           </div>
         )}
         <ul className="divide-y divide-border">
-          {items.map((q) => (
+          {pageItems.map((q) => (
             <li key={q.id} className="p-4 flex items-start gap-3">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
@@ -234,6 +336,14 @@ function AdminQuiz() {
                   {q.reference && (
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-gold/20 text-gold-foreground font-bold">
                       {q.reference}
+                    </span>
+                  )}
+                  {(q.starts_at || q.ends_at) && (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-bold inline-flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      {q.starts_at ? new Date(q.starts_at).toLocaleString("pt-BR") : "…"}
+                      {" → "}
+                      {q.ends_at ? new Date(q.ends_at).toLocaleString("pt-BR") : "…"}
                     </span>
                   )}
                 </div>
@@ -280,6 +390,15 @@ function AdminQuiz() {
             </li>
           ))}
         </ul>
+        {pageCount > 1 && (
+          <div className="flex items-center justify-between p-3 border-t border-border text-xs">
+            <span className="text-muted-foreground">Página {currentPage} de {pageCount}</span>
+            <div className="flex items-center gap-1">
+              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-1.5 rounded border border-border disabled:opacity-40"><ChevronLeft className="w-4 h-4" /></button>
+              <button onClick={() => setPage((p) => Math.min(pageCount, p + 1))} disabled={currentPage === pageCount} className="p-1.5 rounded border border-border disabled:opacity-40"><ChevronRight className="w-4 h-4" /></button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

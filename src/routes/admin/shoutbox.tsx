@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Trash2, Check, X, MessageSquare, RefreshCw } from "lucide-react";
+import { logAudit } from "@/lib/audit-log";
+import { Trash2, Check, X, MessageSquare, RefreshCw, Search, ChevronLeft, ChevronRight, ArrowUpDown } from "lucide-react";
 
 export const Route = createFileRoute("/admin/shoutbox")({ component: AdminShoutbox });
 
@@ -18,6 +19,10 @@ function AdminShoutbox() {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "approved" | "pending">("all");
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<"newest" | "oldest" | "name">("newest");
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
 
   const load = async () => {
     setLoading(true);
@@ -25,7 +30,7 @@ function AdminShoutbox() {
       .from("shoutbox_messages")
       .select("id,name,message,approved,created_at")
       .order("created_at", { ascending: false })
-      .limit(200);
+      .limit(1000);
     setMessages((data ?? []) as Msg[]);
     setLoading(false);
   };
@@ -51,19 +56,35 @@ function AdminShoutbox() {
       .update({ approved: !m.approved })
       .eq("id", m.id);
     if (error) return toast.error("Falha ao atualizar");
+    await logAudit(m.approved ? "hide" : "approve", "shoutbox_message", m.id, { name: m.name });
     toast.success(m.approved ? "Mensagem oculta" : "Mensagem liberada");
   };
 
   const remove = async (id: string) => {
     if (!confirm("Remover esta mensagem definitivamente?")) return;
+    const target = messages.find((x) => x.id === id);
     const { error } = await supabase.from("shoutbox_messages").delete().eq("id", id);
     if (error) return toast.error("Falha ao remover");
+    await logAudit("delete", "shoutbox_message", id, { name: target?.name, message: target?.message });
     toast.success("Removida");
   };
 
-  const filtered = messages.filter((m) =>
-    filter === "all" ? true : filter === "approved" ? m.approved : !m.approved,
-  );
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    let list = messages.filter((m) =>
+      filter === "all" ? true : filter === "approved" ? m.approved : !m.approved,
+    );
+    if (q) list = list.filter((m) => m.name.toLowerCase().includes(q) || m.message.toLowerCase().includes(q));
+    if (sort === "oldest") list = [...list].sort((a, b) => a.created_at.localeCompare(b.created_at));
+    else if (sort === "name") list = [...list].sort((a, b) => a.name.localeCompare(b.name));
+    else list = [...list].sort((a, b) => b.created_at.localeCompare(a.created_at));
+    return list;
+  }, [messages, filter, query, sort]);
+
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, pageCount);
+  const pageItems = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  useEffect(() => setPage(1), [query, sort, filter]);
 
   return (
     <div className="space-y-6">
@@ -95,17 +116,44 @@ function AdminShoutbox() {
         </div>
       </header>
 
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="relative flex-1 min-w-[220px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Buscar por nome ou mensagem…"
+            className="w-full pl-9 pr-3 py-2 rounded-lg border border-input bg-background text-sm"
+          />
+        </div>
+        <label className="inline-flex items-center gap-2 text-xs text-muted-foreground font-bold">
+          <ArrowUpDown className="w-4 h-4" />
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as typeof sort)}
+            className="px-2 py-1.5 rounded-md border border-input bg-background text-xs"
+          >
+            <option value="newest">Mais recentes</option>
+            <option value="oldest">Mais antigas</option>
+            <option value="name">Nome (A–Z)</option>
+          </select>
+        </label>
+        <span className="text-xs text-muted-foreground">
+          {filtered.length} resultado(s)
+        </span>
+      </div>
+
       <div className="bg-card border border-border rounded-2xl overflow-hidden">
         {loading && (
           <div className="p-10 text-center text-muted-foreground text-sm">Carregando…</div>
         )}
-        {!loading && filtered.length === 0 && (
+        {!loading && pageItems.length === 0 && (
           <div className="p-10 text-center text-muted-foreground text-sm">
             Nenhuma mensagem neste filtro.
           </div>
         )}
         <ul className="divide-y divide-border">
-          {filtered.map((m) => (
+          {pageItems.map((m) => (
             <li key={m.id} className="p-4 flex items-start gap-3">
               <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold uppercase text-xs shrink-0">
                 {m.name.slice(0, 1)}
@@ -149,6 +197,15 @@ function AdminShoutbox() {
             </li>
           ))}
         </ul>
+        {pageCount > 1 && (
+          <div className="flex items-center justify-between p-3 border-t border-border text-xs">
+            <span className="text-muted-foreground">Página {currentPage} de {pageCount}</span>
+            <div className="flex items-center gap-1">
+              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-1.5 rounded border border-border disabled:opacity-40"><ChevronLeft className="w-4 h-4" /></button>
+              <button onClick={() => setPage((p) => Math.min(pageCount, p + 1))} disabled={currentPage === pageCount} className="p-1.5 rounded border border-border disabled:opacity-40"><ChevronRight className="w-4 h-4" /></button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

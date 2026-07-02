@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { SongRequestForm } from "@/components/site/SongRequestForm";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { Music, Clock, CheckCircle2, XCircle } from "lucide-react";
 
 export const Route = createFileRoute("/pedidos")({
@@ -37,11 +38,14 @@ interface Req {
 function PedidosPage() {
   const [items, setItems] = useState<Req[]>([]);
   const [loading, setLoading] = useState(true);
+  const prevStatusRef = useRef<Record<string, string>>({});
+  const myIdsRef = useRef<Set<string>>(new Set());
 
   const load = async () => {
     if (typeof window === "undefined") return;
     setLoading(true);
     const ids: string[] = JSON.parse(localStorage.getItem("my-song-requests") || "[]");
+    myIdsRef.current = new Set(ids);
     if (ids.length === 0) {
       setItems([]);
       setLoading(false);
@@ -52,18 +56,38 @@ function PedidosPage() {
       .select("id,user_name,song_title,artist,status,created_at")
       .in("id", ids)
       .order("created_at", { ascending: false });
-    setItems((data ?? []) as Req[]);
+    const rows = (data ?? []) as Req[];
+    prevStatusRef.current = Object.fromEntries(rows.map((r) => [r.id, r.status]));
+    setItems(rows);
     setLoading(false);
   };
 
   useEffect(() => {
     load();
-    const iv = setInterval(load, 30000);
     const onFocus = () => load();
     window.addEventListener("focus", onFocus);
+    const channel = supabase
+      .channel("my-song-requests")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "song_requests" },
+        (payload: any) => {
+          const row = payload.new as Req;
+          if (!myIdsRef.current.has(row.id)) return;
+          const prev = prevStatusRef.current[row.id];
+          setItems((cur) => cur.map((r) => (r.id === row.id ? { ...r, ...row } : r)));
+          prevStatusRef.current[row.id] = row.status;
+          if (prev && prev !== row.status) {
+            if (row.status === "played") toast.success(`🎶 Sua música "${row.song_title}" está tocando!`);
+            else if (row.status === "rejected") toast.info(`Seu pedido "${row.song_title}" não foi aprovado desta vez.`);
+            else toast.message(`Status atualizado: ${row.status}`);
+          }
+        },
+      )
+      .subscribe();
     return () => {
-      clearInterval(iv);
       window.removeEventListener("focus", onFocus);
+      supabase.removeChannel(channel);
     };
   }, []);
 

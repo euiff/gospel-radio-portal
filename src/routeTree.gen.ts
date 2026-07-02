@@ -28,6 +28,7 @@ import { Route as AdminPedidosRouteImport } from './routes/admin/pedidos'
 import { Route as AdminOracaoRouteImport } from './routes/admin/oracao'
 import { Route as AdminNoticiasRouteImport } from './routes/admin/noticias'
 import { Route as AdminCategoriasRouteImport } from './routes/admin/categorias'
+import { Route as AdminAuditRouteImport } from './routes/admin/audit'
 
 const ProgramacaoRoute = ProgramacaoRouteImport.update({
   id: '/programacao',
@@ -124,6 +125,11 @@ const AdminCategoriasRoute = AdminCategoriasRouteImport.update({
   path: '/categorias',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAuditRoute = AdminAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -132,6 +138,7 @@ export interface FileRoutesByFullPath {
   '/ouvinte': typeof OuvinteRoute
   '/pedidos': typeof PedidosRoute
   '/programacao': typeof ProgramacaoRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/noticias': typeof AdminNoticiasRoute
   '/admin/oracao': typeof AdminOracaoRoute
@@ -152,6 +159,7 @@ export interface FileRoutesByTo {
   '/ouvinte': typeof OuvinteRoute
   '/pedidos': typeof PedidosRoute
   '/programacao': typeof ProgramacaoRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/noticias': typeof AdminNoticiasRoute
   '/admin/oracao': typeof AdminOracaoRoute
@@ -174,6 +182,7 @@ export interface FileRoutesById {
   '/ouvinte': typeof OuvinteRoute
   '/pedidos': typeof PedidosRoute
   '/programacao': typeof ProgramacaoRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/noticias': typeof AdminNoticiasRoute
   '/admin/oracao': typeof AdminOracaoRoute
@@ -197,6 +206,7 @@ export interface FileRouteTypes {
     | '/ouvinte'
     | '/pedidos'
     | '/programacao'
+    | '/admin/audit'
     | '/admin/categorias'
     | '/admin/noticias'
     | '/admin/oracao'
@@ -217,6 +227,7 @@ export interface FileRouteTypes {
     | '/ouvinte'
     | '/pedidos'
     | '/programacao'
+    | '/admin/audit'
     | '/admin/categorias'
     | '/admin/noticias'
     | '/admin/oracao'
@@ -238,6 +249,7 @@ export interface FileRouteTypes {
     | '/ouvinte'
     | '/pedidos'
     | '/programacao'
+    | '/admin/audit'
     | '/admin/categorias'
     | '/admin/noticias'
     | '/admin/oracao'
@@ -399,10 +411,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriasRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/audit': {
+      id: '/admin/audit'
+      path: '/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AdminAuditRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
 interface AdminRouteChildren {
+  AdminAuditRoute: typeof AdminAuditRoute
   AdminCategoriasRoute: typeof AdminCategoriasRoute
   AdminNoticiasRoute: typeof AdminNoticiasRoute
   AdminOracaoRoute: typeof AdminOracaoRoute
@@ -417,6 +437,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAuditRoute: AdminAuditRoute,
   AdminCategoriasRoute: AdminCategoriasRoute,
   AdminNoticiasRoute: AdminNoticiasRoute,
   AdminOracaoRoute: AdminOracaoRoute,
