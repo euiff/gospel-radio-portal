@@ -20,6 +20,19 @@ const ScheduleDisplay = lazy(() =>
 const PrayerMural = lazy(() =>
   import("@/components/site/PrayerMural").then((m) => ({ default: m.PrayerMural })),
 );
+const Shoutbox = lazy(() =>
+  import("@/components/site/Shoutbox").then((m) => ({ default: m.Shoutbox })),
+);
+const TopChart = lazy(() =>
+  import("@/components/site/TopChart").then((m) => ({ default: m.TopChart })),
+);
+const QuizCard = lazy(() =>
+  import("@/components/site/QuizCard").then((m) => ({ default: m.QuizCard })),
+);
+import { NewsTicker } from "@/components/site/NewsTicker";
+import { OnAirBadge } from "@/components/site/OnAirBadge";
+import { AudioVisualizer } from "@/components/site/AudioVisualizer";
+import { RecentTracks } from "@/components/site/RecentTracks";
 
 const programsTodayQueryOptions = (dow: number) =>
   queryOptions({
@@ -92,66 +105,112 @@ function Home() {
   return (
     <main>
       {/* HERO */}
-      <section className="relative overflow-hidden min-h-[70vh] flex items-center">
+      <section className="relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img
-            src={heroImg}
-            alt=""
-            className="w-full h-full object-cover"
-            width={1600}
-            height={900}
-            fetchPriority="high"
-            loading="eager"
-          />
-          <div className="absolute inset-0 gradient-deep opacity-90" />
+          <img src={heroImg} alt="" className="w-full h-full object-cover" fetchPriority="high" loading="eager" />
+          <div className="absolute inset-0 gradient-deep opacity-95" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(201,168,76,0.15),transparent_60%)]" />
         </div>
-        <div className="relative z-10 container mx-auto px-4 py-16 md:py-24 text-white">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-gold/40 text-gold text-[10px] md:text-xs uppercase tracking-widest mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" /> No ar agora
+        <div className="relative z-10 container mx-auto px-4 py-14 md:py-24 text-white">
+          <div className="grid lg:grid-cols-12 gap-10 items-center">
+            <div className="lg:col-span-7">
+              <OnAirBadge label={isPlaying ? "TRANSMITINDO AGORA" : "PRONTO PARA OUVIR"} />
+              <h1 className="font-display leading-[1.05] mb-6 mt-6">
+                {siteSettings?.hero_title ? (
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: siteSettings.hero_title.replace(
+                        /(.+)\s(.+)$/,
+                        '$1 <span class="text-gradient-gold italic">$2</span>',
+                      ),
+                    }}
+                  />
+                ) : (
+                  <>
+                    A música que <span className="text-gradient-gold italic">renova</span> sua fé
+                  </>
+                )}
+              </h1>
+              <p className="text-base md:text-xl text-white/80 mb-8 max-w-2xl leading-relaxed">
+                {siteSettings?.hero_subtitle ||
+                  settings?.tagline ||
+                  "Louvor, palavra e notícias 24h — uma experiência de rádio profissional para toda a família."}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
+                  onClick={toggle}
+                  aria-label={isPlaying ? "Pausar rádio" : "Ouvir agora"}
+                  className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full gradient-gold text-gold-foreground font-bold shadow-glow hover:scale-105 active:scale-95 transition min-w-[200px]"
+                >
+                  {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
+                  {isPlaying ? "Pausar rádio" : "Ouvir ao vivo"}
+                </button>
+                {settings?.whatsapp && (
+                  <a
+                    href={`https://wa.me/${settings.whatsapp}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-white/30 hover:bg-white/10 backdrop-blur-sm transition font-medium"
+                  >
+                    <MessageCircle className="w-5 h-5" /> Fale com a rádio
+                  </a>
+                )}
+              </div>
+
+              <div className="mt-10 grid grid-cols-3 gap-4 max-w-md">
+                <div className="text-center">
+                  <div className="font-display text-3xl text-gold">24h</div>
+                  <div className="text-[10px] uppercase tracking-widest text-white/60">No ar</div>
+                </div>
+                <div className="text-center border-x border-white/10">
+                  <div className="font-display text-3xl text-gold">HD</div>
+                  <div className="text-[10px] uppercase tracking-widest text-white/60">Qualidade</div>
+                </div>
+                <div className="text-center">
+                  <div className="font-display text-3xl text-gold">∞</div>
+                  <div className="text-[10px] uppercase tracking-widest text-white/60">Louvor</div>
+                </div>
+              </div>
             </div>
-            <h1 className="font-display leading-[1.1] mb-6">
-              {siteSettings?.hero_title ? (
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: siteSettings.hero_title.replace(
-                      /(.+)\s(.+)$/,
-                      '$1 <span class="text-gradient-gold italic">$2</span>',
-                    ),
-                  }}
-                />
-              ) : (
-                <>
-                  A música que <span className="text-gradient-gold italic">renova</span> sua fé
-                </>
-              )}
-            </h1>
-            <p className="text-base md:text-xl text-white/80 mb-8 max-w-2xl leading-relaxed">
-              {siteSettings?.hero_subtitle ||
-                settings?.tagline ||
-                "Notícias, louvor e palavra 24 horas por dia, levando a mensagem de esperança para todo o mundo."}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button
-                onClick={toggle}
-                aria-label={isPlaying ? "Pausar rádio" : "Ouvir agora"}
-                aria-pressed={isPlaying}
-                className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full gradient-gold text-gold-foreground font-bold shadow-glow hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/50 transition min-w-[200px]"
-              >
-                {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
-                {isPlaying ? "Pausar rádio" : "Ouvir agora"}
-              </button>
-              <Link
-                to="/categoria/$slug"
-                params={{ slug: "noticias" }}
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-white/30 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white backdrop-blur-sm transition active:scale-95 font-medium"
-              >
-                Explorar notícias <ArrowRight className="w-4 h-4" />
-              </Link>
+
+            {/* Player card */}
+            <div className="lg:col-span-5">
+              <div className="bg-white/5 backdrop-blur-md border border-gold/30 rounded-3xl p-6 md:p-8 shadow-emerald">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className={`relative w-20 h-20 rounded-full overflow-hidden border-4 border-gold/40 ${isPlaying ? "animate-spin-slow" : ""}`}>
+                    {settings?.logo_url ? (
+                      <img src={settings.logo_url} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full gradient-emerald" />
+                    )}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-2.5 h-2.5 rounded-full bg-deep-darker border border-gold/60" />
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[10px] uppercase tracking-widest text-gold font-bold mb-1">Tocando agora</div>
+                    <div className="font-display text-lg text-white truncate">
+                      {settings?.station_name || "Sua Rádio"}
+                    </div>
+                    <AudioVisualizer active={isPlaying} bars={6} className="mt-1 h-4" />
+                  </div>
+                </div>
+                <div className="border-t border-white/10 pt-4">
+                  <div className="text-[10px] uppercase tracking-widest text-white/50 font-bold mb-3 flex items-center gap-2">
+                    <Music className="w-3 h-3" /> Últimas tocadas
+                  </div>
+                  <div className="text-white [&_*]:!text-white/90 [&_.text-primary]:!text-white [&_.text-muted-foreground]:!text-white/50">
+                    <RecentTracks limit={4} />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* News ticker */}
+      <NewsTicker items={(latest ?? []).slice(0, 8)} />
 
       {/* FEATURED + LATEST */}
       <section className="container mx-auto px-4 py-12 md:py-20">
@@ -313,90 +372,62 @@ function Home() {
         </div>
       </section>
 
-      {/* FEATURES TABS / SECTION */}
-      <section id="interatividade" className="bg-white py-16 md:py-24 border-b border-border">
+
+      {/* CALL TO ACTION */}
+      {/* TOP CHART + QUIZ */}
+      <section className="bg-muted/40 py-16 md:py-20 border-y border-border">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <div className="text-xs uppercase tracking-widest text-accent font-bold mb-3">
-              Interatividade
-            </div>
-            <h2 className="font-display text-primary text-4xl md:text-5xl">
-              Participe da Nossa Rádio
-            </h2>
-            <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-              Peça sua música favorita, confira nossa grade completa e deixe seu pedido de oração no
-              nosso mural comunitário.
-            </p>
+          <div className="text-center mb-12">
+            <div className="text-xs uppercase tracking-widest text-accent font-bold mb-3">Ranking & Cultura</div>
+            <h2 className="font-display text-primary">O que está bombando</h2>
           </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-            {/* Sidebar: Schedule and Request Form */}
-            <div className="lg:col-span-4 space-y-8">
-              <div id="programacao">
-                <Suspense fallback={<Skeleton className="h-[400px] w-full rounded-2xl" />}>
-                  <ScheduleDisplay />
-                </Suspense>
-              </div>
-              <div id="pedidos">
-                <Suspense fallback={<Skeleton className="h-[300px] w-full rounded-2xl" />}>
-                  <SongRequestForm />
-                </Suspense>
-              </div>
+          <div className="grid lg:grid-cols-5 gap-8">
+            <div className="lg:col-span-3">
+              <Suspense fallback={<Skeleton className="h-[500px] w-full rounded-2xl" />}>
+                <TopChart />
+              </Suspense>
             </div>
-
-            {/* Main Content: Prayer Mural */}
-            <div className="lg:col-span-8" id="oracao">
-              <Suspense fallback={<Skeleton className="h-[600px] w-full rounded-2xl" />}>
-                <PrayerMural />
+            <div className="lg:col-span-2">
+              <Suspense fallback={<Skeleton className="h-[500px] w-full rounded-2xl" />}>
+                <QuizCard />
               </Suspense>
             </div>
           </div>
         </div>
       </section>
 
-      {/* INTERACTIVE QUICK NAV */}
-      <section className="bg-primary/5 py-12 border-b border-border">
+      {/* SHOUTBOX + PRAYER */}
+      <section className="bg-white py-16 md:py-20 border-b border-border">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <a
-              href="#pedidos"
-              className="flex flex-col items-center p-6 bg-card rounded-2xl border border-border hover:border-accent hover:shadow-md transition-all text-center group"
-            >
-              <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Music className="w-6 h-6 text-accent" />
-              </div>
-              <h3 className="font-bold text-primary mb-1">Pedir Música</h3>
-              <p className="text-xs text-muted-foreground">Mande seu pedido via WhatsApp</p>
-            </a>
-            <a
-              href="#oracao"
-              className="flex flex-col items-center p-6 bg-card rounded-2xl border border-border hover:border-accent hover:shadow-md transition-all text-center group"
-            >
-              <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Heart className="w-6 h-6 text-red-500" />
-              </div>
-              <h3 className="font-bold text-primary mb-1">Mural de Oração</h3>
-              <p className="text-xs text-muted-foreground">Compartilhe sua intenção</p>
-            </a>
-            <a
-              href="#programacao"
-              className="flex flex-col items-center p-6 bg-card rounded-2xl border border-border hover:border-accent hover:shadow-md transition-all text-center group"
-            >
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <MessageCircle className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="font-bold text-primary mb-1">Grade Completa</h3>
-              <p className="text-xs text-muted-foreground">Confira nossos horários</p>
-            </a>
+          <div className="text-center mb-12">
+            <div className="text-xs uppercase tracking-widest text-accent font-bold mb-3">Comunidade</div>
+            <h2 className="font-display text-primary">A rádio é sua — participe</h2>
+          </div>
+          <div className="grid lg:grid-cols-2 gap-8">
+            <Suspense fallback={<Skeleton className="h-[520px] w-full rounded-2xl" />}>
+              <Shoutbox />
+            </Suspense>
+            <div className="space-y-6">
+              <Suspense fallback={<Skeleton className="h-[240px] w-full rounded-2xl" />}>
+                <SongRequestForm />
+              </Suspense>
+              <Suspense fallback={<Skeleton className="h-[240px] w-full rounded-2xl" />}>
+                <ScheduleDisplay />
+              </Suspense>
+            </div>
+          </div>
+          <div className="mt-8" id="oracao">
+            <Suspense fallback={<Skeleton className="h-[500px] w-full rounded-2xl" />}>
+              <PrayerMural />
+            </Suspense>
           </div>
         </div>
       </section>
 
-      {/* CALL TO ACTION */}
-      <section className="bg-primary text-primary-foreground py-16 md:py-20 text-center">
+      <section className="gradient-emerald text-white py-16 md:py-20 text-center">
         <div className="container mx-auto px-4 max-w-4xl">
           <h2 className="font-display text-4xl md:text-5xl mb-6">Sua participação faz a rádio!</h2>
-          <p className="text-lg md:text-xl text-primary-foreground/80 mb-10 leading-relaxed">
+          <p className="text-lg md:text-xl text-white/85 mb-10 leading-relaxed">
             Siga-nos nas redes sociais, mande seu testemunho e ajude a espalhar a palavra de Deus
             através da música.
           </p>

@@ -130,6 +130,30 @@ export type Database = {
           },
         ]
       }
+      played_songs: {
+        Row: {
+          artist: string | null
+          cover_url: string | null
+          id: string
+          played_at: string
+          title: string
+        }
+        Insert: {
+          artist?: string | null
+          cover_url?: string | null
+          id?: string
+          played_at?: string
+          title: string
+        }
+        Update: {
+          artist?: string | null
+          cover_url?: string | null
+          id?: string
+          played_at?: string
+          title?: string
+        }
+        Relationships: []
+      }
       prayer_comments: {
         Row: {
           content: string
@@ -249,6 +273,74 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_answers: {
+        Row: {
+          created_at: string
+          id: string
+          is_correct: boolean
+          question_id: string
+          selected_index: number
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_correct: boolean
+          question_id: string
+          selected_index: number
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          question_id?: string
+          selected_index?: number
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_questions: {
+        Row: {
+          active: boolean
+          correct_index: number
+          created_at: string
+          id: string
+          options: Json
+          question: string
+          reference: string | null
+        }
+        Insert: {
+          active?: boolean
+          correct_index: number
+          created_at?: string
+          id?: string
+          options: Json
+          question: string
+          reference?: string | null
+        }
+        Update: {
+          active?: boolean
+          correct_index?: number
+          created_at?: string
+          id?: string
+          options?: Json
+          question?: string
+          reference?: string | null
+        }
+        Relationships: []
+      }
       radio_settings: {
         Row: {
           api_now_playing: string | null
@@ -291,6 +383,33 @@ export type Database = {
           updated_at?: string
           whatsapp?: string | null
           youtube?: string | null
+        }
+        Relationships: []
+      }
+      shoutbox_messages: {
+        Row: {
+          approved: boolean
+          created_at: string
+          id: string
+          message: string
+          name: string
+          user_id: string | null
+        }
+        Insert: {
+          approved?: boolean
+          created_at?: string
+          id?: string
+          message: string
+          name: string
+          user_id?: string | null
+        }
+        Update: {
+          approved?: boolean
+          created_at?: string
+          id?: string
+          message?: string
+          name?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -366,6 +485,77 @@ export type Database = {
           song_title?: string
           status?: string
           user_name?: string
+        }
+        Relationships: []
+      }
+      song_votes: {
+        Row: {
+          created_at: string
+          id: string
+          song_id: string
+          user_id: string
+          week_start: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          song_id: string
+          user_id: string
+          week_start: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          song_id?: string
+          user_id?: string
+          week_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "song_votes_song_id_fkey"
+            columns: ["song_id"]
+            isOneToOne: false
+            referencedRelation: "top_songs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      top_songs: {
+        Row: {
+          active: boolean
+          artist: string
+          cover_url: string | null
+          created_at: string
+          id: string
+          position: number
+          title: string
+          updated_at: string
+          votes: number
+          youtube_url: string | null
+        }
+        Insert: {
+          active?: boolean
+          artist: string
+          cover_url?: string | null
+          created_at?: string
+          id?: string
+          position?: number
+          title: string
+          updated_at?: string
+          votes?: number
+          youtube_url?: string | null
+        }
+        Update: {
+          active?: boolean
+          artist?: string
+          cover_url?: string | null
+          created_at?: string
+          id?: string
+          position?: number
+          title?: string
+          updated_at?: string
+          votes?: number
+          youtube_url?: string | null
         }
         Relationships: []
       }
