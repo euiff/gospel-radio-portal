@@ -452,10 +452,60 @@ function Home() {
       </section>
 
       {/* CALL TO ACTION */}
-      <section className="bg-primary text-primary-foreground py-16 md:py-20 text-center">
+      {/* TOP CHART + QUIZ */}
+      <section className="bg-muted/40 py-16 md:py-20 border-y border-border">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="text-xs uppercase tracking-widest text-accent font-bold mb-3">Ranking & Cultura</div>
+            <h2 className="font-display text-primary">O que está bombando</h2>
+          </div>
+          <div className="grid lg:grid-cols-5 gap-8">
+            <div className="lg:col-span-3">
+              <Suspense fallback={<Skeleton className="h-[500px] w-full rounded-2xl" />}>
+                <TopChart />
+              </Suspense>
+            </div>
+            <div className="lg:col-span-2">
+              <Suspense fallback={<Skeleton className="h-[500px] w-full rounded-2xl" />}>
+                <QuizCard />
+              </Suspense>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SHOUTBOX + PRAYER */}
+      <section className="bg-white py-16 md:py-20 border-b border-border">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="text-xs uppercase tracking-widest text-accent font-bold mb-3">Comunidade</div>
+            <h2 className="font-display text-primary">A rádio é sua — participe</h2>
+          </div>
+          <div className="grid lg:grid-cols-2 gap-8">
+            <Suspense fallback={<Skeleton className="h-[520px] w-full rounded-2xl" />}>
+              <Shoutbox />
+            </Suspense>
+            <div className="space-y-6">
+              <Suspense fallback={<Skeleton className="h-[240px] w-full rounded-2xl" />}>
+                <SongRequestForm />
+              </Suspense>
+              <Suspense fallback={<Skeleton className="h-[240px] w-full rounded-2xl" />}>
+                <ScheduleDisplay />
+              </Suspense>
+            </div>
+          </div>
+          <div className="mt-8" id="oracao">
+            <Suspense fallback={<Skeleton className="h-[500px] w-full rounded-2xl" />}>
+              <PrayerMural />
+            </Suspense>
+          </div>
+        </div>
+      </section>
+
+      <section className="gradient-emerald text-white py-16 md:py-20 text-center">
         <div className="container mx-auto px-4 max-w-4xl">
           <h2 className="font-display text-4xl md:text-5xl mb-6">Sua participação faz a rádio!</h2>
-          <p className="text-lg md:text-xl text-primary-foreground/80 mb-10 leading-relaxed">
+          <p className="text-lg md:text-xl text-white/85 mb-10 leading-relaxed">
             Siga-nos nas redes sociais, mande seu testemunho e ajude a espalhar a palavra de Deus
             através da música.
           </p>
