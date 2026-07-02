@@ -14,6 +14,8 @@ const defaultNav = [
   { to: "/categoria/eventos", label: "Eventos" },
   { to: "/categoria/devocional", label: "Devocional" },
   { to: "/programacao", label: "Programação" },
+  { to: "/ouvinte", label: "Ouvinte" },
+  { to: "/pedidos", label: "Pedidos" },
 ];
 
 const FALLBACK_STATION_NAME = "Alternativa gospel";
@@ -34,6 +36,18 @@ function PublicNavLink({ item, className }: { item: NavItem; className: string }
   if (to === "/programacao")
     return (
       <Link to="/programacao" className={className}>
+        {label}
+      </Link>
+    );
+  if (to === "/ouvinte")
+    return (
+      <Link to="/ouvinte" className={className}>
+        {label}
+      </Link>
+    );
+  if (to === "/pedidos")
+    return (
+      <Link to="/pedidos" className={className}>
         {label}
       </Link>
     );
