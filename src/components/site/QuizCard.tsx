@@ -31,10 +31,13 @@ export function QuizCard() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase
+      const nowIso = new Date().toISOString();
+      const { data } = await (supabase as any)
         .from("quiz_questions")
-        .select("id,question,options,correct_index,reference")
+        .select("id,question,options,correct_index,reference,starts_at,ends_at")
         .eq("active", true)
+        .or(`starts_at.is.null,starts_at.lte.${nowIso}`)
+        .or(`ends_at.is.null,ends_at.gte.${nowIso}`)
         .limit(30);
       if (data && data.length) {
         const daySeed = new Date().toISOString().slice(0, 10).replace(/-/g, "");
