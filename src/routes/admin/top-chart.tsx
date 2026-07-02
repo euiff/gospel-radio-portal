@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Trophy, Plus, Trash2, Edit3, X, Calendar, RotateCcw } from "lucide-react";
+import { logAudit } from "@/lib/audit-log";
+import { Trophy, Plus, Trash2, Edit3, X, Calendar, RotateCcw, Search, ArrowUpDown, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/top-chart")({ component: AdminTopChart });
 
@@ -45,6 +46,12 @@ function AdminTopChart() {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [weekStart, setWeekStart] = useState("");
   const [weekEnd, setWeekEnd] = useState("");
+  const [resetting, setResetting] = useState(false);
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<"votes" | "position" | "az">("votes");
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "hidden">("all");
+  const [page, setPage] = useState(1);
+  const pageSize = 15;
 
   const load = async () => {
     setLoading(true);
@@ -82,6 +89,7 @@ function AdminTopChart() {
       ? await (supabase as any).from("top_songs").update(payload).eq("id", draft.id)
       : await (supabase as any).from("top_songs").insert({ ...payload, votes: 0 });
     if (q.error) return toast.error("Erro ao salvar");
+    await logAudit(draft.id ? "update" : "create", "top_song", draft.id, { title: payload.title, artist: payload.artist });
     toast.success("Salvo");
     setDraft(null);
     load();
@@ -89,32 +97,56 @@ function AdminTopChart() {
 
   const remove = async (id: string) => {
     if (!confirm("Remover esta música do ranking?")) return;
+    const target = songs.find((x) => x.id === id);
     const { error } = await supabase.from("top_songs").delete().eq("id", id);
     if (error) return toast.error("Erro ao remover");
+    await logAudit("delete", "top_song", id, { title: target?.title });
+    toast.success("Música removida");
     load();
   };
 
   const toggleActive = async (s: Song) => {
     await (supabase as any).from("top_songs").update({ active: !s.active }).eq("id", s.id);
+    await logAudit(s.active ? "deactivate" : "activate", "top_song", s.id, { title: s.title });
+    toast.success(s.active ? "Música ocultada" : "Música ativada");
     load();
   };
 
   const resetWeek = async () => {
     if (!weekStart || !weekEnd) return toast.error("Defina início e fim da semana");
-    if (
-      !confirm(
-        "Isto zera TODOS os votos e define uma nova semana para as músicas ativas. Confirmar?",
-      )
-    )
-      return;
+    if (weekEnd < weekStart) return toast.error("A data final deve ser após a inicial");
+    if (!confirm("Isto zera TODOS os votos e define uma nova semana para as músicas ativas. Confirmar?")) return;
+    setResetting(true);
+    const tId = toast.loading("Iniciando nova semana e zerando votos…");
     const { error } = await (supabase as any).rpc("reset_top_chart_week", {
       _start: weekStart,
       _end: weekEnd,
     });
-    if (error) return toast.error("Falha ao reiniciar: " + error.message);
-    toast.success("Nova semana iniciada! Votos zerados.");
+    setResetting(false);
+    if (error) {
+      toast.error("Falha ao reiniciar: " + error.message, { id: tId });
+      return;
+    }
+    await logAudit("reset_week", "top_chart", null, { week_start: weekStart, week_end: weekEnd });
+    toast.success(`Nova semana iniciada (${weekStart} → ${weekEnd}). Votos zerados! 🎉`, { id: tId, duration: 5000 });
     load();
   };
+
+  const filtered = useMemo(() => {
+    let list = songs.slice();
+    if (statusFilter === "active") list = list.filter((s) => s.active);
+    else if (statusFilter === "hidden") list = list.filter((s) => !s.active);
+    const term = query.trim().toLowerCase();
+    if (term) list = list.filter((s) => s.title.toLowerCase().includes(term) || s.artist.toLowerCase().includes(term));
+    if (sort === "position") list.sort((a, b) => a.position - b.position);
+    else if (sort === "az") list.sort((a, b) => a.title.localeCompare(b.title));
+    else list.sort((a, b) => b.votes - a.votes || a.position - b.position);
+    return list;
+  }, [songs, statusFilter, query, sort]);
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, pageCount);
+  const pageItems = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  useEffect(() => setPage(1), [query, sort, statusFilter]);
 
   return (
     <div className="space-y-6">
@@ -163,9 +195,11 @@ function AdminTopChart() {
         </label>
         <button
           onClick={resetWeek}
-          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-deep text-white font-bold hover:opacity-90 transition"
+          disabled={resetting}
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-deep text-white font-bold hover:opacity-90 transition disabled:opacity-60"
         >
-          <RotateCcw className="w-4 h-4" /> Iniciar nova semana
+          {resetting ? <Loader2 className="w-4 h-4 animate-spin" /> : <RotateCcw className="w-4 h-4" />}
+          {resetting ? "Processando…" : "Iniciar nova semana"}
         </button>
       </section>
 
@@ -247,22 +281,39 @@ function AdminTopChart() {
       )}
 
       <div className="bg-card border border-border rounded-2xl overflow-hidden">
+        <div className="p-3 flex flex-wrap items-center gap-2 border-b border-border">
+          <div className="relative flex-1 min-w-[220px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar por título ou artista…" className="w-full pl-9 pr-3 py-2 rounded-lg border border-input bg-background text-sm" />
+          </div>
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)} className="px-2 py-1.5 rounded-md border border-input bg-background text-xs font-bold">
+            <option value="all">Todas</option>
+            <option value="active">Ativas</option>
+            <option value="hidden">Ocultas</option>
+          </select>
+          <label className="inline-flex items-center gap-2 text-xs text-muted-foreground font-bold">
+            <ArrowUpDown className="w-4 h-4" />
+            <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} className="px-2 py-1.5 rounded-md border border-input bg-background text-xs">
+              <option value="votes">Mais votadas</option>
+              <option value="position">Posição</option>
+              <option value="az">A–Z</option>
+            </select>
+          </label>
+          <span className="text-xs text-muted-foreground">{filtered.length} resultado(s)</span>
+        </div>
         {loading && (
           <div className="p-10 text-center text-muted-foreground text-sm">Carregando…</div>
         )}
-        {!loading && songs.length === 0 && (
+        {!loading && pageItems.length === 0 && (
           <div className="p-10 text-center text-muted-foreground text-sm">
-            Nenhuma música cadastrada.
+            Nenhum resultado neste filtro.
           </div>
         )}
         <ul className="divide-y divide-border">
-          {songs
-            .slice()
-            .sort((a, b) => b.votes - a.votes || a.position - b.position)
-            .map((s, i) => (
+          {pageItems.map((s, i) => (
               <li key={s.id} className="p-4 flex items-center gap-3">
                 <span className="w-8 text-center font-display text-lg text-muted-foreground">
-                  #{i + 1}
+                  #{(currentPage - 1) * pageSize + i + 1}
                 </span>
                 <div className="w-12 h-12 rounded-md bg-primary/10 overflow-hidden shrink-0">
                   {s.cover_url && (
@@ -315,7 +366,17 @@ function AdminTopChart() {
               </li>
             ))}
         </ul>
+        {pageCount > 1 && (
+          <div className="flex items-center justify-between p-3 border-t border-border text-xs">
+            <span className="text-muted-foreground">Página {currentPage} de {pageCount}</span>
+            <div className="flex items-center gap-1">
+              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-1.5 rounded border border-border disabled:opacity-40"><ChevronLeft className="w-4 h-4" /></button>
+              <button onClick={() => setPage((p) => Math.min(pageCount, p + 1))} disabled={currentPage === pageCount} className="p-1.5 rounded border border-border disabled:opacity-40"><ChevronRight className="w-4 h-4" /></button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
+}
 }
