@@ -2,154 +2,180 @@ import {
   Play,
   Pause,
   Volume2,
+  VolumeX,
   Radio as RadioIcon,
   MessageCircle,
-  Instagram,
-  Facebook,
-  Youtube,
+  ChevronUp,
+  ChevronDown,
   Music,
+  Share2,
 } from "lucide-react";
+import { useState } from "react";
 import { useRadio } from "@/lib/radio-context";
+import { AudioVisualizer } from "./AudioVisualizer";
+import { RecentTracks } from "./RecentTracks";
+import { toast } from "sonner";
 
 export function RadioPlayer() {
   const { settings, nowPlaying, isPlaying, volume, toggle, setVolume } = useRadio();
+  const [expanded, setExpanded] = useState(false);
+  const [muted, setMuted] = useState(false);
+
   if (!settings) return null;
 
-  return (
-    <div
-      role="complementary"
-      aria-label="Player de Rádio"
-      className="sticky top-0 z-50 gradient-deep text-white border-b border-gold/30 shadow-glow overflow-hidden"
-    >
-      <div className="container mx-auto px-4 py-2 md:py-3 flex items-center gap-3 md:gap-4">
-        <button
-          onClick={toggle}
-          aria-label={isPlaying ? "Pausar" : "Tocar"}
-          aria-pressed={isPlaying}
-          className="shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-full gradient-gold text-gold-foreground flex items-center justify-center hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/50 transition shadow-glow z-10"
-        >
-          {isPlaying ? (
-            <Pause className="w-6 h-6 md:w-7 md:h-7" />
-          ) : (
-            <Play className="w-6 h-6 md:w-7 md:h-7 ml-0.5" />
-          )}
-        </button>
+  const toggleMute = () => {
+    if (muted) {
+      setVolume(0.8);
+      setMuted(false);
+    } else {
+      setVolume(0);
+      setMuted(true);
+    }
+  };
 
-        <div className="flex-1 min-w-0 py-1 flex items-center gap-3" role="status" aria-live="polite">
-          {settings.logo_url && (
-            <div className="hidden sm:block shrink-0 bg-white/10 p-1 rounded-lg border border-white/10 backdrop-blur-sm">
-              <img 
-                src={settings.logo_url} 
-                alt="" 
-                className="h-10 w-10 md:h-12 md:w-12 object-contain"
-              />
+  const share = async () => {
+    const url = typeof window !== "undefined" ? window.location.origin : "";
+    const data = { title: settings.station_name, text: `Ouvindo ${nowPlaying || settings.station_name} agora! 🎵`, url };
+    if (navigator.share) {
+      try { await navigator.share(data); } catch {}
+    } else {
+      navigator.clipboard.writeText(`${data.text} ${url}`);
+      toast.success("Link copiado!");
+    }
+  };
+
+  return (
+    <>
+      {/* Expanded drawer */}
+      {expanded && (
+        <div className="fixed bottom-[88px] md:bottom-[92px] left-0 right-0 z-40 animate-in slide-in-from-bottom-5">
+          <div className="container mx-auto px-4">
+            <div className="bg-card rounded-2xl shadow-premium border border-border p-5 max-w-2xl mx-auto">
+              <div className="flex items-center gap-2 mb-3">
+                <Music className="w-4 h-4 text-accent" />
+                <h4 className="font-display text-lg text-primary">Últimas Tocadas</h4>
+              </div>
+              <RecentTracks limit={8} />
             </div>
-          )}
-          <div className="min-w-0 flex-1">
+          </div>
+        </div>
+      )}
+
+      {/* Sticky player bar */}
+      <div
+        role="complementary"
+        aria-label="Player de Rádio"
+        className="fixed bottom-0 left-0 right-0 z-50 gradient-deep text-white border-t border-gold/30 shadow-premium"
+      >
+        <div className="container mx-auto px-3 md:px-4 py-2.5 md:py-3 flex items-center gap-3 md:gap-4">
+          {/* Vinyl cover */}
+          <div className="relative shrink-0">
+            <div
+              className={`w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden border-2 border-gold/40 bg-deep-darker ${isPlaying ? "animate-spin-slow" : ""}`}
+            >
+              {settings.logo_url ? (
+                <img src={settings.logo_url} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full gradient-emerald flex items-center justify-center">
+                  <RadioIcon className="w-6 h-6 text-white/70" />
+                </div>
+              )}
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-2 h-2 rounded-full bg-deep-darker border border-gold/60" />
+            </div>
+          </div>
+
+          {/* Play button */}
+          <button
+            onClick={toggle}
+            aria-label={isPlaying ? "Pausar" : "Tocar"}
+            aria-pressed={isPlaying}
+            className="shrink-0 w-11 h-11 md:w-14 md:h-14 rounded-full gradient-gold text-gold-foreground flex items-center justify-center hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/50 transition shadow-glow"
+          >
+            {isPlaying ? (
+              <Pause className="w-5 h-5 md:w-7 md:h-7" />
+            ) : (
+              <Play className="w-5 h-5 md:w-7 md:h-7 ml-0.5" />
+            )}
+          </button>
+
+          {/* Track info */}
+          <div className="flex-1 min-w-0" role="status" aria-live="polite">
             <div className="flex items-center gap-2 text-[10px] md:text-xs uppercase tracking-widest text-gold font-bold">
-              <RadioIcon className="w-3 h-3" />
               {isPlaying ? (
-                <span className="flex items-center gap-1.5">
+                <>
                   <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
                   Ao vivo
-                </span>
+                  <AudioVisualizer active className="ml-1 h-3" bars={4} />
+                </>
               ) : (
                 "Pronto para tocar"
               )}
             </div>
-            <div className="font-display text-base md:text-xl lg:text-2xl truncate leading-tight mt-0.5">
-              {nowPlaying ? (
-                <span className="flex items-center gap-2">
-                  <Music className="w-4 h-4 text-gold animate-bounce shrink-0" aria-hidden="true" />
-                  {nowPlaying}
-                </span>
-              ) : (
-                settings.station_name
-              )}
+            <div className="font-display text-sm md:text-lg lg:text-xl truncate leading-tight mt-0.5">
+              {nowPlaying || settings.station_name}
             </div>
-            <div className="text-[10px] md:text-xs text-white/60 truncate mt-0.5">
+            <div className="text-[10px] md:text-xs text-white/60 truncate">
               {nowPlaying ? settings.station_name : settings.tagline}
             </div>
           </div>
-        </div>
 
-        {/* Desktop Volume */}
-        <div className="hidden md:flex items-center gap-3 w-32 lg:w-44 px-4 border-l border-white/10 ml-2">
-          <Volume2 className="w-4 h-4 text-white/50 shrink-0" />
-          <input
-            type="range"
-            min={0}
-            max={1}
-            step={0.05}
-            value={volume}
-            onChange={(e) => setVolume(parseFloat(e.target.value))}
-            className="w-full accent-gold cursor-pointer h-1.5 bg-white/10 rounded-lg appearance-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
-            aria-label="Volume"
-          />
-        </div>
-
-        {/* Social Icons - Hidden on small mobile, shown on tablet up */}
-        <nav
-          className="hidden sm:flex items-center gap-1.5 md:gap-2 ml-auto"
-          aria-label="Redes Sociais"
-        >
-          {settings.whatsapp && (
-            <a
-              href={`https://wa.me/${settings.whatsapp}`}
-              target="_blank"
-              rel="noreferrer"
-              className="w-10 h-10 rounded-full bg-white/5 hover:bg-gold hover:text-gold-foreground flex items-center justify-center transition active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
-              title="WhatsApp"
-              aria-label={`Falar com ${settings.station_name} no WhatsApp`}
+          {/* Desktop volume */}
+          <div className="hidden md:flex items-center gap-2 w-28 lg:w-40 px-3 border-l border-white/10">
+            <button
+              onClick={toggleMute}
+              aria-label={muted ? "Ativar som" : "Silenciar"}
+              className="text-white/70 hover:text-gold transition"
             >
-              <MessageCircle className="w-5 h-5" />
-            </a>
-          )}
-          {settings.instagram && (
-            <a
-              href={settings.instagram}
-              target="_blank"
-              rel="noreferrer"
-              className="w-10 h-10 rounded-full bg-white/5 hover:bg-gold hover:text-gold-foreground flex items-center justify-center transition active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
-              title="Instagram"
-              aria-label={`Seguir ${settings.station_name} no Instagram`}
-            >
-              <Instagram className="w-5 h-5" />
-            </a>
-          )}
-          <div className="hidden lg:contents">
-            {settings.facebook && (
-              <a
-                href={settings.facebook}
-                target="_blank"
-                rel="noreferrer"
-                className="w-10 h-10 rounded-full bg-white/5 hover:bg-gold hover:text-gold-foreground flex items-center justify-center transition active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
-                title="Facebook"
-                aria-label={`Seguir ${settings.station_name} no Facebook`}
-              >
-                <Facebook className="w-5 h-5" />
-              </a>
-            )}
-            {settings.youtube && (
-              <a
-                href={settings.youtube}
-                target="_blank"
-                rel="noreferrer"
-                className="w-10 h-10 rounded-full bg-white/5 hover:bg-gold hover:text-gold-foreground flex items-center justify-center transition active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
-                title="YouTube"
-                aria-label={`Inscrever-se no canal da ${settings.station_name} no YouTube`}
-              >
-                <Youtube className="w-5 h-5" />
-              </a>
-            )}
+              {muted || volume === 0 ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            </button>
+            <input
+              type="range"
+              min={0}
+              max={1}
+              step={0.05}
+              value={volume}
+              onChange={(e) => { setVolume(parseFloat(e.target.value)); setMuted(false); }}
+              className="w-full accent-gold cursor-pointer h-1 bg-white/10 rounded-lg appearance-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+              aria-label="Volume"
+            />
           </div>
-        </nav>
-      </div>
 
-      {/* Progress simulation bar (just visual for flair) */}
-      {isPlaying && (
-        <div className="absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-gold to-transparent w-full opacity-50 animate-pulse" />
-      )}
-    </div>
+          {/* Actions */}
+          <div className="flex items-center gap-1 md:gap-2">
+            <button
+              onClick={share}
+              aria-label="Compartilhar"
+              className="hidden sm:inline-flex w-10 h-10 rounded-full bg-white/5 hover:bg-gold hover:text-gold-foreground items-center justify-center transition"
+            >
+              <Share2 className="w-4 h-4" />
+            </button>
+            {settings.whatsapp && (
+              <a
+                href={`https://wa.me/${settings.whatsapp}`}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="WhatsApp"
+                className="hidden sm:inline-flex w-10 h-10 rounded-full bg-white/5 hover:bg-emerald-500 items-center justify-center transition"
+              >
+                <MessageCircle className="w-4 h-4" />
+              </a>
+            )}
+            <button
+              onClick={() => setExpanded((v) => !v)}
+              aria-label={expanded ? "Recolher" : "Ver últimas tocadas"}
+              className="w-10 h-10 md:w-11 md:h-11 rounded-full bg-gold/10 hover:bg-gold hover:text-gold-foreground text-gold flex items-center justify-center transition border border-gold/30"
+            >
+              {expanded ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+            </button>
+          </div>
+        </div>
+
+        {isPlaying && (
+          <div className="absolute top-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-gold to-transparent w-full opacity-70 animate-pulse" />
+        )}
+      </div>
+    </>
   );
 }
