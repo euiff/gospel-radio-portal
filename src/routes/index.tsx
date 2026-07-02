@@ -20,6 +20,19 @@ const ScheduleDisplay = lazy(() =>
 const PrayerMural = lazy(() =>
   import("@/components/site/PrayerMural").then((m) => ({ default: m.PrayerMural })),
 );
+const Shoutbox = lazy(() =>
+  import("@/components/site/Shoutbox").then((m) => ({ default: m.Shoutbox })),
+);
+const TopChart = lazy(() =>
+  import("@/components/site/TopChart").then((m) => ({ default: m.TopChart })),
+);
+const QuizCard = lazy(() =>
+  import("@/components/site/QuizCard").then((m) => ({ default: m.QuizCard })),
+);
+import { NewsTicker } from "@/components/site/NewsTicker";
+import { OnAirBadge } from "@/components/site/OnAirBadge";
+import { AudioVisualizer } from "@/components/site/AudioVisualizer";
+import { RecentTracks } from "@/components/site/RecentTracks";
 
 const programsTodayQueryOptions = (dow: number) =>
   queryOptions({
