@@ -25,7 +25,11 @@ const formSchema = z.object({
   message: z.string().optional(),
 });
 
-export function SongRequestForm() {
+interface SongRequestFormProps {
+  onSubmitted?: (id: string) => void;
+}
+
+export function SongRequestForm({ onSubmitted }: SongRequestFormProps = {}) {
   const [isLoading, setIsLoading] = useState(false);
   const { settings } = useRadio();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -41,14 +45,19 @@ export function SongRequestForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
-      const { error } = await supabase.from("song_requests").insert({
-        user_name: values.userName,
-        song_title: values.songTitle,
-        artist: values.artist,
-        message: values.message,
-      });
+      const { data, error } = await supabase
+        .from("song_requests")
+        .insert({
+          user_name: values.userName,
+          song_title: values.songTitle,
+          artist: values.artist,
+          message: values.message,
+        })
+        .select("id")
+        .single();
 
       if (error) throw error;
+      if (data?.id && onSubmitted) onSubmitted(data.id);
 
       toast.success("Pedido enviado! Sua música foi solicitada com sucesso.");
 

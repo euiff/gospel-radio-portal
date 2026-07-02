@@ -10,14 +10,19 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProgramacaoRouteImport } from './routes/programacao'
+import { Route as PedidosRouteImport } from './routes/pedidos'
+import { Route as OuvinteRouteImport } from './routes/ouvinte'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as NoticiaSlugRouteImport } from './routes/noticia/$slug'
 import { Route as CategoriaSlugRouteImport } from './routes/categoria/$slug'
+import { Route as AdminTopChartRouteImport } from './routes/admin/top-chart'
 import { Route as AdminSiteRouteImport } from './routes/admin/site'
+import { Route as AdminShoutboxRouteImport } from './routes/admin/shoutbox'
 import { Route as AdminRadioRouteImport } from './routes/admin/radio'
+import { Route as AdminQuizRouteImport } from './routes/admin/quiz'
 import { Route as AdminProgramacaoRouteImport } from './routes/admin/programacao'
 import { Route as AdminPedidosRouteImport } from './routes/admin/pedidos'
 import { Route as AdminOracaoRouteImport } from './routes/admin/oracao'
@@ -27,6 +32,16 @@ import { Route as AdminCategoriasRouteImport } from './routes/admin/categorias'
 const ProgramacaoRoute = ProgramacaoRouteImport.update({
   id: '/programacao',
   path: '/programacao',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PedidosRoute = PedidosRouteImport.update({
+  id: '/pedidos',
+  path: '/pedidos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OuvinteRoute = OuvinteRouteImport.update({
+  id: '/ouvinte',
+  path: '/ouvinte',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -59,14 +74,29 @@ const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
   path: '/categoria/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminTopChartRoute = AdminTopChartRouteImport.update({
+  id: '/top-chart',
+  path: '/top-chart',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminSiteRoute = AdminSiteRouteImport.update({
   id: '/site',
   path: '/site',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminShoutboxRoute = AdminShoutboxRouteImport.update({
+  id: '/shoutbox',
+  path: '/shoutbox',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminRadioRoute = AdminRadioRouteImport.update({
   id: '/radio',
   path: '/radio',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminQuizRoute = AdminQuizRouteImport.update({
+  id: '/quiz',
+  path: '/quiz',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminProgramacaoRoute = AdminProgramacaoRouteImport.update({
@@ -99,14 +129,19 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/login': typeof LoginRoute
+  '/ouvinte': typeof OuvinteRoute
+  '/pedidos': typeof PedidosRoute
   '/programacao': typeof ProgramacaoRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/noticias': typeof AdminNoticiasRoute
   '/admin/oracao': typeof AdminOracaoRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/programacao': typeof AdminProgramacaoRoute
+  '/admin/quiz': typeof AdminQuizRoute
   '/admin/radio': typeof AdminRadioRoute
+  '/admin/shoutbox': typeof AdminShoutboxRoute
   '/admin/site': typeof AdminSiteRoute
+  '/admin/top-chart': typeof AdminTopChartRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/noticia/$slug': typeof NoticiaSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -114,14 +149,19 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/ouvinte': typeof OuvinteRoute
+  '/pedidos': typeof PedidosRoute
   '/programacao': typeof ProgramacaoRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/noticias': typeof AdminNoticiasRoute
   '/admin/oracao': typeof AdminOracaoRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/programacao': typeof AdminProgramacaoRoute
+  '/admin/quiz': typeof AdminQuizRoute
   '/admin/radio': typeof AdminRadioRoute
+  '/admin/shoutbox': typeof AdminShoutboxRoute
   '/admin/site': typeof AdminSiteRoute
+  '/admin/top-chart': typeof AdminTopChartRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/noticia/$slug': typeof NoticiaSlugRoute
   '/admin': typeof AdminIndexRoute
@@ -131,14 +171,19 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/login': typeof LoginRoute
+  '/ouvinte': typeof OuvinteRoute
+  '/pedidos': typeof PedidosRoute
   '/programacao': typeof ProgramacaoRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/noticias': typeof AdminNoticiasRoute
   '/admin/oracao': typeof AdminOracaoRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/programacao': typeof AdminProgramacaoRoute
+  '/admin/quiz': typeof AdminQuizRoute
   '/admin/radio': typeof AdminRadioRoute
+  '/admin/shoutbox': typeof AdminShoutboxRoute
   '/admin/site': typeof AdminSiteRoute
+  '/admin/top-chart': typeof AdminTopChartRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/noticia/$slug': typeof NoticiaSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -149,14 +194,19 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/login'
+    | '/ouvinte'
+    | '/pedidos'
     | '/programacao'
     | '/admin/categorias'
     | '/admin/noticias'
     | '/admin/oracao'
     | '/admin/pedidos'
     | '/admin/programacao'
+    | '/admin/quiz'
     | '/admin/radio'
+    | '/admin/shoutbox'
     | '/admin/site'
+    | '/admin/top-chart'
     | '/categoria/$slug'
     | '/noticia/$slug'
     | '/admin/'
@@ -164,14 +214,19 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/ouvinte'
+    | '/pedidos'
     | '/programacao'
     | '/admin/categorias'
     | '/admin/noticias'
     | '/admin/oracao'
     | '/admin/pedidos'
     | '/admin/programacao'
+    | '/admin/quiz'
     | '/admin/radio'
+    | '/admin/shoutbox'
     | '/admin/site'
+    | '/admin/top-chart'
     | '/categoria/$slug'
     | '/noticia/$slug'
     | '/admin'
@@ -180,14 +235,19 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/login'
+    | '/ouvinte'
+    | '/pedidos'
     | '/programacao'
     | '/admin/categorias'
     | '/admin/noticias'
     | '/admin/oracao'
     | '/admin/pedidos'
     | '/admin/programacao'
+    | '/admin/quiz'
     | '/admin/radio'
+    | '/admin/shoutbox'
     | '/admin/site'
+    | '/admin/top-chart'
     | '/categoria/$slug'
     | '/noticia/$slug'
     | '/admin/'
@@ -197,6 +257,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
   LoginRoute: typeof LoginRoute
+  OuvinteRoute: typeof OuvinteRoute
+  PedidosRoute: typeof PedidosRoute
   ProgramacaoRoute: typeof ProgramacaoRoute
   CategoriaSlugRoute: typeof CategoriaSlugRoute
   NoticiaSlugRoute: typeof NoticiaSlugRoute
@@ -209,6 +271,20 @@ declare module '@tanstack/react-router' {
       path: '/programacao'
       fullPath: '/programacao'
       preLoaderRoute: typeof ProgramacaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pedidos': {
+      id: '/pedidos'
+      path: '/pedidos'
+      fullPath: '/pedidos'
+      preLoaderRoute: typeof PedidosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ouvinte': {
+      id: '/ouvinte'
+      path: '/ouvinte'
+      fullPath: '/ouvinte'
+      preLoaderRoute: typeof OuvinteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -253,6 +329,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CategoriaSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/top-chart': {
+      id: '/admin/top-chart'
+      path: '/top-chart'
+      fullPath: '/admin/top-chart'
+      preLoaderRoute: typeof AdminTopChartRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/site': {
       id: '/admin/site'
       path: '/site'
@@ -260,11 +343,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSiteRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/shoutbox': {
+      id: '/admin/shoutbox'
+      path: '/shoutbox'
+      fullPath: '/admin/shoutbox'
+      preLoaderRoute: typeof AdminShoutboxRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/radio': {
       id: '/admin/radio'
       path: '/radio'
       fullPath: '/admin/radio'
       preLoaderRoute: typeof AdminRadioRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/quiz': {
+      id: '/admin/quiz'
+      path: '/quiz'
+      fullPath: '/admin/quiz'
+      preLoaderRoute: typeof AdminQuizRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/programacao': {
@@ -311,8 +408,11 @@ interface AdminRouteChildren {
   AdminOracaoRoute: typeof AdminOracaoRoute
   AdminPedidosRoute: typeof AdminPedidosRoute
   AdminProgramacaoRoute: typeof AdminProgramacaoRoute
+  AdminQuizRoute: typeof AdminQuizRoute
   AdminRadioRoute: typeof AdminRadioRoute
+  AdminShoutboxRoute: typeof AdminShoutboxRoute
   AdminSiteRoute: typeof AdminSiteRoute
+  AdminTopChartRoute: typeof AdminTopChartRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -322,8 +422,11 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminOracaoRoute: AdminOracaoRoute,
   AdminPedidosRoute: AdminPedidosRoute,
   AdminProgramacaoRoute: AdminProgramacaoRoute,
+  AdminQuizRoute: AdminQuizRoute,
   AdminRadioRoute: AdminRadioRoute,
+  AdminShoutboxRoute: AdminShoutboxRoute,
   AdminSiteRoute: AdminSiteRoute,
+  AdminTopChartRoute: AdminTopChartRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
@@ -333,6 +436,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
   LoginRoute: LoginRoute,
+  OuvinteRoute: OuvinteRoute,
+  PedidosRoute: PedidosRoute,
   ProgramacaoRoute: ProgramacaoRoute,
   CategoriaSlugRoute: CategoriaSlugRoute,
   NoticiaSlugRoute: NoticiaSlugRoute,

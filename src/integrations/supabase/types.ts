@@ -531,6 +531,8 @@ export type Database = {
           title: string
           updated_at: string
           votes: number
+          week_end: string | null
+          week_start: string | null
           youtube_url: string | null
         }
         Insert: {
@@ -543,6 +545,8 @@ export type Database = {
           title: string
           updated_at?: string
           votes?: number
+          week_end?: string | null
+          week_start?: string | null
           youtube_url?: string | null
         }
         Update: {
@@ -555,6 +559,8 @@ export type Database = {
           title?: string
           updated_at?: string
           votes?: number
+          week_end?: string | null
+          week_start?: string | null
           youtube_url?: string | null
         }
         Relationships: []
@@ -590,6 +596,10 @@ export type Database = {
         Returns: boolean
       }
       increment_news_views: { Args: { news_id: string }; Returns: undefined }
+      reset_top_chart_week: {
+        Args: { _end: string; _start: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "editor" | "user"

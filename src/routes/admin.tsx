@@ -13,7 +13,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { MessageSquare, Heart } from "lucide-react";
+import { MessageSquare, Heart, BookOpen, Trophy, MessagesSquare } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({ component: AdminLayout });
 
@@ -24,6 +24,9 @@ const menu = [
   { to: "/admin/programacao", label: "Programação", icon: Calendar },
   { to: "/admin/pedidos", label: "Pedidos de Música", icon: MessageSquare },
   { to: "/admin/oracao", label: "Mural de Oração", icon: Heart },
+  { to: "/admin/shoutbox", label: "Shoutbox", icon: MessagesSquare },
+  { to: "/admin/quiz", label: "Quiz Bíblico", icon: BookOpen },
+  { to: "/admin/top-chart", label: "Top Chart", icon: Trophy },
   { to: "/admin/radio", label: "Configurar Rádio", icon: Radio },
   { to: "/admin/site", label: "Configurar Site", icon: Settings },
 ];
@@ -69,6 +72,24 @@ function AdminMenuLink({ item, active }: { item: (typeof menu)[number]; active: 
   if (item.to === "/admin/oracao")
     return (
       <Link to="/admin/oracao" className={className}>
+        {content}
+      </Link>
+    );
+  if (item.to === "/admin/shoutbox")
+    return (
+      <Link to="/admin/shoutbox" className={className}>
+        {content}
+      </Link>
+    );
+  if (item.to === "/admin/quiz")
+    return (
+      <Link to="/admin/quiz" className={className}>
+        {content}
+      </Link>
+    );
+  if (item.to === "/admin/top-chart")
+    return (
+      <Link to="/admin/top-chart" className={className}>
         {content}
       </Link>
     );
