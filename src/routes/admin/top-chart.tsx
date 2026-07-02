@@ -379,4 +379,3 @@ function AdminTopChart() {
     </div>
   );
 }
-}
