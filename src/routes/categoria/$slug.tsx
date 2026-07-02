@@ -10,20 +10,50 @@ const categoryQuery = (slug: string) =>
       (await supabase.from("categories").select("*").eq("slug", slug).maybeSingle()).data,
   });
 
+const categoryOgImageQuery = (categoryId: string | undefined) =>
+  queryOptions({
+    queryKey: ["cat-og", categoryId],
+    enabled: !!categoryId,
+    queryFn: async () => {
+      if (!categoryId) return null;
+      const { data } = await supabase
+        .from("news")
+        .select("cover_image,content")
+        .eq("category_id", categoryId)
+        .eq("published", true)
+        .order("published_at", { ascending: false })
+        .limit(5);
+      const list = data ?? [];
+      const cover = list.find((n: any) => n.cover_image)?.cover_image;
+      if (cover) return cover as string;
+      for (const n of list) {
+        const m = (n as any).content?.match(
+          /https?:\/\/[^\s"'<>]+\.(?:png|jpg|jpeg|gif|webp)/i,
+        );
+        if (m) return m[0] as string;
+      }
+      return null;
+    },
+  });
+
 export const Route = createFileRoute("/categoria/$slug")({
   loader: async ({ params: { slug }, context: { queryClient } }) => {
     const [category, radio] = await Promise.all([
       queryClient.ensureQueryData(categoryQuery(slug)),
       queryClient.ensureQueryData(radioSettingsQueryOptions),
     ]);
-    return { category, radio };
+    const ogImage = category?.id
+      ? await queryClient.ensureQueryData(categoryOgImageQuery(category.id))
+      : null;
+    return { category, radio, ogImage };
   },
   head: ({ loaderData, params: { slug } }) => {
     const name = loaderData?.category?.name || slug;
     const stationName = loaderData?.radio?.station_name || "Alternativa gospel";
     const title = `${name} | ${stationName}`;
     const description = loaderData?.category?.description || `Confira as últimas notícias sobre ${name}`;
-    const ogImage = loaderData?.radio?.logo_url || "";
+    const ogImage =
+      loaderData?.ogImage || loaderData?.radio?.logo_url || "";
 
     return {
       meta: [
