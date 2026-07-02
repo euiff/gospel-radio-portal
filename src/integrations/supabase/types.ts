@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          actor_email: string | null
+          created_at: string
+          entity: string
+          entity_id: string | null
+          id: string
+          meta: Json
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_email?: string | null
+          created_at?: string
+          entity: string
+          entity_id?: string | null
+          id?: string
+          meta?: Json
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_email?: string | null
+          created_at?: string
+          entity?: string
+          entity_id?: string | null
+          id?: string
+          meta?: Json
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       banners: {
         Row: {
           active: boolean
@@ -316,28 +349,34 @@ export type Database = {
           active: boolean
           correct_index: number
           created_at: string
+          ends_at: string | null
           id: string
           options: Json
           question: string
           reference: string | null
+          starts_at: string | null
         }
         Insert: {
           active?: boolean
           correct_index: number
           created_at?: string
+          ends_at?: string | null
           id?: string
           options: Json
           question: string
           reference?: string | null
+          starts_at?: string | null
         }
         Update: {
           active?: boolean
           correct_index?: number
           created_at?: string
+          ends_at?: string | null
           id?: string
           options?: Json
           question?: string
           reference?: string | null
+          starts_at?: string | null
         }
         Relationships: []
       }
