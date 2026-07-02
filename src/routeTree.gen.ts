@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProgramacaoRouteImport } from './routes/programacao'
 import { Route as PedidosRouteImport } from './routes/pedidos'
+import { Route as OuvinteRouteImport } from './routes/ouvinte'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
@@ -36,6 +37,11 @@ const ProgramacaoRoute = ProgramacaoRouteImport.update({
 const PedidosRoute = PedidosRouteImport.update({
   id: '/pedidos',
   path: '/pedidos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OuvinteRoute = OuvinteRouteImport.update({
+  id: '/ouvinte',
+  path: '/ouvinte',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/login': typeof LoginRoute
+  '/ouvinte': typeof OuvinteRoute
   '/pedidos': typeof PedidosRoute
   '/programacao': typeof ProgramacaoRoute
   '/admin/categorias': typeof AdminCategoriasRoute
@@ -142,6 +149,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/ouvinte': typeof OuvinteRoute
   '/pedidos': typeof PedidosRoute
   '/programacao': typeof ProgramacaoRoute
   '/admin/categorias': typeof AdminCategoriasRoute
@@ -163,6 +171,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/login': typeof LoginRoute
+  '/ouvinte': typeof OuvinteRoute
   '/pedidos': typeof PedidosRoute
   '/programacao': typeof ProgramacaoRoute
   '/admin/categorias': typeof AdminCategoriasRoute
@@ -185,6 +194,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/login'
+    | '/ouvinte'
     | '/pedidos'
     | '/programacao'
     | '/admin/categorias'
@@ -204,6 +214,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/ouvinte'
     | '/pedidos'
     | '/programacao'
     | '/admin/categorias'
@@ -224,6 +235,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/login'
+    | '/ouvinte'
     | '/pedidos'
     | '/programacao'
     | '/admin/categorias'
@@ -245,6 +257,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
   LoginRoute: typeof LoginRoute
+  OuvinteRoute: typeof OuvinteRoute
   PedidosRoute: typeof PedidosRoute
   ProgramacaoRoute: typeof ProgramacaoRoute
   CategoriaSlugRoute: typeof CategoriaSlugRoute
@@ -265,6 +278,13 @@ declare module '@tanstack/react-router' {
       path: '/pedidos'
       fullPath: '/pedidos'
       preLoaderRoute: typeof PedidosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ouvinte': {
+      id: '/ouvinte'
+      path: '/ouvinte'
+      fullPath: '/ouvinte'
+      preLoaderRoute: typeof OuvinteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -416,6 +436,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
   LoginRoute: LoginRoute,
+  OuvinteRoute: OuvinteRoute,
   PedidosRoute: PedidosRoute,
   ProgramacaoRoute: ProgramacaoRoute,
   CategoriaSlugRoute: CategoriaSlugRoute,
