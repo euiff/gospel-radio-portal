@@ -141,11 +141,11 @@ export function Footer() {
             </ul>
           </div>
 
-          <div>
+          <div className="min-w-0">
             <h4 className="text-gold font-bold text-xs uppercase tracking-[0.2em] mb-6">
               Categorias
             </h4>
-            <ul className="space-y-4 text-sm">
+            <ul className="space-y-1 md:space-y-3 text-sm">
               <li>
                 <Link
                   to="/categoria/$slug"
@@ -176,7 +176,7 @@ export function Footer() {
             </ul>
           </div>
 
-          <div>
+          <div className="col-span-2 lg:col-span-1 min-w-0">
             <h4 className="text-gold font-bold text-xs uppercase tracking-[0.2em] mb-6">
               Fale Conosco
             </h4>
