@@ -7,6 +7,21 @@ import { ImageUpload } from "@/components/admin/ImageUpload";
 
 export const Route = createFileRoute("/admin/site")({ component: SiteSettings });
 
+const HEADING_FONTS = [
+  "DM Serif Display",
+  "Playfair Display",
+  "Cormorant Garamond",
+  "Space Grotesk",
+  "Archivo Black",
+  "Bebas Neue",
+];
+const BODY_FONTS = ["Fira Sans", "Inter", "DM Sans", "Manrope", "Work Sans", "Nunito Sans"];
+const THEME_MODES = [
+  { value: "system", label: "Automático (sistema)" },
+  { value: "light", label: "Claro" },
+  { value: "dark", label: "Escuro" },
+];
+
 const sections = [
   {
     title: "Identidade Visual & Cores",
