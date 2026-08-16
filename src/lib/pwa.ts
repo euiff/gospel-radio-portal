@@ -25,11 +25,14 @@ async function unregisterAppSW() {
   );
 }
 
-export async function registerAppServiceWorker(version: number | string = 1) {
-  if (!("serviceWorker" in navigator)) return;
+export type AppServiceWorkerStatus = { supported: boolean; registered: boolean; appliedVersion: number };
+
+export async function registerAppServiceWorker(version: number | string = 1): Promise<AppServiceWorkerStatus> {
+  const appliedVersion = Number(version) || 1;
+  if (!("serviceWorker" in navigator)) return { supported: false, registered: false, appliedVersion };
   if (isRefusedContext()) {
     await unregisterAppSW();
-    return;
+    return { supported: true, registered: false, appliedVersion };
   }
   try {
     const reg = await navigator.serviceWorker.register(`${SW_PATH}?v=${version}`);
@@ -50,7 +53,9 @@ export async function registerAppServiceWorker(version: number | string = 1) {
       reloaded = true;
       window.location.reload();
     });
+    await navigator.serviceWorker.ready;
+    return { supported: true, registered: true, appliedVersion };
   } catch {
-    /* ignore */
+    return { supported: true, registered: false, appliedVersion };
   }
 }

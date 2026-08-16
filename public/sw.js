@@ -1,13 +1,28 @@
 const VERSION = new URL(self.location.href).searchParams.get("v") || "1";
 const CACHE = `radio-shell-v${VERSION}`;
-const ASSETS = ["/", "/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png"];
+const MANIFEST_URL = `/api/public/manifest?v=${VERSION}`;
+
+async function versionAssets() {
+  const response = await fetch(MANIFEST_URL, { cache: "no-store" });
+  if (!response.ok) throw new Error("Manifest unavailable");
+  const manifest = await response.json();
+  const icons = Array.isArray(manifest.icons) ? manifest.icons.map((icon) => icon.src).filter(Boolean) : [];
+  return ["/", MANIFEST_URL, ...icons];
+}
 
 self.addEventListener("message", (e) => {
   if (e.data && e.data.type === "SKIP_WAITING") self.skipWaiting();
 });
 
 self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  e.waitUntil(
+    caches.open(CACHE)
+      .then(async (cache) => {
+        const assets = await versionAssets();
+        await Promise.allSettled(assets.map((asset) => cache.add(asset)));
+      })
+      .then(() => self.skipWaiting()),
+  );
 });
 
 self.addEventListener("activate", (e) => {
