@@ -229,6 +229,7 @@ function SiteSettings() {
         <div className="bg-card border border-border rounded-xl p-6 space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-display text-primary">Menu de Navegação</h2>
+            {null}
             <button
               type="button"
               onClick={addMenuItem}
