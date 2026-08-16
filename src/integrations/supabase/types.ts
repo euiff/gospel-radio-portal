@@ -306,6 +306,75 @@ export type Database = {
         }
         Relationships: []
       }
+      pwa_installations: {
+        Row: {
+          applied_version: number
+          first_seen_at: string
+          installation_id: string
+          last_seen_at: string
+          updated_at: string
+        }
+        Insert: {
+          applied_version?: number
+          first_seen_at?: string
+          installation_id: string
+          last_seen_at?: string
+          updated_at?: string
+        }
+        Update: {
+          applied_version?: number
+          first_seen_at?: string
+          installation_id?: string
+          last_seen_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      pwa_versions: {
+        Row: {
+          assets: Json
+          change_note: string | null
+          created_at: string
+          created_by: string | null
+          force_update: boolean
+          id: string
+          integrity_status: string
+          is_active: boolean
+          manifest: Json
+          source_version: number | null
+          sw_version: string
+          version: number
+        }
+        Insert: {
+          assets?: Json
+          change_note?: string | null
+          created_at?: string
+          created_by?: string | null
+          force_update?: boolean
+          id?: string
+          integrity_status?: string
+          is_active?: boolean
+          manifest?: Json
+          source_version?: number | null
+          sw_version: string
+          version: number
+        }
+        Update: {
+          assets?: Json
+          change_note?: string | null
+          created_at?: string
+          created_by?: string | null
+          force_update?: boolean
+          id?: string
+          integrity_status?: string
+          is_active?: boolean
+          manifest?: Json
+          source_version?: number | null
+          sw_version?: string
+          version?: number
+        }
+        Relationships: []
+      }
       quiz_answers: {
         Row: {
           created_at: string
@@ -647,9 +716,66 @@ export type Database = {
         Returns: boolean
       }
       increment_news_views: { Args: { news_id: string }; Returns: undefined }
+      publish_pwa_version: {
+        Args: {
+          _assets: Json
+          _change_note?: string
+          _force_update?: boolean
+          _integrity_status?: string
+          _manifest: Json
+          _source_version?: number
+        }
+        Returns: {
+          assets: Json
+          change_note: string | null
+          created_at: string
+          created_by: string | null
+          force_update: boolean
+          id: string
+          integrity_status: string
+          is_active: boolean
+          manifest: Json
+          source_version: number | null
+          sw_version: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "pwa_versions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      report_pwa_installation: {
+        Args: { _applied_version: number; _installation_id: string }
+        Returns: undefined
+      }
       reset_top_chart_week: {
         Args: { _end: string; _start: string }
         Returns: undefined
+      }
+      rollback_pwa_version: {
+        Args: { _change_note?: string; _version: number }
+        Returns: {
+          assets: Json
+          change_note: string | null
+          created_at: string
+          created_by: string | null
+          force_update: boolean
+          id: string
+          integrity_status: string
+          is_active: boolean
+          manifest: Json
+          source_version: number | null
+          sw_version: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "pwa_versions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
     }
     Enums: {

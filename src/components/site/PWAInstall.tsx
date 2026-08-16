@@ -33,7 +33,19 @@ export function PWAInstall() {
     };
     window.addEventListener("beforeinstallprompt", onPrompt);
 
-    void registerAppServiceWorker(version);
+    void registerAppServiceWorker(version).then(async (status) => {
+      if (!status.registered) return;
+      const storageKey = "pwa-installation-id";
+      let installationId = localStorage.getItem(storageKey);
+      if (!installationId) {
+        installationId = crypto.randomUUID();
+        localStorage.setItem(storageKey, installationId);
+      }
+      await supabase.rpc("report_pwa_installation", {
+        _installation_id: installationId,
+        _applied_version: status.appliedVersion,
+      });
+    });
     return () => window.removeEventListener("beforeinstallprompt", onPrompt);
   }, [version]);
 

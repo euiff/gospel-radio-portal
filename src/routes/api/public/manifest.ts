@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
+import { defaultPwaAssets, readPwaAssets } from "@/lib/pwa-assets";
 
 const DEFAULTS = {
   name: "Rádio Gospel",
@@ -35,18 +36,19 @@ export const Route = createFileRoute("/api/public/manifest")({
           cfg = DEFAULTS;
         }
 
-        const v = cfg.asset_version ?? 1;
-        const base = cfg.icon_url || "/icons/icon-";
+        const v = Number(cfg.asset_version ?? 1);
+        const publishedAssets = readPwaAssets(cfg.assets);
+        const assets = publishedAssets.length > 0 ? publishedAssets : defaultPwaAssets();
+        const versioned = (url: string) => `${url}${url.includes("?") ? "&" : "?"}v=${v}`;
         const icons = cfg.icon_url
           ? [
-              { src: `${cfg.icon_url}`, sizes: "512x512", type: "image/png", purpose: "any" },
-              { src: `${cfg.icon_url}`, sizes: "512x512", type: "image/png", purpose: "maskable" },
+              { src: versioned(String(cfg.icon_url)), sizes: "512x512", type: "image/png", purpose: "any maskable" },
             ]
-          : [96, 144, 192, 384, 512].map((s) => ({
-              src: `${base}${s}.png?v=${v}`,
-              sizes: `${s}x${s}`,
-              type: "image/png",
-              purpose: s === 512 ? "any maskable" : "any",
+          : assets.filter((asset) => asset.kind === "icon").map((asset) => ({
+              src: versioned(asset.url),
+              sizes: `${asset.width}x${asset.height}`,
+              type: asset.mimeType,
+              purpose: asset.width === 512 ? "any maskable" : "any",
             }));
 
         const manifest = {
@@ -62,6 +64,7 @@ export const Route = createFileRoute("/api/public/manifest")({
           lang: "pt-BR",
           categories: ["music", "news", "entertainment"],
           icons,
+          version: v,
           shortcuts: [
             { name: "Ouvir agora", url: "/ouvinte" },
             { name: "Pedir música", url: "/pedidos" },

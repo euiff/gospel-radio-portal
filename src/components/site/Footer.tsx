@@ -66,6 +66,7 @@ export function Footer() {
       const { data } = await supabase.from("site_settings").select("*").limit(1).maybeSingle();
       return data;
     },
+    staleTime: 5 * 60 * 1000,
   });
 
   const stationName = radioSettings?.station_name || FALLBACK_STATION_NAME;
@@ -88,9 +89,7 @@ export function Footer() {
               )}
             </div>
             <p className="text-sm mt-4 text-white/60 leading-relaxed max-w-xs">
-              {siteSettings?.site_description ||
-                radioSettings?.tagline ||
-                "Levando a palavra de Deus e o melhor do louvor para o seu coração, 24 horas por dia."}
+              {siteSettings?.site_description || radioSettings?.tagline || "A música que toca o coração"}
             </p>
           </div>
 
