@@ -86,7 +86,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  const { settings, isPlaying, toggle } = useRadio();
+  const { settings, nowPlaying, nowPlayingInfo, isPlaying, toggle } = useRadio();
   const dow = new Date().getDay();
   const { data: featured } = useSuspenseQuery(featuredNewsQuery);
   const { data: latest } = useSuspenseQuery(latestNewsQuery);
@@ -179,8 +179,8 @@ function Home() {
               <div className="bg-white/5 backdrop-blur-md border border-gold/30 rounded-3xl p-6 md:p-8 shadow-emerald">
                 <div className="flex items-center gap-4 mb-6">
                   <div className={`relative w-20 h-20 rounded-full overflow-hidden border-4 border-gold/40 ${isPlaying ? "animate-spin-slow" : ""}`}>
-                    {settings?.logo_url ? (
-                      <img src={settings.logo_url} alt="" className="w-full h-full object-cover" />
+                    {nowPlayingInfo?.coverUrl || settings?.logo_url ? (
+                      <img src={nowPlayingInfo?.coverUrl || settings?.logo_url || ""} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full gradient-emerald" />
                     )}
@@ -191,7 +191,13 @@ function Home() {
                   <div className="flex-1 min-w-0">
                     <div className="text-[10px] uppercase tracking-widest text-gold font-bold mb-1">Tocando agora</div>
                     <div className="font-display text-lg text-white truncate">
-                      {settings?.station_name || "Sua Rádio"}
+                      {nowPlaying || settings?.station_name || "Sua Rádio"}
+                    </div>
+                    <div className="text-xs text-white/60 truncate">
+                      {nowPlayingInfo?.stationTitle || settings?.station_name}
+                      {nowPlayingInfo?.listeners !== null && nowPlayingInfo?.listeners !== undefined
+                        ? ` • ${nowPlayingInfo.listeners} ouvintes`
+                        : ""}
                     </div>
                     <AudioVisualizer active={isPlaying} bars={6} className="mt-1 h-4" />
                   </div>
