@@ -30,6 +30,7 @@ const QuizCard = lazy(() =>
   import("@/components/site/QuizCard").then((m) => ({ default: m.QuizCard })),
 );
 import { NewsTicker } from "@/components/site/NewsTicker";
+import { AdBanner } from "@/components/site/AdBanner";
 import { OnAirBadge } from "@/components/site/OnAirBadge";
 import { AudioVisualizer } from "@/components/site/AudioVisualizer";
 import { RecentTracks } from "@/components/site/RecentTracks";

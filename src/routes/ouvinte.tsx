@@ -6,6 +6,7 @@ import { useRadio } from "@/lib/radio-context";
 import { RecentTracks } from "@/components/site/RecentTracks";
 import { AudioVisualizer } from "@/components/site/AudioVisualizer";
 import { OnAirBadge } from "@/components/site/OnAirBadge";
+import { AdBanner } from "@/components/site/AdBanner";
 import { Play, Pause, Radio, Music, Trophy, MessageCircle } from "lucide-react";
 
 const TopChart = lazy(() =>
