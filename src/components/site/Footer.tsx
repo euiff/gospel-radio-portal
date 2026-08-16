@@ -176,17 +176,17 @@ export function Footer() {
             <h4 className="text-gold font-bold text-xs uppercase tracking-[0.2em] mb-6">
               Fale Conosco
             </h4>
-            {radioSettings?.whatsapp && (
-              <a
-                href={`https://wa.me/${radioSettings.whatsapp}`}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex min-h-11 items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-gold/20 hover:border-gold/30 transition-all text-sm"
-              >
-                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                Chamar no WhatsApp
-              </a>
-            )}
+            <a
+              suppressHydrationWarning
+              href={radioSettings?.whatsapp ? `https://wa.me/${radioSettings.whatsapp}` : undefined}
+              target="_blank"
+              rel="noreferrer"
+              aria-hidden={!radioSettings?.whatsapp}
+              className={`min-h-11 items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-gold/20 hover:border-gold/30 transition-all text-sm ${radioSettings?.whatsapp ? "inline-flex" : "hidden"}`}
+            >
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              Chamar no WhatsApp
+            </a>
             <p className="text-xs mt-6 text-white/40 italic">
               Envie seu pedido de oração ou sugestão musical.
             </p>
