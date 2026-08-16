@@ -7,6 +7,21 @@ import { ImageUpload } from "@/components/admin/ImageUpload";
 
 export const Route = createFileRoute("/admin/site")({ component: SiteSettings });
 
+const HEADING_FONTS = [
+  "DM Serif Display",
+  "Playfair Display",
+  "Cormorant Garamond",
+  "Space Grotesk",
+  "Archivo Black",
+  "Bebas Neue",
+];
+const BODY_FONTS = ["Fira Sans", "Inter", "DM Sans", "Manrope", "Work Sans", "Nunito Sans"];
+const THEME_MODES = [
+  { value: "system", label: "Automático (sistema)" },
+  { value: "light", label: "Claro" },
+  { value: "dark", label: "Escuro" },
+];
+
 const sections = [
   {
     title: "Identidade Visual & Cores",
@@ -207,6 +222,74 @@ function SiteSettings() {
                   </button>
                 ))}
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-card border border-border rounded-xl p-6 space-y-6">
+          <h2 className="text-xl font-display text-primary border-b border-border pb-2">
+            Aparência (Tema e Tipografia)
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5 block">
+                Modo de Tema
+              </label>
+              <select
+                value={data.theme_mode ?? "system"}
+                onChange={(e) => setData({ ...data, theme_mode: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl border border-input bg-background text-sm"
+              >
+                {THEME_MODES.map((m) => (
+                  <option key={m.value} value={m.value}>
+                    {m.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5 block">
+                Fonte dos Títulos
+              </label>
+              <select
+                value={data.heading_font ?? "DM Serif Display"}
+                onChange={(e) => setData({ ...data, heading_font: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl border border-input bg-background text-sm"
+              >
+                {HEADING_FONTS.map((f) => (
+                  <option key={f} value={f}>
+                    {f}
+                  </option>
+                ))}
+              </select>
+              <p
+                className="mt-2 text-2xl text-primary"
+                style={{ fontFamily: `"${data.heading_font ?? "DM Serif Display"}", serif` }}
+              >
+                Rádio ao vivo
+              </p>
+            </div>
+            <div>
+              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5 block">
+                Fonte do Texto
+              </label>
+              <select
+                value={data.body_font ?? "Fira Sans"}
+                onChange={(e) => setData({ ...data, body_font: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl border border-input bg-background text-sm"
+              >
+                {BODY_FONTS.map((f) => (
+                  <option key={f} value={f}>
+                    {f}
+                  </option>
+                ))}
+              </select>
+              <p
+                className="mt-2 text-sm text-muted-foreground"
+                style={{ fontFamily: `"${data.body_font ?? "Fira Sans"}", sans-serif` }}
+              >
+                Exemplo de texto do site com a fonte escolhida.
+              </p>
             </div>
           </div>
         </div>

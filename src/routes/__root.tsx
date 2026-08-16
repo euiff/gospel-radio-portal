@@ -21,7 +21,7 @@ function ThemeSync() {
       try {
         const { data, error } = await supabase
           .from("site_settings")
-          .select("primary_color, accent_color")
+          .select("primary_color, accent_color, heading_font, body_font, theme_mode")
           .limit(1)
           .maybeSingle();
 
@@ -54,6 +54,37 @@ function ThemeSync() {
       root.style.setProperty("--gold", settings.accent_color);
       root.style.setProperty("--ring", settings.accent_color);
     }
+
+    const fonts: string[] = [];
+    if (settings.heading_font) {
+      root.style.setProperty("--font-display", `"${settings.heading_font}", serif`);
+      fonts.push(settings.heading_font);
+    }
+    if (settings.body_font) {
+      root.style.setProperty("--font-sans", `"${settings.body_font}", system-ui, sans-serif`);
+      fonts.push(settings.body_font);
+    }
+    if (fonts.length) {
+      const href =
+        "https://fonts.googleapis.com/css2?" +
+        fonts.map((f) => `family=${f.replace(/ /g, "+")}:wght@300;400;500;600;700;800`).join("&") +
+        "&display=swap";
+      let link = document.getElementById("dynamic-fonts") as HTMLLinkElement | null;
+      if (!link) {
+        link = document.createElement("link");
+        link.id = "dynamic-fonts";
+        link.rel = "stylesheet";
+        document.head.appendChild(link);
+      }
+      if (link.href !== href) link.href = href;
+    }
+
+    const mode = settings.theme_mode || "system";
+    const prefersDark =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const dark = mode === "dark" || (mode === "system" && prefersDark);
+    root.classList.toggle("dark", dark);
   }, [settings]);
 
   return null;
@@ -171,13 +202,33 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         { rel: "stylesheet", href: appCss },
         { rel: "manifest", href: "/manifest.webmanifest" },
         { rel: "apple-touch-icon", sizes: "180x180", href: "/icons/apple-touch-icon.png" },
+        { rel: "apple-touch-icon", sizes: "167x167", href: "/icons/apple-touch-icon-167.png" },
+        { rel: "apple-touch-icon", sizes: "152x152", href: "/icons/apple-touch-icon-152.png" },
+        ...[
+          [1170, 2532],
+          [1284, 2778],
+          [1179, 2556],
+          [1290, 2796],
+          [1125, 2436],
+          [828, 1792],
+          [1242, 2688],
+          [750, 1334],
+          [1536, 2048],
+          [1668, 2388],
+          [2048, 2732],
+        ].map(([w, h]) => ({
+          rel: "apple-touch-startup-image",
+          href: `/icons/splash-${w}x${h}.png`,
+          media: `(device-width: ${Math.round(w / 3)}px) and (device-height: ${Math.round(h / 3)}px) and (-webkit-device-pixel-ratio: 3)`,
+        })),
         { rel: "preconnect", href: "https://fonts.googleapis.com" },
         { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
         {
           rel: "stylesheet",
           href: "https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Fira+Sans:wght@300;400;500;600;700;800&display=swap",
         },
-        { rel: "icon", type: "image/png", href: "/favicon.png" },
+        { rel: "icon", type: "image/png", sizes: "64x64", href: "/favicon.png" },
+        { rel: "icon", href: "/favicon.ico", sizes: "48x48" },
       ],
     };
   },
