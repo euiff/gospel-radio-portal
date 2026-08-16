@@ -33,7 +33,7 @@ export const Route = createFileRoute("/ouvinte")({
 });
 
 function OuvintePage() {
-  const { settings, nowPlaying, isPlaying, toggle } = useRadio();
+  const { settings, nowPlaying, nowPlayingInfo, isPlaying, toggle } = useRadio();
   const [artist, title] = nowPlaying?.includes(" - ")
     ? nowPlaying.split(" - ")
     : [null, nowPlaying];
@@ -61,9 +61,9 @@ function OuvintePage() {
                   <div
                     className={`relative w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden border-4 border-gold/40 ${isPlaying ? "animate-spin-slow" : ""}`}
                   >
-                    {settings?.logo_url ? (
+                    {nowPlayingInfo?.coverUrl || settings?.logo_url ? (
                       <img
-                        src={settings.logo_url}
+                        src={nowPlayingInfo?.coverUrl || settings?.logo_url || ""}
                         alt=""
                         className="w-full h-full object-cover"
                       />
@@ -84,6 +84,14 @@ function OuvintePage() {
                     {artist && (
                       <div className="text-white/70 truncate text-sm">{artist}</div>
                     )}
+                    <div className="text-white/60 text-xs mt-1 flex flex-wrap gap-x-3 gap-y-1">
+                      {nowPlayingInfo?.stationTitle && <span>{nowPlayingInfo.stationTitle}</span>}
+                      {nowPlayingInfo?.listeners !== null && nowPlayingInfo?.listeners !== undefined && (
+                        <span>{nowPlayingInfo.listeners} ouvintes conectados</span>
+                      )}
+                      {nowPlayingInfo?.genre && <span>{nowPlayingInfo.genre}</span>}
+                      {nowPlayingInfo?.bitrate && <span>{nowPlayingInfo.bitrate}</span>}
+                    </div>
                     <AudioVisualizer active={isPlaying} bars={10} className="mt-3 h-5" />
                   </div>
                 </div>

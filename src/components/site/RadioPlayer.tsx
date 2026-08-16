@@ -17,7 +17,7 @@ import { RecentTracks } from "./RecentTracks";
 import { toast } from "sonner";
 
 export function RadioPlayer() {
-  const { settings, nowPlaying, isPlaying, volume, toggle, setVolume } = useRadio();
+  const { settings, nowPlaying, nowPlayingInfo, isPlaying, volume, toggle, setVolume } = useRadio();
   const [expanded, setExpanded] = useState(false);
   const [muted, setMuted] = useState(false);
 
@@ -73,8 +73,8 @@ export function RadioPlayer() {
             <div
               className={`w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden border-2 border-gold/40 bg-deep-darker ${isPlaying ? "animate-spin-slow" : ""}`}
             >
-              {settings.logo_url ? (
-                <img src={settings.logo_url} alt="" className="w-full h-full object-cover" />
+              {nowPlayingInfo?.coverUrl || settings.logo_url ? (
+                <img src={nowPlayingInfo?.coverUrl || settings.logo_url || ""} alt="" className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full gradient-emerald flex items-center justify-center">
                   <RadioIcon className="w-6 h-6 text-white/70" />
@@ -117,7 +117,9 @@ export function RadioPlayer() {
               {nowPlaying || settings.station_name}
             </div>
             <div className="text-[10px] md:text-xs text-white/60 truncate">
-              {nowPlaying ? settings.station_name : settings.tagline}
+              {nowPlaying
+                ? `${nowPlayingInfo?.stationTitle || settings.station_name}${nowPlayingInfo?.listeners !== null && nowPlayingInfo?.listeners !== undefined ? ` • ${nowPlayingInfo.listeners} ouvintes` : ""}`
+                : settings.tagline}
             </div>
           </div>
 

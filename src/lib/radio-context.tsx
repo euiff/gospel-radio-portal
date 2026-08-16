@@ -9,6 +9,11 @@ import {
 } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  normalizeMetadataUrl,
+  parseNowPlaying,
+  type NowPlayingInfo,
+} from "@/lib/radio-metadata";
 
 interface RadioSettings {
   id: string;
@@ -27,6 +32,7 @@ interface RadioSettings {
 interface RadioCtx {
   settings: RadioSettings | null;
   nowPlaying: string | null;
+  nowPlayingInfo: NowPlayingInfo | null;
   isPlaying: boolean;
   volume: number;
   toggle: () => void;
@@ -55,6 +61,7 @@ export function RadioProvider({ children }: { children: ReactNode }) {
   const { data: settings = null } = useQuery(radioSettingsQueryOptions);
 
   const [nowPlaying, setNowPlaying] = useState<string | null>(null);
+  const [nowPlayingInfo, setNowPlayingInfo] = useState<NowPlayingInfo | null>(null);
    const [isPlaying, setIsPlaying] = useState(false);
    const hasAttemptedAutoplay = useRef(false);
   const [volume, setVolumeState] = useState(0.8);
@@ -65,21 +72,22 @@ export function RadioProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    const streamUrl = settings?.api_now_playing;
-    if (!streamUrl) {
+    const metadataUrl = settings?.api_now_playing;
+    if (!metadataUrl) {
       setNowPlaying(null);
+      setNowPlayingInfo(null);
       return;
     }
 
     const fetchNowPlaying = async () => {
       try {
-        const res = await fetch(streamUrl);
-        const json = await res.json();
-        const title =
-          json.title || json.song || json.now_playing?.song?.title || json.current || json.text;
-        if (title) setNowPlaying(title);
+        const res = await fetch(normalizeMetadataUrl(metadataUrl), { cache: "no-store" });
+        if (!res.ok) throw new Error(`API respondeu com status ${res.status}`);
+        const info = parseNowPlaying(await res.json());
+        setNowPlayingInfo(info);
+        setNowPlaying(info?.title ?? null);
       } catch (e) {
-        console.debug("Now playing fetch failed", e);
+        console.warn("Não foi possível atualizar os dados da API da rádio", e);
       }
     };
 
@@ -134,13 +142,14 @@ export function RadioProvider({ children }: { children: ReactNode }) {
     () => ({
       settings,
       nowPlaying,
+      nowPlayingInfo,
       isPlaying,
       volume,
       toggle,
       setVolume: setVolumeState,
       reload,
     }),
-    [settings, nowPlaying, isPlaying, volume],
+    [settings, nowPlaying, nowPlayingInfo, isPlaying, volume],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
