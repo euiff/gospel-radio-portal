@@ -1,7 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
-import { Header } from "@/components/site/Header";
-import { Footer } from "@/components/site/Footer";
 import { useRadio, radioSettingsQueryOptions } from "@/lib/radio-context";
 import { RecentTracks } from "@/components/site/RecentTracks";
 import { AudioVisualizer } from "@/components/site/AudioVisualizer";
@@ -54,7 +52,6 @@ function OuvintePage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
       <main className="flex-1">
         {/* Hero: now playing */}
         <section className="relative gradient-deep text-white overflow-hidden">
@@ -162,7 +159,6 @@ function OuvintePage() {
         </section>
         <AdBanner position="player" className="pb-12" />
       </main>
-      <Footer />
     </div>
   );
 }

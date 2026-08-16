@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Header } from "@/components/site/Header";
-import { Footer } from "@/components/site/Footer";
 import { SongRequestForm } from "@/components/site/SongRequestForm";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -114,7 +112,6 @@ function PedidosPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
       <main className="flex-1 container mx-auto px-4 py-10 md:py-16">
         <div className="max-w-3xl mx-auto text-center mb-10">
           <div className="text-xs uppercase tracking-widest text-accent font-bold mb-2">
@@ -194,7 +191,6 @@ function PedidosPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }
