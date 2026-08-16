@@ -180,7 +180,7 @@ export function Footer() {
             <h4 className="text-gold font-bold text-xs uppercase tracking-[0.2em] mb-6">
               Fale Conosco
             </h4>
-            {radioSettings?.whatsapp && (
+            {mounted && radioSettings?.whatsapp && (
               <a
                 href={`https://wa.me/${radioSettings.whatsapp}`}
                 target="_blank"
