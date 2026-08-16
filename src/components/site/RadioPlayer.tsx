@@ -17,7 +17,8 @@ import { RecentTracks } from "./RecentTracks";
 import { toast } from "sonner";
 
 export function RadioPlayer() {
-  const { settings, nowPlaying, nowPlayingInfo, isPlaying, volume, toggle, setVolume } = useRadio();
+  const { settings, nowPlaying, nowPlayingInfo, voxStatus, isPlaying, volume, toggle, setVolume } =
+    useRadio();
   const [expanded, setExpanded] = useState(false);
   const [muted, setMuted] = useState(false);
 
@@ -121,6 +122,14 @@ export function RadioPlayer() {
                 ? `${nowPlayingInfo?.stationTitle || settings.station_name}${nowPlayingInfo?.listeners !== null && nowPlayingInfo?.listeners !== undefined ? ` • ${nowPlayingInfo.listeners} ouvintes` : ""}`
                 : settings.tagline}
             </div>
+            {voxStatus.stale && nowPlaying && (
+              <div
+                title={voxStatus.error ?? undefined}
+                className="mt-0.5 text-[9px] md:text-[10px] text-white/40 truncate"
+              >
+                Dados em tempo real indisponíveis — exibindo último título válido
+              </div>
+            )}
           </div>
 
           {/* Desktop volume */}
