@@ -1,118 +1,50 @@
+# Corrigir deploy e criar gerenciamento robusto do PWA
 
-## Visão
+## Objetivo
+Eliminar o erro `Could not resolve entry module "index.html"` na Vercel e transformar a área **App (PWA)** em uma central confiável de publicação, validação, acompanhamento e rollback de versões.
 
-Transformar o portal numa **rádio gospel premium** com identidade Emerald Prestige (verde esmeralda profundo + dourado antigo + creme), tipografia DM Serif Display / Fira Sans, e uma camada real de interação ouvinte↔rádio (player sticky, top músicas, shoutbox ao vivo, quiz bíblico).
+## Implementação
 
----
+### 1. Corrigir o build para Vercel
+- Configurar a Vercel como aplicação TanStack Start/Nitro full-stack, sem preset de site Vite estático e sem depender de `index.html`.
+- Preservar o build atual usado pelo preview/Lovable e selecionar o preset Vercel somente no ambiente da Vercel.
+- Remover referências conflitantes ao manifest estático; o endpoint dinâmico será a fonte única do manifest.
 
-## 1. Design system (Emerald Prestige Gospel)
+### 2. Modelo de versões e assets
+- Criar tabelas protegidas para:
+  - versões imutáveis do PWA, contendo snapshot do manifest, lista de assets, versão do service worker, autor, data e status;
+  - registros anônimos de instalações, contendo somente um identificador aleatório, versão aplicada e último contato.
+- Manter cada conjunto de ícones/splash em caminhos versionados e imutáveis no Storage, para que versões anteriores continuem disponíveis.
+- Ao publicar, salvar um snapshot antes de ativar a nova versão. Ao reverter, restaurar manifest e referências dos assets da versão escolhida e publicar uma nova versão de service worker para distribuir o rollback com segurança.
 
-Atualizar `src/styles.css` com tokens semânticos:
-- `--background` creme quente `oklch(0.98 0.01 90)` / dark esmeralda profundo
-- `--primary` esmeralda `#0d7a5f`, `--primary-glow` `#14a37a`
-- `--gold` `#c9a84c`, `--gold-foreground` `#1a1a1a`
-- Gradientes: `--gradient-hero` (esmeralda→dourado), `--gradient-gold`, `--gradient-onair` (dourado pulsante)
-- Sombras: `--shadow-premium`, `--shadow-glow-emerald`
-- Fontes carregadas via `<link>` no `__root.tsx`: DM Serif Display + Fira Sans
+### 3. Manifest e service worker consistentes
+- Gerar o manifest a partir da versão ativa, incluindo exatamente os assets publicados naquela versão.
+- Gerar/servir os metadados do service worker com a mesma versão ativa e fazer o worker armazenar apenas URLs válidas.
+- Adicionar uma verificação cruzada no admin entre manifest, assets registrados, respostas HTTP e versão ativa do worker.
+- Bloquear a publicação quando houver arquivo obrigatório ausente ou com dimensão/formato inválido; alertas não críticos continuarão visíveis sem bloquear.
 
-## 2. Redesign visual
+### 4. Upload multi-resolução
+- Criar um componente de upload em lote para favicon, ícones e splash screens.
+- Validar antes do envio: tipo PNG/ICO compatível, dimensão exata da posição, limite de tamanho e duplicidade.
+- Exibir prévia e estado individual (válido, inválido, enviando, publicado) para cada resolução.
+- Enviar somente arquivos aprovados para uma pasta da nova versão e salvar URL, dimensão, MIME e tamanho no snapshot.
 
-**Header** (`src/components/site/Header.tsx`)
-- Barra superior fina em esmeralda escuro com data/hora, "AO VIVO", CTA WhatsApp
-- Header principal creme com logo grande, nav serif dourado no hover, indicador de programa no ar
-- Menu mobile com drawer premium
+### 5. Painel de status e métricas
+- Exibir versão ativa do manifest, versão do service worker, integridade dos assets e estado da solicitação de atualização.
+- Registrar, sem dados pessoais, quando uma instalação carregar/aplicar uma versão.
+- Mostrar quantidade de instalações vistas, atualizadas e pendentes, além da data do último recebimento. A contagem será estimada por instalações que abriram o app após a publicação; navegadores offline não podem confirmar atualização até reconectarem.
 
-**Hero / Home** (`src/routes/index.tsx`)
-- Hero split: à esquerda tagline em DM Serif enorme + "No Ar Agora" com badge pulsante dourado + capa do programa + CTAs (Ouvir, Pedir Música, WhatsApp)
-- À direita: card do player grande com visualizer animado (barras CSS) + histórico das últimas músicas
-- Faixa de manchetes rolante (marquee) abaixo do hero
-- Grid editorial: notícia destaque + 6 laterais em estilo revista
-- Seção "Top da Semana" (ranking votação)
-- Faixa de programação do dia horizontal com scroll
-- Shoutbox ao vivo + Quiz do dia lado a lado
-- Mural de oração + Pedidos de música
-- CTA para app / redes sociais em faixa dourada
+### 6. Histórico e rollback
+- Listar versões com data, autor, quantidade de assets, integridade e observação.
+- Permitir inspecionar o snapshot e reverter com diálogo de confirmação.
+- Registrar publicação e rollback no log de auditoria existente.
 
-**Footer** — três colunas premium com logo, redes sociais, contato, badge "Transmitindo 24/7".
+## Segurança e acesso
+- Somente administradores poderão criar, publicar ou reverter versões e consultar métricas agregadas.
+- O endpoint público de telemetria aceitará apenas UUID anônimo e versões numéricas, sem nome, e-mail, IP armazenado ou outros dados pessoais.
+- Novas tabelas terão grants e RLS explícitos; uploads continuarão no bucket de assets já existente, em caminhos versionados.
 
-**RadioPlayer sticky** (`src/components/site/RadioPlayer.tsx`)
-- Barra fixa no bottom em todas as páginas (desktop + mobile)
-- Capa girando (vinyl), título atual, artista, barras visualizer, botão play grande dourado, volume, share, favoritar
-- Expansível para modo "full" com histórico das últimas 10 músicas
-
-## 3. Novas funcionalidades de interação
-
-### 3.1 Histórico de músicas tocadas
-- Tabela `played_songs` (id, title, artist, played_at, cover_url)
-- Server function que faz poll da `api_now_playing` a cada 30s e insere quando muda
-- Componente `RecentTracks` no player expandido e na home
-
-### 3.2 Top músicas + votação semanal
-- Tabelas `top_songs` (curadoria admin) + `song_votes` (user_id, song_id, week)
-- Componente `TopChart` na home com ranking Top 10, botão votar (1 voto/semana/usuário)
-- Página `/top-musicas` completa
-
-### 3.3 Shoutbox ao vivo
-- Tabela `shoutbox_messages` (id, user_id, name, message, created_at, approved)
-- Realtime via Supabase channels
-- Componente sticky na home + página `/aovivo`
-- Moderação no admin
-
-### 3.4 Quiz bíblico
-- Tabelas `quiz_questions` (question, options[], correct_index, active) + `quiz_answers`
-- Card diário na home com pergunta + 4 opções + feedback + ranking
-- Admin CRUD em `/admin/quiz`
-
-## 4. Admin
-- Novas páginas: `/admin/top-musicas`, `/admin/shoutbox` (moderar), `/admin/quiz`
-- Sidebar atualizada
-
----
-
-## Detalhes técnicos
-
-**Migrations (uma única migration):**
-```sql
-CREATE TABLE public.played_songs (...);  -- + GRANTs + RLS público leitura
-CREATE TABLE public.top_songs (...);
-CREATE TABLE public.song_votes (...);    -- unique (user_id, week_start)
-CREATE TABLE public.shoutbox_messages (...); -- RLS: authenticated insert, todos leem approved=true
-CREATE TABLE public.quiz_questions (...);
-CREATE TABLE public.quiz_answers (...);
-ALTER PUBLICATION supabase_realtime ADD TABLE public.shoutbox_messages;
-ALTER PUBLICATION supabase_realtime ADD TABLE public.played_songs;
-```
-
-**Server functions:** `src/lib/interactions.functions.ts`
-- `voteSong` (requireSupabaseAuth, valida 1/semana)
-- `submitQuizAnswer`, `postShoutMessage`
-
-**Componentes novos:**
-- `src/components/site/StickyPlayer.tsx` (substitui/complementa AudioPlayer)
-- `src/components/site/RecentTracks.tsx`
-- `src/components/site/TopChart.tsx`
-- `src/components/site/Shoutbox.tsx` (realtime)
-- `src/components/site/QuizCard.tsx`
-- `src/components/site/NewsTicker.tsx` (marquee manchetes)
-- `src/components/site/OnAirBadge.tsx`
-- `src/components/site/AudioVisualizer.tsx`
-
-**Preserva:** rotas atuais, RLS existente, SEO/OG, JSON-LD, SongRequestForm, PrayerMural, ScheduleDisplay, autoplay do player.
-
----
-
-## Escopo desta rodada
-
-Como o escopo é grande, entrego em **uma rodada única e coesa**:
-1. Design tokens + fontes
-2. Migrations das 6 tabelas
-3. Header + Footer + Hero + Home redesign
-4. StickyPlayer com visualizer e histórico
-5. Shoutbox realtime + TopChart + QuizCard (versão leitor; admin CRUD fica para próxima rodada se aprovado)
-
-**Fora do escopo desta rodada** (posso fazer depois se pedir):
-- Painéis admin para quiz/shoutbox/top-musicas (uso seeds e moderação via banco por enquanto)
-- Notificações push
-- Alô do ouvinte (gravação de áudio)
-
-Confirma que posso implementar?
+## Validação final
+- Verificar build TanStack Start e saída compatível com Vercel, sem busca por `index.html`.
+- Testar manifest, worker, publicação, asset ausente, upload inválido, adoção de versão e rollback.
+- Conferir visualmente o painel administrativo em desktop e mobile e confirmar que o preview não registra service worker.
