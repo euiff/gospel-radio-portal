@@ -9,11 +9,8 @@ import {
 } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  normalizeMetadataUrl,
-  parseNowPlaying,
-  type NowPlayingInfo,
-} from "@/lib/radio-metadata";
+import { type NowPlayingInfo } from "@/lib/radio-metadata";
+import { fetchVoxNowPlaying, type VoxIssue } from "@/lib/vox";
 
 interface RadioSettings {
   id: string;
@@ -27,12 +24,38 @@ interface RadioSettings {
   instagram: string | null;
   facebook: string | null;
   youtube: string | null;
+  vox_token?: string | null;
+  vox_field_map?: unknown;
+  vox_last_valid?: unknown;
+  vox_auto_highlight?: boolean;
+}
+
+export interface VoxStatus {
+  lastSuccessAt: string | null;
+  lastAttemptAt: string | null;
+  error: string | null;
+  issues: VoxIssue[];
+  stale: boolean;
+  consecutiveFailures: number;
+}
+
+const FALLBACK_KEY = "radio:last-valid-now-playing";
+
+function readStoredFallback(): NowPlayingInfo | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(FALLBACK_KEY);
+    return raw ? (JSON.parse(raw) as NowPlayingInfo) : null;
+  } catch {
+    return null;
+  }
 }
 
 interface RadioCtx {
   settings: RadioSettings | null;
   nowPlaying: string | null;
   nowPlayingInfo: NowPlayingInfo | null;
+  voxStatus: VoxStatus;
   isPlaying: boolean;
   volume: number;
   toggle: () => void;
@@ -62,6 +85,14 @@ export function RadioProvider({ children }: { children: ReactNode }) {
 
   const [nowPlaying, setNowPlaying] = useState<string | null>(null);
   const [nowPlayingInfo, setNowPlayingInfo] = useState<NowPlayingInfo | null>(null);
+  const [voxStatus, setVoxStatus] = useState<VoxStatus>({
+    lastSuccessAt: null,
+    lastAttemptAt: null,
+    error: null,
+    issues: [],
+    stale: false,
+    consecutiveFailures: 0,
+  });
    const [isPlaying, setIsPlaying] = useState(false);
    const hasAttemptedAutoplay = useRef(false);
   const [volume, setVolumeState] = useState(0.8);
@@ -79,22 +110,64 @@ export function RadioProvider({ children }: { children: ReactNode }) {
       return;
     }
 
+    let cancelled = false;
+
+    // Fallback imediato: último destaque válido salvo (local ou pelo admin).
+    const stored = readStoredFallback();
+    const saved = settings?.vox_last_valid as NowPlayingInfo | null | undefined;
+    const seed = stored ?? (saved && (saved as NowPlayingInfo).title ? saved : null);
+    if (seed) {
+      setNowPlayingInfo((prev) => prev ?? seed);
+      setNowPlaying((prev) => prev ?? seed.title);
+    }
+
     const fetchNowPlaying = async () => {
-      try {
-        const res = await fetch(normalizeMetadataUrl(metadataUrl), { cache: "no-store" });
-        if (!res.ok) throw new Error(`API respondeu com status ${res.status}`);
-        const info = parseNowPlaying(await res.json());
-        setNowPlayingInfo(info);
-        setNowPlaying(info?.title ?? null);
-      } catch (e) {
-        console.warn("Não foi possível atualizar os dados da API da rádio", e);
+      const result = await fetchVoxNowPlaying(metadataUrl, {
+        token: settings?.vox_token ?? null,
+        fieldMap: settings?.vox_field_map,
+      });
+      if (cancelled) return;
+
+      if (result.ok && result.info) {
+        setNowPlayingInfo(result.info);
+        setNowPlaying(result.info.title);
+        try {
+          window.localStorage.setItem(FALLBACK_KEY, JSON.stringify(result.info));
+        } catch {
+          /* storage indisponível */
+        }
+        setVoxStatus({
+          lastSuccessAt: result.fetchedAt,
+          lastAttemptAt: result.fetchedAt,
+          error: null,
+          issues: result.issues,
+          stale: false,
+          consecutiveFailures: 0,
+        });
+      } else {
+        setVoxStatus((prev) => ({
+          lastSuccessAt: prev.lastSuccessAt,
+          lastAttemptAt: result.fetchedAt,
+          error: result.error ?? "Dados em tempo real indisponíveis.",
+          issues: result.issues,
+          stale: true,
+          consecutiveFailures: prev.consecutiveFailures + 1,
+        }));
       }
     };
 
     fetchNowPlaying();
     const interval = setInterval(fetchNowPlaying, 30000);
-    return () => clearInterval(interval);
-  }, [settings?.api_now_playing]);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [
+    settings?.api_now_playing,
+    settings?.vox_token,
+    settings?.vox_field_map,
+    settings?.vox_last_valid,
+  ]);
 
    useEffect(() => {
      if (typeof window === "undefined") return;
@@ -143,13 +216,14 @@ export function RadioProvider({ children }: { children: ReactNode }) {
       settings,
       nowPlaying,
       nowPlayingInfo,
+      voxStatus,
       isPlaying,
       volume,
       toggle,
       setVolume: setVolumeState,
       reload,
     }),
-    [settings, nowPlaying, nowPlayingInfo, isPlaying, volume],
+    [settings, nowPlaying, nowPlayingInfo, voxStatus, isPlaying, volume],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
