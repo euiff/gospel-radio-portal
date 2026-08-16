@@ -455,7 +455,9 @@ export type Database = {
       site_settings: {
         Row: {
           accent_color: string | null
+          body_font: string | null
           footer_text: string | null
+          heading_font: string | null
           hero_subtitle: string | null
           hero_title: string | null
           id: string
@@ -465,11 +467,14 @@ export type Database = {
           primary_color: string | null
           site_description: string | null
           site_name: string
+          theme_mode: string | null
           updated_at: string
         }
         Insert: {
           accent_color?: string | null
+          body_font?: string | null
           footer_text?: string | null
+          heading_font?: string | null
           hero_subtitle?: string | null
           hero_title?: string | null
           id?: string
@@ -479,11 +484,14 @@ export type Database = {
           primary_color?: string | null
           site_description?: string | null
           site_name?: string
+          theme_mode?: string | null
           updated_at?: string
         }
         Update: {
           accent_color?: string | null
+          body_font?: string | null
           footer_text?: string | null
+          heading_font?: string | null
           hero_subtitle?: string | null
           hero_title?: string | null
           id?: string
@@ -493,6 +501,7 @@ export type Database = {
           primary_color?: string | null
           site_description?: string | null
           site_name?: string
+          theme_mode?: string | null
           updated_at?: string
         }
         Relationships: []
