@@ -122,8 +122,8 @@ function Home() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(201,168,76,0.15),transparent_60%)]" />
         </div>
         <div className="relative z-10 container mx-auto px-4 py-14 md:py-24 text-white">
-          <div className="grid lg:grid-cols-12 gap-10 items-center">
-            <div className="lg:col-span-7">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10 items-center">
+            <div className="min-w-0 lg:col-span-7">
               <OnAirBadge label={isPlaying ? "TRANSMITINDO AGORA" : "PRONTO PARA OUVIR"} />
               <h1 className="font-display leading-[1.05] mb-6 mt-6">
                 {siteSettings?.hero_title ? (
@@ -146,11 +146,11 @@ function Home() {
                   settings?.tagline ||
                   "Louvor, palavra e notícias 24h — uma experiência de rádio profissional para toda a família."}
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <button
                   onClick={toggle}
                   aria-label={isPlaying ? "Pausar rádio" : "Ouvir agora"}
-                  className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full gradient-gold text-gold-foreground font-bold shadow-glow hover:scale-105 active:scale-95 transition min-w-[200px]"
+                  className="inline-flex w-full sm:w-auto items-center justify-center gap-3 px-6 sm:px-8 py-4 rounded-full gradient-gold text-gold-foreground font-bold shadow-glow hover:scale-105 active:scale-95 transition sm:min-w-[200px]"
                 >
                   {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
                   {isPlaying ? "Pausar rádio" : "Ouvir ao vivo"}
@@ -160,14 +160,14 @@ function Home() {
                     href={`https://wa.me/${settings.whatsapp}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-white/30 hover:bg-white/10 backdrop-blur-sm transition font-medium"
+                    className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-6 sm:px-8 py-4 rounded-full border border-white/30 hover:bg-white/10 backdrop-blur-sm transition font-medium"
                   >
                     <MessageCircle className="w-5 h-5" /> Fale com a rádio
                   </a>
                 )}
               </div>
 
-              <div className="mt-10 grid grid-cols-3 gap-4 max-w-md">
+              <div className="mt-8 md:mt-10 grid grid-cols-3 gap-2 sm:gap-4 max-w-md">
                 <div className="text-center">
                   <div className="font-display text-3xl text-gold">24h</div>
                   <div className="text-[10px] uppercase tracking-widest text-white/60">No ar</div>
@@ -184,10 +184,10 @@ function Home() {
             </div>
 
             {/* Player card */}
-            <div className="lg:col-span-5">
-              <div className="bg-white/5 backdrop-blur-md border border-gold/30 rounded-3xl p-6 md:p-8 shadow-emerald">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className={`relative w-20 h-20 rounded-full overflow-hidden border-4 border-gold/40 ${isPlaying ? "animate-spin-slow" : ""}`}>
+            <div className="min-w-0 lg:col-span-5">
+              <div className="bg-white/5 backdrop-blur-md border border-gold/30 rounded-3xl p-4 sm:p-6 md:p-8 shadow-emerald">
+                <div className="flex items-center gap-3 sm:gap-4 mb-6">
+                  <div className={`relative shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-4 border-gold/40 ${isPlaying ? "animate-spin-slow" : ""}`}>
                     {nowPlayingInfo?.coverUrl || settings?.logo_url ? (
                       <img src={nowPlayingInfo?.coverUrl || settings?.logo_url || ""} alt="" className="w-full h-full object-cover" />
                     ) : (

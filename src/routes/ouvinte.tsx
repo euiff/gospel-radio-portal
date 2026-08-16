@@ -1,7 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
-import { Header } from "@/components/site/Header";
-import { Footer } from "@/components/site/Footer";
 import { useRadio, radioSettingsQueryOptions } from "@/lib/radio-context";
 import { RecentTracks } from "@/components/site/RecentTracks";
 import { AudioVisualizer } from "@/components/site/AudioVisualizer";
@@ -54,7 +52,6 @@ function OuvintePage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
       <main className="flex-1">
         {/* Hero: now playing */}
         <section className="relative gradient-deep text-white overflow-hidden">
@@ -69,11 +66,11 @@ function OuvintePage() {
               semanal.
             </p>
 
-            <div className="mt-8 grid md:grid-cols-5 gap-6 items-stretch">
-              <div className="md:col-span-3 bg-white/5 backdrop-blur-md border border-gold/30 rounded-3xl p-6 md:p-8 shadow-emerald">
-                <div className="flex items-center gap-5">
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-5 gap-6 items-stretch">
+              <div className="min-w-0 md:col-span-3 bg-white/5 backdrop-blur-md border border-gold/30 rounded-3xl p-4 sm:p-6 md:p-8 shadow-emerald">
+                <div className="flex items-center gap-4 sm:gap-5">
                   <div
-                    className={`relative w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden border-4 border-gold/40 ${isPlaying ? "animate-spin-slow" : ""}`}
+                    className={`relative shrink-0 w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full overflow-hidden border-4 border-gold/40 ${isPlaying ? "animate-spin-slow" : ""}`}
                   >
                     {nowPlayingInfo?.coverUrl || settings?.logo_url ? (
                       <img
@@ -92,7 +89,7 @@ function OuvintePage() {
                     <div className="text-[10px] uppercase tracking-widest text-gold font-bold mb-1 flex items-center gap-2">
                       <Radio className="w-3 h-3" /> Tocando agora
                     </div>
-                    <div className="font-display text-2xl md:text-3xl truncate">
+                    <div className="font-display text-xl sm:text-2xl md:text-3xl truncate">
                       {title || settings?.station_name || "Sua Rádio"}
                     </div>
                     {artist && (
@@ -109,25 +106,25 @@ function OuvintePage() {
                     <AudioVisualizer active={isPlaying} bars={10} className="mt-3 h-5" />
                   </div>
                 </div>
-                <div className="mt-6 flex flex-wrap gap-3">
+                <div className="mt-6 flex flex-col sm:flex-row flex-wrap gap-3">
                   <button
                     onClick={toggle}
                     aria-label={isPlaying ? "Pausar" : "Ouvir agora"}
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full gradient-gold text-gold-foreground font-bold shadow-glow hover:scale-105 active:scale-95 transition"
+                    className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-6 py-3 rounded-full gradient-gold text-gold-foreground font-bold shadow-glow hover:scale-105 active:scale-95 transition"
                   >
                     {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
                     {isPlaying ? "Pausar" : "Ouvir ao vivo"}
                   </button>
                   <Link
                     to="/pedidos"
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/30 hover:bg-white/10 transition font-medium"
+                    className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-6 py-3 rounded-full border border-white/30 hover:bg-white/10 transition font-medium"
                   >
                     <MessageCircle className="w-5 h-5" /> Pedir uma música
                   </Link>
                 </div>
               </div>
 
-              <div className="md:col-span-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-6">
+              <div className="min-w-0 md:col-span-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-4 sm:p-6">
                 <div className="text-[10px] uppercase tracking-widest text-gold font-bold mb-3 flex items-center gap-2">
                   <Music className="w-3 h-3" /> Últimas tocadas
                 </div>
@@ -162,7 +159,6 @@ function OuvintePage() {
         </section>
         <AdBanner position="player" className="pb-12" />
       </main>
-      <Footer />
     </div>
   );
 }

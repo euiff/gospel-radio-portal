@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Header } from "@/components/site/Header";
-import { Footer } from "@/components/site/Footer";
 import { SongRequestForm } from "@/components/site/SongRequestForm";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -114,7 +112,6 @@ function PedidosPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
       <main className="flex-1 container mx-auto px-4 py-10 md:py-16">
         <div className="max-w-3xl mx-auto text-center mb-10">
           <div className="text-xs uppercase tracking-widest text-accent font-bold mb-2">
@@ -129,8 +126,8 @@ function PedidosPage() {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-5 gap-8 max-w-6xl mx-auto">
-          <div className="lg:col-span-3">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 max-w-6xl mx-auto">
+          <div className="min-w-0 lg:col-span-3">
             <SongRequestForm
               onSubmitted={(id) => {
                 if (typeof window === "undefined") return;
@@ -143,7 +140,7 @@ function PedidosPage() {
               }}
             />
           </div>
-          <div className="lg:col-span-2">
+          <div className="min-w-0 lg:col-span-2">
             <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
               <div className="gradient-deep text-white px-5 py-4 flex items-center gap-3">
                 <Music className="w-5 h-5 text-gold" />
@@ -194,7 +191,6 @@ function PedidosPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

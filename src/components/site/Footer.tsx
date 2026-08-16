@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useRadio } from "@/lib/radio-context";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
 
 type NavItem = { to?: string; label?: string };
 
@@ -60,6 +61,8 @@ function FooterNavLink({ item }: { item: NavItem }) {
 
 export function Footer() {
   const { settings: radioSettings } = useRadio();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const { data: siteSettings } = useQuery({
     queryKey: ["site-settings-footer"],
     queryFn: async () => {
@@ -73,10 +76,10 @@ export function Footer() {
   const nav = (siteSettings?.navigation_menu as NavItem[] | null) || [];
 
   return (
-    <footer className="gradient-deep text-white/80 mt-20 pt-16 pb-8">
+    <footer className="gradient-deep text-white/80 mt-12 md:mt-20 pt-10 md:pt-16 pb-8">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-          <div className="col-span-1 lg:col-span-1">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8 md:gap-12 mb-10 md:mb-12">
+          <div className="col-span-2 lg:col-span-1 min-w-0">
             <div className="font-display text-3xl text-white font-bold leading-none flex items-center">
               {siteSettings?.logo_url ? (
                 <img
@@ -93,11 +96,11 @@ export function Footer() {
             </p>
           </div>
 
-          <div>
+          <div className="min-w-0">
             <h4 className="text-gold font-bold text-xs uppercase tracking-[0.2em] mb-6">
               Menu Principal
             </h4>
-            <ul className="space-y-4 text-sm">
+            <ul className="space-y-1 md:space-y-3 text-sm">
               {nav.length > 0 ? (
                 nav.map((item, idx) => (
                   <li key={idx}>
@@ -138,11 +141,11 @@ export function Footer() {
             </ul>
           </div>
 
-          <div>
+          <div className="min-w-0">
             <h4 className="text-gold font-bold text-xs uppercase tracking-[0.2em] mb-6">
               Categorias
             </h4>
-            <ul className="space-y-4 text-sm">
+            <ul className="space-y-1 md:space-y-3 text-sm">
               <li>
                 <Link
                   to="/categoria/$slug"
@@ -173,11 +176,11 @@ export function Footer() {
             </ul>
           </div>
 
-          <div>
+          <div className="col-span-2 lg:col-span-1 min-w-0">
             <h4 className="text-gold font-bold text-xs uppercase tracking-[0.2em] mb-6">
               Fale Conosco
             </h4>
-            {radioSettings?.whatsapp && (
+            {mounted && radioSettings?.whatsapp && (
               <a
                 href={`https://wa.me/${radioSettings.whatsapp}`}
                 target="_blank"
