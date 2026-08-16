@@ -222,6 +222,7 @@ function RootComponent() {
           {!isAdmin && <Footer />}
           <ThemeSync />
           <Toaster />
+          {!isAdmin && <PWAInstall />}
         </RadioProvider>
       </AuthProvider>
     </QueryClientProvider>
