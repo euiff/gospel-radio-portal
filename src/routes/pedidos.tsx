@@ -6,9 +6,14 @@ import { SongRequestForm } from "@/components/site/SongRequestForm";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Music, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { radioSettingsQueryOptions } from "@/lib/radio-context";
 
 export const Route = createFileRoute("/pedidos")({
-  head: () => ({
+  loader: async ({ context: { queryClient } }) => {
+    const radio = await queryClient.ensureQueryData(radioSettingsQueryOptions);
+    return { radio };
+  },
+  head: ({ loaderData }) => ({
     meta: [
       { title: "Pedidos de Música — Envie sua sugestão para a rádio" },
       {
@@ -21,7 +26,17 @@ export const Route = createFileRoute("/pedidos")({
         property: "og:description",
         content: "Peça a sua música e acompanhe o status dela na rádio.",
       },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://gospel-radio-portal.lovable.app/pedidos" },
+      { name: "twitter:card", content: "summary_large_image" },
+      ...(loaderData?.radio?.logo_url
+        ? [
+            { property: "og:image", content: loaderData.radio.logo_url },
+            { name: "twitter:image", content: loaderData.radio.logo_url },
+          ]
+        : []),
     ],
+    links: [{ rel: "canonical", href: "https://gospel-radio-portal.lovable.app/pedidos" }],
   }),
   component: PedidosPage,
 });
