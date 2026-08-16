@@ -6,8 +6,6 @@
 // You can pass additional config via defineConfig({ vite: { ... } }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
-import { nitro } from "nitro/vite";
-
 // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
 // @cloudflare/vite-plugin builds from this — wrangler.jsonc main alone is insufficient.
 export default defineConfig({
@@ -15,24 +13,8 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
-    plugins: [
-      nitro({
-        preset: "vercel",
-      }),
-    ],
     build: {
       target: "esnext",
-      rollupOptions: {
-        output: {
-          manualChunks: (id) => {
-            if (id.includes("node_modules")) {
-              if (id.includes("@supabase")) return "vendor-supabase";
-              if (id.includes("@tanstack")) return "vendor-tanstack";
-              return "vendor";
-            }
-          },
-        },
-      },
     },
   },
 });
