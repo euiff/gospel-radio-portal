@@ -66,6 +66,11 @@ export const Route = createFileRoute("/categoria/$slug")({
         { name: "twitter:description", content: description },
         { name: "twitter:image", content: ogImage },
         { name: "twitter:card", content: "summary_large_image" },
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: `https://gospel-radio-portal.lovable.app/categoria/${slug}` },
+      ],
+      links: [
+        { rel: "canonical", href: `https://gospel-radio-portal.lovable.app/categoria/${slug}` },
       ],
     };
   },

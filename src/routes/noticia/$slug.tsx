@@ -28,7 +28,7 @@ export const Route = createFileRoute("/noticia/$slug")({
     ]);
     return { news, radio };
   },
-  head: ({ loaderData }) => {
+  head: ({ loaderData, params: { slug } }) => {
     if (!loaderData?.news) return { title: "Notícia não encontrada" };
     const { news, radio } = loaderData;
     const stationName = radio?.station_name || "Alternativa gospel";
@@ -38,6 +38,7 @@ export const Route = createFileRoute("/noticia/$slug")({
     // Tenta encontrar a primeira imagem no conteúdo se não houver imagem de capa
     const contentImageMatch = news.content?.match(/https?:\/\/[^\s"'<>]+\.(?:png|jpg|jpeg|gif|webp)/i);
     const ogImage = news.cover_image || (contentImageMatch ? contentImageMatch[0] : radio?.logo_url);
+    const url = `https://gospel-radio-portal.lovable.app/noticia/${slug}`;
 
     return {
       meta: [
@@ -50,6 +51,29 @@ export const Route = createFileRoute("/noticia/$slug")({
         { name: "twitter:description", content: description },
         { name: "twitter:image", content: ogImage || "" },
         { name: "twitter:card", content: "summary_large_image" },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: url },
+      ],
+      links: [{ rel: "canonical", href: url }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "NewsArticle",
+            headline: news.title,
+            description,
+            ...(ogImage ? { image: [ogImage] } : {}),
+            ...(news.published_at ? { datePublished: news.published_at } : {}),
+            ...(news.updated_at ? { dateModified: news.updated_at } : {}),
+            mainEntityOfPage: { "@type": "WebPage", "@id": url },
+            publisher: {
+              "@type": "Organization",
+              name: stationName,
+              ...(radio?.logo_url ? { logo: { "@type": "ImageObject", url: radio.logo_url } } : {}),
+            },
+          }),
+        },
       ],
     };
   },
