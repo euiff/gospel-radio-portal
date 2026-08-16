@@ -25,11 +25,32 @@ async function unregisterAppSW() {
   );
 }
 
-export async function registerAppServiceWorker() {
+export async function registerAppServiceWorker(version: number | string = 1) {
   if (!("serviceWorker" in navigator)) return;
   if (isRefusedContext()) {
     await unregisterAppSW();
     return;
   }
-  navigator.serviceWorker.register(SW_PATH).catch(() => {});
+  try {
+    const reg = await navigator.serviceWorker.register(`${SW_PATH}?v=${version}`);
+    // Force check for a new worker whenever the asset version changes.
+    reg.update().catch(() => {});
+    reg.addEventListener("updatefound", () => {
+      const sw = reg.installing;
+      if (!sw) return;
+      sw.addEventListener("statechange", () => {
+        if (sw.state === "installed" && navigator.serviceWorker.controller) {
+          sw.postMessage({ type: "SKIP_WAITING" });
+        }
+      });
+    });
+    let reloaded = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (reloaded) return;
+      reloaded = true;
+      window.location.reload();
+    });
+  } catch {
+    /* ignore */
+  }
 }
