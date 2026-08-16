@@ -13,7 +13,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { MessageSquare, Heart, BookOpen, Trophy, MessagesSquare, ClipboardList } from "lucide-react";
+import { MessageSquare, Heart, BookOpen, Trophy, MessagesSquare, ClipboardList, Megaphone } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({ component: AdminLayout });
 
@@ -28,6 +28,7 @@ const menu = [
   { to: "/admin/quiz", label: "Quiz Bíblico", icon: BookOpen },
   { to: "/admin/top-chart", label: "Top Chart", icon: Trophy },
   { to: "/admin/audit", label: "Auditoria", icon: ClipboardList },
+  { to: "/admin/banners", label: "Anúncios", icon: Megaphone },
   { to: "/admin/radio", label: "Configurar Rádio", icon: Radio },
   { to: "/admin/site", label: "Configurar Site", icon: Settings },
 ];
@@ -97,6 +98,12 @@ function AdminMenuLink({ item, active }: { item: (typeof menu)[number]; active: 
   if (item.to === "/admin/audit")
     return (
       <Link to="/admin/audit" className={className}>
+        {content}
+      </Link>
+    );
+  if (item.to === "/admin/banners")
+    return (
+      <Link to="/admin/banners" className={className}>
         {content}
       </Link>
     );
