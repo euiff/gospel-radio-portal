@@ -461,6 +461,10 @@ export type Database = {
           stream_url: string
           tagline: string | null
           updated_at: string
+          vox_auto_highlight: boolean
+          vox_field_map: Json
+          vox_last_valid: Json
+          vox_token: string | null
           whatsapp: string | null
           youtube: string | null
         }
@@ -475,6 +479,10 @@ export type Database = {
           stream_url?: string
           tagline?: string | null
           updated_at?: string
+          vox_auto_highlight?: boolean
+          vox_field_map?: Json
+          vox_last_valid?: Json
+          vox_token?: string | null
           whatsapp?: string | null
           youtube?: string | null
         }
@@ -489,6 +497,10 @@ export type Database = {
           stream_url?: string
           tagline?: string | null
           updated_at?: string
+          vox_auto_highlight?: boolean
+          vox_field_map?: Json
+          vox_last_valid?: Json
+          vox_token?: string | null
           whatsapp?: string | null
           youtube?: string | null
         }
