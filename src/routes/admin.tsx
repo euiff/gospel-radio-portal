@@ -13,7 +13,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { MessageSquare, Heart, BookOpen, Trophy, MessagesSquare, ClipboardList, Megaphone, Smartphone } from "lucide-react";
+import { MessageSquare, Heart, BookOpen, Trophy, MessagesSquare, ClipboardList, Megaphone, Smartphone, Activity } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({ component: AdminLayout });
 
@@ -30,6 +30,7 @@ const menu = [
   { to: "/admin/audit", label: "Auditoria", icon: ClipboardList },
   { to: "/admin/banners", label: "Anúncios", icon: Megaphone },
   { to: "/admin/pwa", label: "App (PWA)", icon: Smartphone },
+  { to: "/admin/vox", label: "Destaques & Vox", icon: Activity },
   { to: "/admin/radio", label: "Configurar Rádio", icon: Radio },
   { to: "/admin/site", label: "Configurar Site", icon: Settings },
 ];
@@ -111,6 +112,12 @@ function AdminMenuLink({ item, active }: { item: (typeof menu)[number]; active: 
   if (item.to === "/admin/pwa")
     return (
       <Link to="/admin/pwa" className={className}>
+        {content}
+      </Link>
+    );
+  if (item.to === "/admin/vox")
+    return (
+      <Link to="/admin/vox" className={className}>
         {content}
       </Link>
     );

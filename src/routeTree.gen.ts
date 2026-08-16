@@ -18,6 +18,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as NoticiaSlugRouteImport } from './routes/noticia/$slug'
 import { Route as CategoriaSlugRouteImport } from './routes/categoria/$slug'
+import { Route as AdminVoxRouteImport } from './routes/admin/vox'
 import { Route as AdminTopChartRouteImport } from './routes/admin/top-chart'
 import { Route as AdminSiteRouteImport } from './routes/admin/site'
 import { Route as AdminShoutboxRouteImport } from './routes/admin/shoutbox'
@@ -77,6 +78,11 @@ const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
   id: '/categoria/$slug',
   path: '/categoria/$slug',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminVoxRoute = AdminVoxRouteImport.update({
+  id: '/vox',
+  path: '/vox',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminTopChartRoute = AdminTopChartRouteImport.update({
   id: '/top-chart',
@@ -169,6 +175,7 @@ export interface FileRoutesByFullPath {
   '/admin/shoutbox': typeof AdminShoutboxRoute
   '/admin/site': typeof AdminSiteRoute
   '/admin/top-chart': typeof AdminTopChartRoute
+  '/admin/vox': typeof AdminVoxRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/noticia/$slug': typeof NoticiaSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -193,6 +200,7 @@ export interface FileRoutesByTo {
   '/admin/shoutbox': typeof AdminShoutboxRoute
   '/admin/site': typeof AdminSiteRoute
   '/admin/top-chart': typeof AdminTopChartRoute
+  '/admin/vox': typeof AdminVoxRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/noticia/$slug': typeof NoticiaSlugRoute
   '/admin': typeof AdminIndexRoute
@@ -219,6 +227,7 @@ export interface FileRoutesById {
   '/admin/shoutbox': typeof AdminShoutboxRoute
   '/admin/site': typeof AdminSiteRoute
   '/admin/top-chart': typeof AdminTopChartRoute
+  '/admin/vox': typeof AdminVoxRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/noticia/$slug': typeof NoticiaSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -246,6 +255,7 @@ export interface FileRouteTypes {
     | '/admin/shoutbox'
     | '/admin/site'
     | '/admin/top-chart'
+    | '/admin/vox'
     | '/categoria/$slug'
     | '/noticia/$slug'
     | '/admin/'
@@ -270,6 +280,7 @@ export interface FileRouteTypes {
     | '/admin/shoutbox'
     | '/admin/site'
     | '/admin/top-chart'
+    | '/admin/vox'
     | '/categoria/$slug'
     | '/noticia/$slug'
     | '/admin'
@@ -295,6 +306,7 @@ export interface FileRouteTypes {
     | '/admin/shoutbox'
     | '/admin/site'
     | '/admin/top-chart'
+    | '/admin/vox'
     | '/categoria/$slug'
     | '/noticia/$slug'
     | '/admin/'
@@ -377,6 +389,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/categoria/$slug'
       preLoaderRoute: typeof CategoriaSlugRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/vox': {
+      id: '/admin/vox'
+      path: '/vox'
+      fullPath: '/admin/vox'
+      preLoaderRoute: typeof AdminVoxRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/top-chart': {
       id: '/admin/top-chart'
@@ -493,6 +512,7 @@ interface AdminRouteChildren {
   AdminShoutboxRoute: typeof AdminShoutboxRoute
   AdminSiteRoute: typeof AdminSiteRoute
   AdminTopChartRoute: typeof AdminTopChartRoute
+  AdminVoxRoute: typeof AdminVoxRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -510,6 +530,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminShoutboxRoute: AdminShoutboxRoute,
   AdminSiteRoute: AdminSiteRoute,
   AdminTopChartRoute: AdminTopChartRoute,
+  AdminVoxRoute: AdminVoxRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
