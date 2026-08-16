@@ -138,6 +138,7 @@ function OuvintePage() {
             </Suspense>
           </div>
         </section>
+        <AdBanner position="player" className="pb-12" />
       </main>
       <Footer />
     </div>
