@@ -129,8 +129,8 @@ function PedidosPage() {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-5 gap-8 max-w-6xl mx-auto">
-          <div className="lg:col-span-3">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 max-w-6xl mx-auto">
+          <div className="min-w-0 lg:col-span-3">
             <SongRequestForm
               onSubmitted={(id) => {
                 if (typeof window === "undefined") return;
@@ -143,7 +143,7 @@ function PedidosPage() {
               }}
             />
           </div>
-          <div className="lg:col-span-2">
+          <div className="min-w-0 lg:col-span-2">
             <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
               <div className="gradient-deep text-white px-5 py-4 flex items-center gap-3">
                 <Music className="w-5 h-5 text-gold" />
