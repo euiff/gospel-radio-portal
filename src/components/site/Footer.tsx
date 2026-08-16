@@ -2,8 +2,6 @@ import { Link } from "@tanstack/react-router";
 import { useRadio } from "@/lib/radio-context";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
-
 type NavItem = { to?: string; label?: string };
 
 const FALLBACK_STATION_NAME = "Alternativa gospel";
@@ -61,8 +59,6 @@ function FooterNavLink({ item }: { item: NavItem }) {
 
 export function Footer() {
   const { settings: radioSettings } = useRadio();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
   const { data: siteSettings } = useQuery({
     queryKey: ["site-settings-footer"],
     queryFn: async () => {
@@ -180,24 +176,24 @@ export function Footer() {
             <h4 className="text-gold font-bold text-xs uppercase tracking-[0.2em] mb-6">
               Fale Conosco
             </h4>
-            {mounted && radioSettings?.whatsapp && (
-              <a
-                href={`https://wa.me/${radioSettings.whatsapp}`}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-gold/20 hover:border-gold/30 transition-all text-sm group"
-              >
-                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                Chamar no WhatsApp
-              </a>
-            )}
-            <p className="text-xs mt-6 text-white/40 italic">
+            <a
+              suppressHydrationWarning
+              href={radioSettings?.whatsapp ? `https://wa.me/${radioSettings.whatsapp}` : undefined}
+              target="_blank"
+              rel="noreferrer"
+              aria-hidden={!radioSettings?.whatsapp}
+              className={`min-h-11 items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-gold/20 hover:border-gold/30 transition-all text-sm ${radioSettings?.whatsapp ? "inline-flex" : "hidden"}`}
+            >
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              Chamar no WhatsApp
+            </a>
+            <p className="text-xs mt-6 text-white/70 italic">
               Envie seu pedido de oração ou sugestão musical.
             </p>
           </div>
         </div>
 
-        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] md:text-xs text-white/30 uppercase tracking-widest font-medium">
+        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] md:text-xs text-white/70 uppercase tracking-widest font-medium">
           <div>
             {siteSettings?.footer_text ? (
               <span

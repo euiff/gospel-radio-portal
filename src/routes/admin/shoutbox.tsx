@@ -198,11 +198,11 @@ function AdminShoutbox() {
           ))}
         </ul>
         {pageCount > 1 && (
-          <div className="flex items-center justify-between p-3 border-t border-border text-xs">
+          <div className="sticky bottom-0 z-10 flex flex-wrap items-center justify-between gap-2 p-3 border-t border-border bg-card text-sm">
             <span className="text-muted-foreground">Página {currentPage} de {pageCount}</span>
-            <div className="flex items-center gap-1">
-              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-1.5 rounded border border-border disabled:opacity-40"><ChevronLeft className="w-4 h-4" /></button>
-              <button onClick={() => setPage((p) => Math.min(pageCount, p + 1))} disabled={currentPage === pageCount} className="p-1.5 rounded border border-border disabled:opacity-40"><ChevronRight className="w-4 h-4" /></button>
+            <div className="flex items-center gap-2">
+              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1} aria-label="Página anterior" className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-border disabled:opacity-40 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><ChevronLeft className="w-5 h-5" /></button>
+              <button onClick={() => setPage((p) => Math.min(pageCount, p + 1))} disabled={currentPage === pageCount} aria-label="Próxima página" className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-border disabled:opacity-40 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><ChevronRight className="w-5 h-5" /></button>
             </div>
           </div>
         )}
