@@ -6,6 +6,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useRadio } from "@/lib/radio-context";
+import appIcon from "@/assets/app-icon.png";
 
 const defaultNav = [
   { to: "/", label: "Início" },
@@ -125,7 +126,16 @@ export function Header() {
                   className={`${mobileHeight} ${desktopHeight} w-auto max-w-[200px] md:max-w-[300px] object-contain transition-all duration-300 hover:scale-105`}
                 />
               ) : (
-                <span className="flex items-center gap-1">{stationName}</span>
+                <span className="flex items-center gap-2">
+                  <img
+                    src={appIcon}
+                    alt=""
+                    width={40}
+                    height={40}
+                    className={`${mobileHeight} ${desktopHeight} w-auto rounded-xl shadow-sm`}
+                  />
+                  <span className="truncate max-w-[9rem] sm:max-w-none">{stationName}</span>
+                </span>
               )}
             </Link>
           );
