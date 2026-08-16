@@ -27,7 +27,7 @@ const fields: Array<{
     key: "api_now_playing",
     label: "API Agora Tocando (JSON)",
     placeholder: "https://api.suaradio.com/nowplaying",
-    hint: "URL que retorna JSON com campo 'title' ou 'song'",
+    hint: "Compatível com Vox HD e APIs JSON. Links HTTP são acessados automaticamente por HTTPS.",
   },
   { key: "logo_url", label: "Logo da Rádio", type: "image", aspect: 1 },
   { key: "cover_url", label: "Capa do Player", type: "image", aspect: 1.777 },
