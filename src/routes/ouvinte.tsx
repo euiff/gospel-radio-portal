@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
-import { useRadio } from "@/lib/radio-context";
+import { useRadio, radioSettingsQueryOptions } from "@/lib/radio-context";
 import { RecentTracks } from "@/components/site/RecentTracks";
 import { AudioVisualizer } from "@/components/site/AudioVisualizer";
 import { OnAirBadge } from "@/components/site/OnAirBadge";
@@ -14,7 +14,11 @@ const TopChart = lazy(() =>
 );
 
 export const Route = createFileRoute("/ouvinte")({
-  head: () => ({
+  loader: async ({ context: { queryClient } }) => {
+    const radio = await queryClient.ensureQueryData(radioSettingsQueryOptions);
+    return { radio };
+  },
+  head: ({ loaderData }) => ({
     meta: [
       { title: "Área do Ouvinte — Tocando agora, últimas músicas e Top Chart" },
       {
@@ -27,7 +31,17 @@ export const Route = createFileRoute("/ouvinte")({
         property: "og:description",
         content: "Tocando agora, últimas músicas e ranking semanal em um só lugar.",
       },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://gospel-radio-portal.lovable.app/ouvinte" },
+      { name: "twitter:card", content: "summary_large_image" },
+      ...(loaderData?.radio?.logo_url
+        ? [
+            { property: "og:image", content: loaderData.radio.logo_url },
+            { name: "twitter:image", content: loaderData.radio.logo_url },
+          ]
+        : []),
     ],
+    links: [{ rel: "canonical", href: "https://gospel-radio-portal.lovable.app/ouvinte" }],
   }),
   component: OuvintePage,
 });

@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ProgramacaoRouteImport } from './routes/programacao'
 import { Route as PedidosRouteImport } from './routes/pedidos'
 import { Route as OuvinteRouteImport } from './routes/ouvinte'
@@ -34,6 +35,11 @@ import { Route as AdminBannersRouteImport } from './routes/admin/banners'
 import { Route as AdminAuditRouteImport } from './routes/admin/audit'
 import { Route as ApiPublicManifestRouteImport } from './routes/api/public/manifest'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProgramacaoRoute = ProgramacaoRouteImport.update({
   id: '/programacao',
   path: '/programacao',
@@ -162,6 +168,7 @@ export interface FileRoutesByFullPath {
   '/ouvinte': typeof OuvinteRoute
   '/pedidos': typeof PedidosRoute
   '/programacao': typeof ProgramacaoRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
@@ -187,6 +194,7 @@ export interface FileRoutesByTo {
   '/ouvinte': typeof OuvinteRoute
   '/pedidos': typeof PedidosRoute
   '/programacao': typeof ProgramacaoRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
@@ -214,6 +222,7 @@ export interface FileRoutesById {
   '/ouvinte': typeof OuvinteRoute
   '/pedidos': typeof PedidosRoute
   '/programacao': typeof ProgramacaoRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
@@ -242,6 +251,7 @@ export interface FileRouteTypes {
     | '/ouvinte'
     | '/pedidos'
     | '/programacao'
+    | '/sitemap.xml'
     | '/admin/audit'
     | '/admin/banners'
     | '/admin/categorias'
@@ -267,6 +277,7 @@ export interface FileRouteTypes {
     | '/ouvinte'
     | '/pedidos'
     | '/programacao'
+    | '/sitemap.xml'
     | '/admin/audit'
     | '/admin/banners'
     | '/admin/categorias'
@@ -293,6 +304,7 @@ export interface FileRouteTypes {
     | '/ouvinte'
     | '/pedidos'
     | '/programacao'
+    | '/sitemap.xml'
     | '/admin/audit'
     | '/admin/banners'
     | '/admin/categorias'
@@ -320,6 +332,7 @@ export interface RootRouteChildren {
   OuvinteRoute: typeof OuvinteRoute
   PedidosRoute: typeof PedidosRoute
   ProgramacaoRoute: typeof ProgramacaoRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   CategoriaSlugRoute: typeof CategoriaSlugRoute
   NoticiaSlugRoute: typeof NoticiaSlugRoute
   ApiPublicManifestRoute: typeof ApiPublicManifestRoute
@@ -327,6 +340,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/programacao': {
       id: '/programacao'
       path: '/programacao'
@@ -543,6 +563,7 @@ const rootRouteChildren: RootRouteChildren = {
   OuvinteRoute: OuvinteRoute,
   PedidosRoute: PedidosRoute,
   ProgramacaoRoute: ProgramacaoRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   CategoriaSlugRoute: CategoriaSlugRoute,
   NoticiaSlugRoute: NoticiaSlugRoute,
   ApiPublicManifestRoute: ApiPublicManifestRoute,

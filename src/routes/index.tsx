@@ -79,7 +79,10 @@ export const Route = createFileRoute("/")({
         { name: "twitter:description", content: description },
         { name: "twitter:image", content: ogImage },
         { name: "twitter:card", content: "summary_large_image" },
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: "https://gospel-radio-portal.lovable.app/" },
       ],
+      links: [{ rel: "canonical", href: "https://gospel-radio-portal.lovable.app/" }],
     };
   },
   component: Home,
@@ -108,7 +111,13 @@ function Home() {
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={heroImg} alt="" className="w-full h-full object-cover" fetchPriority="high" loading="eager" />
+          <img
+            src={heroImg}
+            alt="Estúdio de rádio gospel com microfone e mesa de som durante transmissão ao vivo"
+            className="w-full h-full object-cover"
+            fetchPriority="high"
+            loading="eager"
+          />
           <div className="absolute inset-0 gradient-deep opacity-95" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(201,168,76,0.15),transparent_60%)]" />
         </div>
@@ -251,7 +260,7 @@ function Home() {
                 <div className="aspect-[16/9] overflow-hidden">
                   <img
                     src={featured.cover_image}
-                    alt=""
+                    alt={featured.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
@@ -287,7 +296,7 @@ function Home() {
                   <div className="aspect-[16/10] overflow-hidden shrink-0">
                     <img
                       src={n.cover_image}
-                      alt=""
+                      alt={n.title}
                       loading="lazy"
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
