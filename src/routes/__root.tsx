@@ -66,6 +66,7 @@ import { AuthProvider } from "@/lib/auth-context";
 import { RadioPlayer } from "@/components/site/RadioPlayer";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
+import { PWAInstall } from "@/components/site/PWAInstall";
 import { siteSettingsQuery } from "@/hooks/use-site-data";
 
 function NotFoundComponent() {
