@@ -177,6 +177,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       radio?.tagline ||
       "Ouça a melhor música gospel ao vivo e acompanhe as notícias do mundo cristão.";
     const logoUrl = site?.logo_url || radio?.logo_url;
+    const pwa: any = (site as any)?.pwa_settings ?? {};
+    const assetVersion = pwa.asset_version ?? 1;
     const fallbackIcon = "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/07e6355f-44f7-4464-8a3d-991a257d1c13/id-preview-7d19905f--200fef07-f222-45f8-bb31-f063c40ad46e.lovable.app-1778977090172.png";
 
     return {
@@ -192,18 +194,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         { property: "og:image", content: logoUrl || fallbackIcon },
         { name: "twitter:image", content: logoUrl || fallbackIcon },
         { name: "twitter:card", content: "summary_large_image" },
-        { name: "theme-color", content: "#04281f" },
+        { name: "theme-color", content: pwa.theme_color || "#04281f" },
         { name: "mobile-web-app-capable", content: "yes" },
         { name: "apple-mobile-web-app-capable", content: "yes" },
         { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
-        { name: "apple-mobile-web-app-title", content: "Rádio Gospel" },
+        { name: "apple-mobile-web-app-title", content: pwa.short_name || "Rádio Gospel" },
       ],
       links: [
         { rel: "stylesheet", href: appCss },
-        { rel: "manifest", href: "/manifest.webmanifest" },
-        { rel: "apple-touch-icon", sizes: "180x180", href: "/icons/apple-touch-icon.png" },
-        { rel: "apple-touch-icon", sizes: "167x167", href: "/icons/apple-touch-icon-167.png" },
-        { rel: "apple-touch-icon", sizes: "152x152", href: "/icons/apple-touch-icon-152.png" },
+        { rel: "manifest", href: `/api/public/manifest?v=${assetVersion}` },
+        { rel: "apple-touch-icon", sizes: "180x180", href: `/icons/apple-touch-icon.png?v=${assetVersion}` },
+        { rel: "apple-touch-icon", sizes: "167x167", href: `/icons/apple-touch-icon-167.png?v=${assetVersion}` },
+        { rel: "apple-touch-icon", sizes: "152x152", href: `/icons/apple-touch-icon-152.png?v=${assetVersion}` },
         ...[
           [1170, 2532],
           [1284, 2778],
@@ -218,7 +220,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           [2048, 2732],
         ].map(([w, h]) => ({
           rel: "apple-touch-startup-image",
-          href: `/icons/splash-${w}x${h}.png`,
+          href: `/icons/splash-${w}x${h}.png?v=${assetVersion}`,
           media: `(device-width: ${Math.round(w / 3)}px) and (device-height: ${Math.round(h / 3)}px) and (-webkit-device-pixel-ratio: 3)`,
         })),
         { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -227,8 +229,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           rel: "stylesheet",
           href: "https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Fira+Sans:wght@300;400;500;600;700;800&display=swap",
         },
-        { rel: "icon", type: "image/png", sizes: "64x64", href: "/favicon.png" },
-        { rel: "icon", href: "/favicon.ico", sizes: "48x48" },
+        { rel: "icon", type: "image/png", sizes: "64x64", href: `/favicon.png?v=${assetVersion}` },
+        { rel: "icon", href: `/favicon.ico?v=${assetVersion}`, sizes: "48x48" },
       ],
     };
   },

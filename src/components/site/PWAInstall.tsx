@@ -1,12 +1,27 @@
 import { useEffect, useState } from "react";
 import { Download, X } from "lucide-react";
 import { registerAppServiceWorker } from "@/lib/pwa";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 type Prompt = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
 
 export function PWAInstall() {
   const [deferred, setDeferred] = useState<Prompt | null>(null);
   const [dismissed, setDismissed] = useState(false);
+  const { data: pwa } = useQuery({
+    queryKey: ["pwa-settings"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("pwa_settings")
+        .limit(1)
+        .maybeSingle();
+      return (data?.pwa_settings as any) ?? null;
+    },
+    staleTime: 60_000,
+  });
+  const version = pwa?.asset_version ?? 1;
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -18,9 +33,9 @@ export function PWAInstall() {
     };
     window.addEventListener("beforeinstallprompt", onPrompt);
 
-    void registerAppServiceWorker();
+    void registerAppServiceWorker(version);
     return () => window.removeEventListener("beforeinstallprompt", onPrompt);
-  }, []);
+  }, [version]);
 
   if (!deferred || dismissed) return null;
 

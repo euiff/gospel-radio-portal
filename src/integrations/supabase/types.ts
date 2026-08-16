@@ -465,6 +465,7 @@ export type Database = {
           logo_url: string | null
           navigation_menu: Json | null
           primary_color: string | null
+          pwa_settings: Json
           site_description: string | null
           site_name: string
           theme_mode: string | null
@@ -482,6 +483,7 @@ export type Database = {
           logo_url?: string | null
           navigation_menu?: Json | null
           primary_color?: string | null
+          pwa_settings?: Json
           site_description?: string | null
           site_name?: string
           theme_mode?: string | null
@@ -499,6 +501,7 @@ export type Database = {
           logo_url?: string | null
           navigation_menu?: Json | null
           primary_color?: string | null
+          pwa_settings?: Json
           site_description?: string | null
           site_name?: string
           theme_mode?: string | null

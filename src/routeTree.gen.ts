@@ -23,6 +23,7 @@ import { Route as AdminSiteRouteImport } from './routes/admin/site'
 import { Route as AdminShoutboxRouteImport } from './routes/admin/shoutbox'
 import { Route as AdminRadioRouteImport } from './routes/admin/radio'
 import { Route as AdminQuizRouteImport } from './routes/admin/quiz'
+import { Route as AdminPwaRouteImport } from './routes/admin/pwa'
 import { Route as AdminProgramacaoRouteImport } from './routes/admin/programacao'
 import { Route as AdminPedidosRouteImport } from './routes/admin/pedidos'
 import { Route as AdminOracaoRouteImport } from './routes/admin/oracao'
@@ -30,6 +31,7 @@ import { Route as AdminNoticiasRouteImport } from './routes/admin/noticias'
 import { Route as AdminCategoriasRouteImport } from './routes/admin/categorias'
 import { Route as AdminBannersRouteImport } from './routes/admin/banners'
 import { Route as AdminAuditRouteImport } from './routes/admin/audit'
+import { Route as ApiPublicManifestRouteImport } from './routes/api/public/manifest'
 
 const ProgramacaoRoute = ProgramacaoRouteImport.update({
   id: '/programacao',
@@ -101,6 +103,11 @@ const AdminQuizRoute = AdminQuizRouteImport.update({
   path: '/quiz',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPwaRoute = AdminPwaRouteImport.update({
+  id: '/pwa',
+  path: '/pwa',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminProgramacaoRoute = AdminProgramacaoRouteImport.update({
   id: '/programacao',
   path: '/programacao',
@@ -136,6 +143,11 @@ const AdminAuditRoute = AdminAuditRouteImport.update({
   path: '/audit',
   getParentRoute: () => AdminRoute,
 } as any)
+const ApiPublicManifestRoute = ApiPublicManifestRouteImport.update({
+  id: '/api/public/manifest',
+  path: '/api/public/manifest',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -151,6 +163,7 @@ export interface FileRoutesByFullPath {
   '/admin/oracao': typeof AdminOracaoRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/programacao': typeof AdminProgramacaoRoute
+  '/admin/pwa': typeof AdminPwaRoute
   '/admin/quiz': typeof AdminQuizRoute
   '/admin/radio': typeof AdminRadioRoute
   '/admin/shoutbox': typeof AdminShoutboxRoute
@@ -159,6 +172,7 @@ export interface FileRoutesByFullPath {
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/noticia/$slug': typeof NoticiaSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/api/public/manifest': typeof ApiPublicManifestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -173,6 +187,7 @@ export interface FileRoutesByTo {
   '/admin/oracao': typeof AdminOracaoRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/programacao': typeof AdminProgramacaoRoute
+  '/admin/pwa': typeof AdminPwaRoute
   '/admin/quiz': typeof AdminQuizRoute
   '/admin/radio': typeof AdminRadioRoute
   '/admin/shoutbox': typeof AdminShoutboxRoute
@@ -181,6 +196,7 @@ export interface FileRoutesByTo {
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/noticia/$slug': typeof NoticiaSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/api/public/manifest': typeof ApiPublicManifestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -197,6 +213,7 @@ export interface FileRoutesById {
   '/admin/oracao': typeof AdminOracaoRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/programacao': typeof AdminProgramacaoRoute
+  '/admin/pwa': typeof AdminPwaRoute
   '/admin/quiz': typeof AdminQuizRoute
   '/admin/radio': typeof AdminRadioRoute
   '/admin/shoutbox': typeof AdminShoutboxRoute
@@ -205,6 +222,7 @@ export interface FileRoutesById {
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/noticia/$slug': typeof NoticiaSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/api/public/manifest': typeof ApiPublicManifestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -222,6 +240,7 @@ export interface FileRouteTypes {
     | '/admin/oracao'
     | '/admin/pedidos'
     | '/admin/programacao'
+    | '/admin/pwa'
     | '/admin/quiz'
     | '/admin/radio'
     | '/admin/shoutbox'
@@ -230,6 +249,7 @@ export interface FileRouteTypes {
     | '/categoria/$slug'
     | '/noticia/$slug'
     | '/admin/'
+    | '/api/public/manifest'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -244,6 +264,7 @@ export interface FileRouteTypes {
     | '/admin/oracao'
     | '/admin/pedidos'
     | '/admin/programacao'
+    | '/admin/pwa'
     | '/admin/quiz'
     | '/admin/radio'
     | '/admin/shoutbox'
@@ -252,6 +273,7 @@ export interface FileRouteTypes {
     | '/categoria/$slug'
     | '/noticia/$slug'
     | '/admin'
+    | '/api/public/manifest'
   id:
     | '__root__'
     | '/'
@@ -267,6 +289,7 @@ export interface FileRouteTypes {
     | '/admin/oracao'
     | '/admin/pedidos'
     | '/admin/programacao'
+    | '/admin/pwa'
     | '/admin/quiz'
     | '/admin/radio'
     | '/admin/shoutbox'
@@ -275,6 +298,7 @@ export interface FileRouteTypes {
     | '/categoria/$slug'
     | '/noticia/$slug'
     | '/admin/'
+    | '/api/public/manifest'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -286,6 +310,7 @@ export interface RootRouteChildren {
   ProgramacaoRoute: typeof ProgramacaoRoute
   CategoriaSlugRoute: typeof CategoriaSlugRoute
   NoticiaSlugRoute: typeof NoticiaSlugRoute
+  ApiPublicManifestRoute: typeof ApiPublicManifestRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -388,6 +413,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminQuizRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/pwa': {
+      id: '/admin/pwa'
+      path: '/pwa'
+      fullPath: '/admin/pwa'
+      preLoaderRoute: typeof AdminPwaRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/programacao': {
       id: '/admin/programacao'
       path: '/programacao'
@@ -437,6 +469,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAuditRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/api/public/manifest': {
+      id: '/api/public/manifest'
+      path: '/api/public/manifest'
+      fullPath: '/api/public/manifest'
+      preLoaderRoute: typeof ApiPublicManifestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -448,6 +487,7 @@ interface AdminRouteChildren {
   AdminOracaoRoute: typeof AdminOracaoRoute
   AdminPedidosRoute: typeof AdminPedidosRoute
   AdminProgramacaoRoute: typeof AdminProgramacaoRoute
+  AdminPwaRoute: typeof AdminPwaRoute
   AdminQuizRoute: typeof AdminQuizRoute
   AdminRadioRoute: typeof AdminRadioRoute
   AdminShoutboxRoute: typeof AdminShoutboxRoute
@@ -464,6 +504,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminOracaoRoute: AdminOracaoRoute,
   AdminPedidosRoute: AdminPedidosRoute,
   AdminProgramacaoRoute: AdminProgramacaoRoute,
+  AdminPwaRoute: AdminPwaRoute,
   AdminQuizRoute: AdminQuizRoute,
   AdminRadioRoute: AdminRadioRoute,
   AdminShoutboxRoute: AdminShoutboxRoute,
@@ -483,6 +524,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProgramacaoRoute: ProgramacaoRoute,
   CategoriaSlugRoute: CategoriaSlugRoute,
   NoticiaSlugRoute: NoticiaSlugRoute,
+  ApiPublicManifestRoute: ApiPublicManifestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

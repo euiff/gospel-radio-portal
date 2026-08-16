@@ -70,12 +70,24 @@ function SiteSettings() {
     const payload = { ...data };
     delete payload.created_at;
     delete payload.updated_at;
+    // Bump the PWA asset version so installed apps refresh icons/splash/manifest.
+    const currentPwa = (data.pwa_settings as any) ?? {};
+    payload.pwa_settings = {
+      ...currentPwa,
+      theme_color: data.primary_color || currentPwa.theme_color,
+      background_color: data.primary_color || currentPwa.background_color,
+      name: data.site_name || currentPwa.name,
+      asset_version: Number(currentPwa.asset_version ?? 1) + 1,
+    };
     const { error } = data?.id
       ? await supabase.from("site_settings").update(payload).eq("id", data.id)
       : await supabase.from("site_settings").insert(payload);
     setSaving(false);
     if (error) toast.error(error.message);
-    else toast.success("Site atualizado!");
+    else {
+      setData({ ...data, pwa_settings: payload.pwa_settings });
+      toast.success("Site atualizado! Os apps instalados vão receber os novos ícones automaticamente.");
+    }
   };
 
   if (!data) return <div className="p-12 text-center text-muted-foreground">Carregando…</div>;
