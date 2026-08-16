@@ -122,14 +122,14 @@ export function Header() {
               {siteSettings?.logo_url ? (
                 <img
                   src={siteSettings.logo_url}
-                  alt="Logo"
+                  alt={`${stationName} — logotipo da rádio`}
                   className={`${mobileHeight} ${desktopHeight} w-auto max-w-[200px] md:max-w-[300px] object-contain transition-all duration-300 hover:scale-105`}
                 />
               ) : (
                 <span className="flex items-center gap-2">
                   <img
                     src={appIcon}
-                    alt=""
+                    alt={`${stationName} — ícone da rádio`}
                     width={40}
                     height={40}
                     className={`${mobileHeight} ${desktopHeight} w-auto rounded-xl shadow-sm`}

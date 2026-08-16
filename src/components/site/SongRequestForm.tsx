@@ -61,12 +61,14 @@ export function SongRequestForm({ onSubmitted }: SongRequestFormProps = {}) {
 
       toast.success("Pedido enviado! Sua música foi solicitada com sucesso.");
 
-      // WhatsApp Integration
-      const whatsappNumber = settings?.whatsapp?.replace(/\D/g, "") || "5511999999999";
-      const text = encodeURIComponent(
-        `*Pedido de Música - Portal Gospel*\n\n*Nome:* ${values.userName}\n*Música:* ${values.songTitle}\n*Artista:* ${values.artist}\n*Mensagem:* ${values.message || "Sem mensagem"}`,
-      );
-      window.open(`https://wa.me/${whatsappNumber}?text=${text}`, "_blank");
+      // WhatsApp Integration (only when a real station number is configured)
+      const whatsappNumber = settings?.whatsapp?.replace(/\D/g, "") ?? "";
+      if (whatsappNumber.length >= 10) {
+        const text = encodeURIComponent(
+          `*Pedido de Música - Portal Gospel*\n\n*Nome:* ${values.userName}\n*Música:* ${values.songTitle}\n*Artista:* ${values.artist}\n*Mensagem:* ${values.message || "Sem mensagem"}`,
+        );
+        window.open(`https://wa.me/${whatsappNumber}?text=${text}`, "_blank");
+      }
 
       form.reset();
     } catch (error) {
