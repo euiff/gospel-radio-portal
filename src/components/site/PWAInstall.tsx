@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Download, X } from "lucide-react";
+import { registerAppServiceWorker } from "@/lib/pwa";
 
 type Prompt = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
 
@@ -17,9 +18,7 @@ export function PWAInstall() {
     };
     window.addEventListener("beforeinstallprompt", onPrompt);
 
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").catch(() => {});
-    }
+    void registerAppServiceWorker();
     return () => window.removeEventListener("beforeinstallprompt", onPrompt);
   }, []);
 
