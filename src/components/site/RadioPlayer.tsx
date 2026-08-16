@@ -70,7 +70,7 @@ export function RadioPlayer() {
       >
         <div className="container mx-auto px-3 md:px-4 py-2.5 md:py-3 flex items-center gap-2.5 sm:gap-3 md:gap-4">
           {/* Vinyl cover */}
-          <div className="relative shrink-0 hidden xs:block sm:block">
+          <div className="relative shrink-0">
             <div
               className={`w-11 h-11 md:w-16 md:h-16 rounded-full overflow-hidden border-2 border-gold/40 bg-deep-darker ${isPlaying ? "animate-spin-slow" : ""}`}
             >
