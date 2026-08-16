@@ -30,6 +30,7 @@ const QuizCard = lazy(() =>
   import("@/components/site/QuizCard").then((m) => ({ default: m.QuizCard })),
 );
 import { NewsTicker } from "@/components/site/NewsTicker";
+import { AdBanner } from "@/components/site/AdBanner";
 import { OnAirBadge } from "@/components/site/OnAirBadge";
 import { AudioVisualizer } from "@/components/site/AudioVisualizer";
 import { RecentTracks } from "@/components/site/RecentTracks";
@@ -211,6 +212,8 @@ function Home() {
 
       {/* News ticker */}
       <NewsTicker items={(latest ?? []).slice(0, 8)} />
+
+      <AdBanner position="hero" className="pt-8" />
 
       {/* FEATURED + LATEST */}
       <section className="container mx-auto px-4 py-12 md:py-20">

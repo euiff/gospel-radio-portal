@@ -28,6 +28,7 @@ import { Route as AdminPedidosRouteImport } from './routes/admin/pedidos'
 import { Route as AdminOracaoRouteImport } from './routes/admin/oracao'
 import { Route as AdminNoticiasRouteImport } from './routes/admin/noticias'
 import { Route as AdminCategoriasRouteImport } from './routes/admin/categorias'
+import { Route as AdminBannersRouteImport } from './routes/admin/banners'
 import { Route as AdminAuditRouteImport } from './routes/admin/audit'
 
 const ProgramacaoRoute = ProgramacaoRouteImport.update({
@@ -125,6 +126,11 @@ const AdminCategoriasRoute = AdminCategoriasRouteImport.update({
   path: '/categorias',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminBannersRoute = AdminBannersRouteImport.update({
+  id: '/banners',
+  path: '/banners',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminAuditRoute = AdminAuditRouteImport.update({
   id: '/audit',
   path: '/audit',
@@ -139,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/pedidos': typeof PedidosRoute
   '/programacao': typeof ProgramacaoRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/noticias': typeof AdminNoticiasRoute
   '/admin/oracao': typeof AdminOracaoRoute
@@ -160,6 +167,7 @@ export interface FileRoutesByTo {
   '/pedidos': typeof PedidosRoute
   '/programacao': typeof ProgramacaoRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/noticias': typeof AdminNoticiasRoute
   '/admin/oracao': typeof AdminOracaoRoute
@@ -183,6 +191,7 @@ export interface FileRoutesById {
   '/pedidos': typeof PedidosRoute
   '/programacao': typeof ProgramacaoRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/noticias': typeof AdminNoticiasRoute
   '/admin/oracao': typeof AdminOracaoRoute
@@ -207,6 +216,7 @@ export interface FileRouteTypes {
     | '/pedidos'
     | '/programacao'
     | '/admin/audit'
+    | '/admin/banners'
     | '/admin/categorias'
     | '/admin/noticias'
     | '/admin/oracao'
@@ -228,6 +238,7 @@ export interface FileRouteTypes {
     | '/pedidos'
     | '/programacao'
     | '/admin/audit'
+    | '/admin/banners'
     | '/admin/categorias'
     | '/admin/noticias'
     | '/admin/oracao'
@@ -250,6 +261,7 @@ export interface FileRouteTypes {
     | '/pedidos'
     | '/programacao'
     | '/admin/audit'
+    | '/admin/banners'
     | '/admin/categorias'
     | '/admin/noticias'
     | '/admin/oracao'
@@ -411,6 +423,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriasRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/banners': {
+      id: '/admin/banners'
+      path: '/banners'
+      fullPath: '/admin/banners'
+      preLoaderRoute: typeof AdminBannersRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/audit': {
       id: '/admin/audit'
       path: '/audit'
@@ -423,6 +442,7 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminAuditRoute: typeof AdminAuditRoute
+  AdminBannersRoute: typeof AdminBannersRoute
   AdminCategoriasRoute: typeof AdminCategoriasRoute
   AdminNoticiasRoute: typeof AdminNoticiasRoute
   AdminOracaoRoute: typeof AdminOracaoRoute
@@ -438,6 +458,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAuditRoute: AdminAuditRoute,
+  AdminBannersRoute: AdminBannersRoute,
   AdminCategoriasRoute: AdminCategoriasRoute,
   AdminNoticiasRoute: AdminNoticiasRoute,
   AdminOracaoRoute: AdminOracaoRoute,
@@ -466,3 +487,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
