@@ -212,6 +212,8 @@ function Home() {
       {/* News ticker */}
       <NewsTicker items={(latest ?? []).slice(0, 8)} />
 
+      <AdBanner position="hero" className="pt-8" />
+
       {/* FEATURED + LATEST */}
       <section className="container mx-auto px-4 py-12 md:py-20">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
