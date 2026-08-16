@@ -4,7 +4,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth-context";
 
-export const Route = createFileRoute("/login")({ component: Login });
+export const Route = createFileRoute("/login")({
+  head: () => ({
+    meta: [
+      { title: "Entrar — Painel da Rádio" },
+      {
+        name: "description",
+        content:
+          "Acesso restrito à equipe: entre com seu e-mail e senha para gerenciar a programação, notícias e pedidos da rádio.",
+      },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
+  component: Login,
+});
 
 function Login() {
   const nav = useNavigate();

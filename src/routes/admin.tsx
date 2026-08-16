@@ -15,7 +15,20 @@ import {
 } from "lucide-react";
 import { MessageSquare, Heart, BookOpen, Trophy, MessagesSquare, ClipboardList, Megaphone, Smartphone, Activity } from "lucide-react";
 
-export const Route = createFileRoute("/admin")({ component: AdminLayout });
+export const Route = createFileRoute("/admin")({
+  head: () => ({
+    meta: [
+      { title: "Painel Administrativo — Rádio" },
+      {
+        name: "description",
+        content:
+          "Área administrativa da rádio: gerencie notícias, programação, pedidos de música, oração, quiz e configurações do app.",
+      },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
+  component: AdminLayout,
+});
 
 const menu = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },

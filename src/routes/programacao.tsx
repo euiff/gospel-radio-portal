@@ -12,8 +12,29 @@ export const Route = createFileRoute("/programacao")({
   },
   head: ({ loaderData }) => {
     const stationName = loaderData?.radio?.station_name || "Alternativa gospel";
+    const title = `Programação — ${stationName}`;
+    const description = `Grade completa de programação da ${stationName}: horários dos programas, locutores e atrações de domingo a sábado.`;
+    const url = "https://gospel-radio-portal.lovable.app/programacao";
+    const image = loaderData?.radio?.logo_url;
     return {
-      meta: [{ title: `Programação — ${stationName}` }],
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: url },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        ...(image
+          ? [
+              { property: "og:image", content: image },
+              { name: "twitter:image", content: image },
+            ]
+          : []),
+      ],
+      links: [{ rel: "canonical", href: url }],
     };
   },
   component: Programacao,
