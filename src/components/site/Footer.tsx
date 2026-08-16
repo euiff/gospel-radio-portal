@@ -187,13 +187,13 @@ export function Footer() {
               <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
               Chamar no WhatsApp
             </a>
-            <p className="text-xs mt-6 text-white/40 italic">
+            <p className="text-xs mt-6 text-white/70 italic">
               Envie seu pedido de oração ou sugestão musical.
             </p>
           </div>
         </div>
 
-        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] md:text-xs text-white/30 uppercase tracking-widest font-medium">
+        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] md:text-xs text-white/70 uppercase tracking-widest font-medium">
           <div>
             {siteSettings?.footer_text ? (
               <span
