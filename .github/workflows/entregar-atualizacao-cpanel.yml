@@ -1,0 +1,47 @@
+name: Entregar atualização para cPanel
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'cpanel/site/**'
+      - '.github/workflows/entregar-atualizacao-cpanel.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: radio-gospel-cpanel-update
+  cancel-in-progress: false
+jobs:
+  prepare-and-deliver:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Preparar pacote cPanel
+        run: |
+          test -d cpanel/site
+          cd cpanel/site
+          test -n "$(find . -type f -print -quit)"
+          zip -q -r "${RUNNER_TEMP}/radio-cpanel-update.zip" . -x 'data/*' '*.env' '*secret*' '*.key'
+          unzip -t "${RUNNER_TEMP}/radio-cpanel-update.zip"
+      - name: Autenticar entrega com identidade assinada do GitHub
+        env:
+          AUDIENCE: https://alternativagospel.com.br/update-receiver.php
+        run: |
+          python3 - <<'PY' > "$RUNNER_TEMP/oidc-token"
+          import json, os, urllib.parse, urllib.request
+          url=os.environ['ACTIONS_ID_TOKEN_REQUEST_URL']
+          sep='&' if '?' in url else '?'
+          url+=sep+urllib.parse.urlencode({'audience':os.environ['AUDIENCE']})
+          request=urllib.request.Request(url,headers={'Authorization':'Bearer '+os.environ['ACTIONS_ID_TOKEN_REQUEST_TOKEN']})
+          with urllib.request.urlopen(request,timeout=15) as res:
+              print(json.load(res)['value'])
+          PY
+          chmod 600 "$RUNNER_TEMP/oidc-token"
+      - name: Enviar versão autenticada para hospedagem
+        run: |
+          curl --fail-with-body --show-error --silent --retry 2 --max-time 90 \
+            -H "Authorization: Bearer $(cat "$RUNNER_TEMP/oidc-token")" \
+            -F "sha=$GITHUB_SHA" \
+            -F "package=@$RUNNER_TEMP/radio-cpanel-update.zip;type=application/zip" \
+            https://alternativagospel.com.br/update-receiver.php
