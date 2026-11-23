@@ -46,6 +46,7 @@ const menu = [
   { to: "/admin/vox", label: "Destaques & Vox", icon: Activity },
   { to: "/admin/radio", label: "Configurar Rádio", icon: Radio },
   { to: "/admin/site", label: "Configurar Site", icon: Settings },
+  { to: "/admin/atualizacoes", label: "Atualizações", icon: RefreshCw },
 ];
 
 function AdminMenuLink({ item, active }: { item: (typeof menu)[number]; active: boolean }) {
@@ -137,6 +138,12 @@ function AdminMenuLink({ item, active }: { item: (typeof menu)[number]; active: 
   if (item.to === "/admin/radio")
     return (
       <Link to="/admin/radio" className={className}>
+        {content}
+      </Link>
+    );
+  if (item.to === "/admin/atualizacoes")
+    return (
+      <Link to="/admin/atualizacoes" className={className}>
         {content}
       </Link>
     );
