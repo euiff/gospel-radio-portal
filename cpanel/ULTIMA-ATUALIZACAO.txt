@@ -1,0 +1,4 @@
+Rádio Alternativa Gospel — atualização PHP v3.7
+Pacote: cpanel/release-current.zip.base64
+Correção: consultar a referência GitHub sem carregar detalhes completos de commits.
+Preserva a programação semanal v3.6 e as configurações do site.
