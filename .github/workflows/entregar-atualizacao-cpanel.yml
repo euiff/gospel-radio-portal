@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'cpanel/site/**'
+      - 'cpanel/release-*.zip.base64'
       - '.github/workflows/entregar-atualizacao-cpanel.yml'
   workflow_dispatch:
 permissions:
@@ -17,13 +18,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Preparar pacote cPanel
+      - name: Validar e preparar a versão PHP do portal
         run: |
-          test -d cpanel/site
-          cd cpanel/site
-          test -n "$(find . -type f -print -quit)"
-          zip -q -r "${RUNNER_TEMP}/radio-cpanel-update.zip" . -x 'data/*' '*.env' '*secret*' '*.key'
-          unzip -t "${RUNNER_TEMP}/radio-cpanel-update.zip"
+          python3 - <<'PY'
+          import base64, pathlib, zipfile, os
+          src=pathlib.Path('cpanel/release-v3.1.zip.base64')
+          if not src.is_file(): raise SystemExit('Pacote PHP não disponível')
+          target=pathlib.Path(os.environ['RUNNER_TEMP'])/'radio-cpanel-update.zip'
+          target.write_bytes(base64.b64decode(src.read_text().strip(),validate=True))
+          with zipfile.ZipFile(target) as z:
+            if z.testzip(): raise SystemExit('Pacote ZIP inválido')
+            if not any(n.endswith('.php') for n in z.namelist()): raise SystemExit('Pacote vazio')
+            for n in z.namelist():
+              parts=n.split('/')
+              if n.startswith('/') or '..' in parts or n.startswith('data/') or n=='update-receiver.php' or any(p.startswith('.') for p in parts):
+                raise SystemExit('Nome de arquivo inseguro')
+          PY
       - name: Autenticar entrega com identidade assinada do GitHub
         env:
           AUDIENCE: https://alternativagospel.com.br/update-receiver.php
